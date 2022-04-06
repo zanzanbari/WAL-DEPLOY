@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true,
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["./src/*"]
+      },
+      // 데코테이터 사용을 위한 설정
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
+      // 엄격도 설정 (strict)
+      "noImplicitAny": false, // any타입 허용 여부
+      "strictNullChecks": true, // null , undefined 허용 여부
+      "strictPropertyInitialization": true, // class 선언 시 생성자를 통한 초기화 필수
+      "forceConsistentCasingInFileNames": true,
+      "skipLibCheck": true,
+      "pretty": true,
+      "sourceMap": true,
+      "outDir": "./dist",
+      "allowJs": true,
+      "noEmit": false,
+      "esModuleInterop": true,
+      "typeRoots": ["./node_modules/@types","./custom"], 
+    },
+    "include": ["./src/**/*"],
+    "exclude": ["node_modules", "tests"]
+}

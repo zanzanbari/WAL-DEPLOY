@@ -12,7 +12,7 @@ function startServer() {
     const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 
     // db 연결
-    // connectDB();
+    connectDB();
     
     app.use(cors());
     app.use(morgan('HTTP/:http-version :method :url :status', { 

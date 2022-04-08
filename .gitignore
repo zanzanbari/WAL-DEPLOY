@@ -2,4 +2,5 @@ node_modules
 .env
 log/*
 *.log
-custom/swagger/*
+custom/*
+*.d.ts

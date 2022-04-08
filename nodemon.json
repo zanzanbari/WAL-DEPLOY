@@ -5,7 +5,8 @@
     ],
     "ext": "js,ts,json",
     "ignore": [
-      "src/**/*.spec.ts"
+      "src/**/*.spec.ts",
+      "custom/swagger/*"
     ],
     "exec": "ts-node  --transpile-only ./src/app.ts"
   }

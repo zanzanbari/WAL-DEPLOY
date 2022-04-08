@@ -3,6 +3,7 @@
       "target": "es6",
       "module": "commonjs",
       "moduleResolution": "node",
+      "resolveJsonModule": true,
       "allowSyntheticDefaultImports": true,
       "baseUrl": ".",
       "paths": {
@@ -23,7 +24,11 @@
       "allowJs": true,
       "noEmit": false,
       "esModuleInterop": true,
-      "typeRoots": ["./node_modules/@types","./custom"], 
+      "typeRoots": [
+        "./node_modules/@types",
+        "./node_modules/swagger-express-ts",
+        "./custom/*"
+      ], 
     },
     "include": ["./src/**/*"],
     "exclude": ["node_modules", "tests"]

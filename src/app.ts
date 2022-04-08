@@ -3,6 +3,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import cors from 'cors';
+import swaggerUi from "swagger-ui-express";
+import swaggerFile from "../custom/swagger/swagger-api.json";
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
 
@@ -19,6 +21,11 @@ function startServer() {
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
     // 라우팅
+    app.use(
+        "/api-docs", 
+        swaggerUi.serve, 
+        swaggerUi.setup(swaggerFile, { explorer: true })
+    );
     app.use("/api", apiRouter);
 
     app.use("*", (req, res) => {
@@ -29,7 +36,7 @@ function startServer() {
         });
     });
 
-    app.listen(5050, () => {
+    app.listen(8080, () => {
         console.log(`
         ################################################
         🛡️  Server listening on port 🛡️

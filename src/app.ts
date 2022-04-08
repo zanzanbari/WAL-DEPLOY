@@ -15,7 +15,9 @@ function startServer() {
     // connectDB();
     
     app.use(cors());
-    app.use(morgan('HTTP/:http-version :method :url :status', { stream: logger.httpLogStream })); // NOTE: http request 로그 남기기
+    app.use(morgan('HTTP/:http-version :method :url :status', { 
+        stream: logger.httpLogStream 
+    })); // NOTE: http request 로그 남기기
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());

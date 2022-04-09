@@ -2,22 +2,24 @@ import { Response } from "express";
 
 export const ErrorResponse = (
     res: Response, 
-    resultCode: number, 
-    resultMessage: string
+    status: number, 
+    message: string
 ) => {
-    res.status(resultCode).json({
-        resultCode,
-        resultMessage
+    res.status(status).json({
+        status,
+        message
     });
 };
 
 export const SuccessResponse = (
     res: Response,
-    resultCode: number,
-    resultMessage: string,
+    status: number,
+    message: string,
     data: any,
 ) => {
-    data.resultCode = resultCode;
-    data.resultMessage = resultMessage,
-    res.status(resultCode).json(data);
+    res.status(status).json({
+        status,
+        message,
+        data
+    });
 }

@@ -31,7 +31,7 @@ function startServer() {
         swaggerUi.serve, 
         swaggerUi.setup(swaggerFile, { explorer: true })
     );
-    app.use("/api", apiRouter);
+    app.use("/api/v1", apiRouter);
 
     app.use("*", (req, res) => {
         res.status(404).json({

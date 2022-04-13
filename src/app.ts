@@ -3,10 +3,11 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import cors from 'cors';
+import { celebrate, errors } from 'celebrate';
 import swaggerUi from "swagger-ui-express";
-import swaggerFile from "../custom/swagger/swagger-api.json";
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
+import swaggerFile from "../custom/swagger/swagger-api.json";
 
 function startServer() {
     const app = express();
@@ -31,6 +32,7 @@ function startServer() {
         swaggerUi.serve, 
         swaggerUi.setup(swaggerFile, { explorer: true })
     );
+    app.use(errors());
     app.use("/api/v1", apiRouter);
 
     app.use("*", (req, res) => {
@@ -50,7 +52,7 @@ function startServer() {
     app.listen(8080, () => {
         console.log(`
         ################################################
-        🛡️  Server listening on port 5050🛡️
+        🛡️  Server listening on port 8080🛡️
         ################################################
       `);
     })

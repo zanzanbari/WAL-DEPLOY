@@ -22,7 +22,7 @@
   "homepage": "https://github.com/zanzanbari/WAL_SERVER#readme",
   "dependencies": {
     "@types/lodash": "^4.14.179",
-    "axios": "^0.26.0",
+    "axios": "^0.26.1",
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.1",
     "cookie-parser": "^1.4.6",
@@ -40,8 +40,10 @@
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.17.0",
     "sequelize-cli": "^6.4.1",
+    "sequelize-pretty-logger": "^1.0.2",
     "sequelize-typescript": "^2.1.3",
     "swagger-express-ts": "^1.1.0",
+    "tsconfig-paths": "^3.14.1",
     "typedi": "^0.10.0",
     "winston": "^3.7.2"
   },

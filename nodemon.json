@@ -8,5 +8,5 @@
       "src/**/*.spec.ts",
       "custom/swagger/*"
     ],
-    "exec": "ts-node  --transpile-only ./src/app.ts"
+    "exec": "ts-node -r tsconfig-paths/register --files --transpile-only ./src/app.ts"
   }

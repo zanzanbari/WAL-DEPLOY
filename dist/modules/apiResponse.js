@@ -1,17 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SuccessResponse = exports.ErrorResponse = void 0;
-const ErrorResponse = (res, resultCode, resultMessage) => {
-    res.status(resultCode).json({
-        resultCode,
-        resultMessage
+const ErrorResponse = (res, status, message) => {
+    res.status(status).json({
+        status,
+        message
     });
 };
 exports.ErrorResponse = ErrorResponse;
-const SuccessResponse = (res, resultCode, resultMessage, data) => {
-    data.resultCode = resultCode;
-    data.resultMessage = resultMessage,
-        res.status(resultCode).json(data);
+const SuccessResponse = (res, status, message, data) => {
+    res.status(status).json({
+        status,
+        message,
+        data
+    });
 };
 exports.SuccessResponse = SuccessResponse;
 //# sourceMappingURL=apiResponse.js.map

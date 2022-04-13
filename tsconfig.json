@@ -21,6 +21,7 @@
       "pretty": true,
       "sourceMap": true,
       "outDir": "./dist",
+      "rootDir": "src",
       "allowJs": true,
       "noEmit": false,
       "esModuleInterop": true,

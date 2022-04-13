@@ -41,12 +41,4 @@ function isTokenExpired(decoded) {
     return decoded === TOKEN_EXPIRED || decoded === TOKEN_INVALID;
 }
 exports.isTokenExpired = isTokenExpired;
-// export function isNullValues(obj: object): boolean | undefined {
-//     // TODO: [Symbol.iterator], generator 사용하기
-//     for (let key in obj) {
-//         console.log(obj[key]);
-//         if (obj[key] === undefined) return false;
-//         else return true;
-//     }
-// }
 //# sourceMappingURL=validator.js.map

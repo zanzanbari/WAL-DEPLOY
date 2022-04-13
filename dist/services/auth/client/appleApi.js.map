@@ -1,0 +1,1 @@
+{"version":3,"file":"appleApi.js","sourceRoot":"","sources":["../../../../src/services/auth/client/appleApi.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;AAAA,gEAA+B;AAG/B,SAAsB,YAAY,CAAC,gBAAuB;;QACtD,IAAI;YACA,MAAM,QAAQ,GAAG,sBAAG,CAAC,MAAM,CAAC,gBAAgB,CAAC,CAAC;YAE9C,OAAM;SACT;QAAC,OAAO,KAAK,EAAE;SAEf;IACL,CAAC;CAAA;AARD,oCAQC"}

@@ -30,6 +30,6 @@
         "./custom/*"
       ], 
     },
-    "include": ["./src/**/*"],
+    "include": ["./src/**/*", "custom/express.d.ts"],
     "exclude": ["node_modules", "tests"]
 }

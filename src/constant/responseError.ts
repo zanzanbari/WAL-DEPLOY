@@ -17,6 +17,7 @@ const enum Error {
     ANONYMOUS_USER, // 비회원인 유저일 때
     FAIL_SIGNUP, // 회원가입 실패
     TOKEN_EXPIRES, // 토큰 만료
+    FAIL_AXIOS_RESPONSE // axios 요청 응답 실패
 }
 
 export default Error;

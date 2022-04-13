@@ -7,7 +7,7 @@ import { celebrate, errors } from 'celebrate';
 import swaggerUi from "swagger-ui-express";
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
-import swaggerFile from "../custom/swagger/swagger-api.json";
+// import swaggerFile from "../custom/swagger/swagger-api.json";
 
 function startServer() {
     const app = express();
@@ -27,11 +27,11 @@ function startServer() {
 
 
     // 라우팅
-    app.use(
-        "/api-docs", 
-        swaggerUi.serve, 
-        swaggerUi.setup(swaggerFile, { explorer: true })
-    );
+    // app.use(
+    //     "/api-docs", 
+    //     swaggerUi.serve, 
+    //     swaggerUi.setup(swaggerFile, { explorer: true })
+    // );
     app.use(errors());
     app.use("/api/v1", apiRouter);
 

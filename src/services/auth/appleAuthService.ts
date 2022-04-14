@@ -2,12 +2,11 @@
 // import { TokenDto } from "@/interface/dto/request/authRequest";
 // import { AuthResponse } from "@/interface/dto/response/authResponse";
 
-// class AppleAuthService extends AuthService {
+// class AppleAuthService implement AuthService {
 //     constructor(
 //         private readonly userRepositroy,
-//         // private readonly logger;
+        // private readonly logger;
 //     ) {
-//         super();
 //     }
 
 //     public async login(request: TokenDto): Promise<AuthResponse | undefined> {
@@ -28,10 +27,10 @@
         
 //         } catch (error) {
 //             console.error(error);
-//             // this.logger.appLogger.log({
-//             //     level: "error",
-//             //     message: error.message
-//             // });
+            // this.logger.appLogger.log({
+            //     level: "error",
+            //     message: error.message
+            // });
 //             throw new Error(error);
 //         }
 

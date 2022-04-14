@@ -7,14 +7,21 @@ import rm from "@/constant/resultMessage";
 import KakaoAuthService from "@/services/auth/kakaoAuthService";
 import { TokenDto } from "@/interface/dto/request/authRequest";
 import { AuthResponse } from "@/interface/dto/response/authResponse";
+import ReissueTokenService from "@/services/auth/reissueTokenService";
+import Error from "@/constant/responseError";
 const logger = require("../middlewares/logger");
 
 // TODO controller class 만들어서 해도 될듯? 
 
-const socialLogin = async (req: Request, res: Response, next: NextFunction) => {
+const socialLogin = async (
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+) => {
     const { social } = req.params;
 
     try {
+
         let data: AuthResponse | undefined;
         switch(social) {
             case "kakao":
@@ -29,6 +36,7 @@ const socialLogin = async (req: Request, res: Response, next: NextFunction) => {
         }
 
         return SuccessResponse(res, sc.OK, rm.LOGIN_SUCCESS, data);
+
     } catch (error) {
         logger.appLogger.log({
             level: "error",
@@ -41,7 +49,11 @@ const socialLogin = async (req: Request, res: Response, next: NextFunction) => {
 
 
 
-const logout = async (req: Request, res: Response, next: NextFunction) => {
+const logout = async (
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+) => {
     const userId = req.user?.id;
 
     try {
@@ -66,8 +78,37 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 
 
 
+const reissueToken = async (
+    req: Request, 
+    res: Response, 
+    next: NextFunction
+) => {
+    try {
+
+        const reissueTokenServiceInstance = new ReissueTokenService(User, logger);
+        const data = await reissueTokenServiceInstance.reissueToken(req.headers as TokenDto);
+
+        if (data === Error.TOKEN_EXPIRES) {
+            return ErrorResponse(res, sc.UNAUTHORIZED, rm.PLEASE_LOGIN_AGAIN);
+        }
+
+        return SuccessResponse(res, sc.OK, rm.REISSUE_TOKEN, data);
+
+    } catch (error) {
+        logger.appLogger.log({
+            level: "error",
+            message: error.message
+        });
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+        return next(error);
+    }
+}
+
+
+
 
 export const authController = {
     socialLogin,
-    logout
+    logout,
+    reissueToken
 }

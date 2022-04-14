@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import { User } from "@/models";
 import { ErrorResponse } from "@/modules/apiResponse";
+import { verifyToken } from "@/modules/tokenHandller";
 import sc from "@/constant/resultCode";
 import rm from "@/constant/resultMessage";
 import { TokenDto } from "@/interface/dto/request/authRequest";
-import { verifyToken } from "@/modules/issueToken";
-import { User } from "@/models";
 import { UserInfo } from "@/interface/dto/response/authResponse";
 const logger = require("../../api/middlewares/logger");
 const TOKEN_EXPIRED = -3;

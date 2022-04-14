@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/app.ts",
-    "build": "tsc && node dist",
+    "build": "tsc -p tsconfig.json",
+    "prestart": "rm -rf ./dist && npm run build",
     "serve": "nodemon",
     "swagger-gen": "node custom/swagger/swagger.js",
-    "start": "node custom/swagger/swagger.js && nodemon"
+    "start": "node custom/swagger/swagger.js && nodemon",
+    "test-start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/app.js"
   },
   "repository": {
     "type": "git",

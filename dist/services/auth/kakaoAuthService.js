@@ -17,17 +17,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
-const authService_1 = __importDefault(require("./authService"));
 const kakaoApi_1 = require("./client/kakaoApi");
-let KakaoAuthService = class KakaoAuthService extends authService_1.default {
+const tokenHandller_1 = require("@/modules/tokenHandller");
+let KakaoAuthService = class KakaoAuthService {
     // 주입해주고 싶다 
     constructor(userRepository, logger) {
-        super();
         this.userRepository = userRepository;
         this.logger = logger;
     }
@@ -35,9 +31,9 @@ let KakaoAuthService = class KakaoAuthService extends authService_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userData = yield (0, kakaoApi_1.KakaoAuthApi)(request.socialtoken);
-                const refreshtoken = yield this.issueRefreshToken();
+                const refreshtoken = yield (0, tokenHandller_1.issueRefreshToken)();
                 const socialUser = yield this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
-                const accesstoken = yield this.issueAccessToken(socialUser);
+                const accesstoken = yield (0, tokenHandller_1.issueAccessToken)(socialUser);
                 const user = {
                     nickname: socialUser.nickname,
                     accesstoken,

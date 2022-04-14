@@ -19,6 +19,7 @@ const resultCode_1 = __importDefault(require("@/constant/resultCode"));
 const resultMessage_1 = __importDefault(require("@/constant/resultMessage"));
 // import AppleAuthService from "@/services/auth/appleAuthService";
 const kakaoAuthService_1 = __importDefault(require("@/services/auth/kakaoAuthService"));
+const reissueTokenService_1 = __importDefault(require("@/services/auth/reissueTokenService"));
 const logger = require("../middlewares/logger");
 // TODO controller class 만들어서 해도 될듯? 
 const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -67,8 +68,27 @@ const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         return next(error);
     }
 });
+const reissueToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const reissueTokenServiceInstance = new reissueTokenService_1.default(models_1.User, logger);
+        const data = yield reissueTokenServiceInstance.reissueToken(req.headers);
+        if (data === 17 /* TOKEN_EXPIRES */) {
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.UNAUTHORIZED, resultMessage_1.default.PLEASE_LOGIN_AGAIN);
+        }
+        return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.REISSUE_TOKEN, data);
+    }
+    catch (error) {
+        logger.appLogger.log({
+            level: "error",
+            message: error.message
+        });
+        (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
+        return next(error);
+    }
+});
 exports.authController = {
     socialLogin,
-    logout
+    logout,
+    reissueToken
 };
 //# sourceMappingURL=authController.js.map

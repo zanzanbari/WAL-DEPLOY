@@ -1,0 +1,54 @@
+import { NextFunction, Request, Response } from "express";
+import { ErrorResponse } from "@/modules/apiResponse";
+import sc from "@/constant/resultCode";
+import rm from "@/constant/resultMessage";
+import { TokenDto } from "@/interface/dto/request/authRequest";
+import { verifyToken } from "@/modules/issueToken";
+import { User } from "@/models";
+import { UserInfo } from "@/interface/dto/response/authResponse";
+const logger = require("../../api/middlewares/logger");
+const TOKEN_EXPIRED = -3;
+const TOKEN_INVALID = -2;
+
+const isAuth = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { accesstoken } = req.headers as TokenDto;
+    if (!accesstoken) { // validation 써서 전역으로 할 수 있지 않을까
+        return ErrorResponse(res, sc.BAD_REQUEST, rm.TOKEN_EMPTY);
+    } 
+
+    try {
+
+        const accessTokenDecoded = await verifyToken(accesstoken);
+
+        if (accessTokenDecoded === TOKEN_EXPIRED) {
+            return ErrorResponse(res, sc.UNAUTHORIZED, rm.TOKEN_EXPIRED);
+        }
+        if (accessTokenDecoded === TOKEN_INVALID) {
+            return ErrorResponse(res, sc.UNAUTHORIZED, rm.TOKEN_INVALID);
+        }
+        if (accessTokenDecoded.id === undefined) {
+            return ErrorResponse(res, sc.UNAUTHORIZED, rm.TOKEN_INVALID);
+        }
+
+        const userId = accessTokenDecoded.id as number;
+        const user = await User.findOne({ where: { id: userId } });
+
+        req.user = user as UserInfo;
+        next();
+
+    } catch (error) {
+        console.error(`[AUTH ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, accesstoken);
+        logger.appLogger.log({ level: "error", message: error.message}); 
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+    }
+};
+
+const authUtil = {
+    isAuth,
+};
+
+export default authUtil;

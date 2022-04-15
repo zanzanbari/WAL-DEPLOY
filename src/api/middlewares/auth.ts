@@ -16,7 +16,7 @@ const isAuth = async (
     next: NextFunction
 ) => {
     const { accesstoken } = req.headers as TokenDto;
-    if (!accesstoken) { // validation 써서 전역으로 할 수 있지 않을까
+    if (!accesstoken) { 
         return ErrorResponse(res, sc.BAD_REQUEST, rm.TOKEN_EMPTY);
     } 
 

@@ -3,11 +3,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import cors from 'cors';
-import { celebrate, errors } from 'celebrate';
-import swaggerUi from "swagger-ui-express";
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
-// import swaggerFile from "../custom/swagger/swagger-api.json";
 
 function startServer() {
     const app = express();
@@ -27,12 +24,6 @@ function startServer() {
 
 
     // 라우팅
-    // app.use(
-    //     "/api-docs", 
-    //     swaggerUi.serve, 
-    //     swaggerUi.setup(swaggerFile, { explorer: true })
-    // );
-    app.use(errors());
     app.use("/api/v1", apiRouter);
 
     app.use("*", (req, res) => {

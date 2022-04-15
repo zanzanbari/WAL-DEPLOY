@@ -22,7 +22,7 @@ const typedi_1 = require("typedi");
 const kakaoApi_1 = require("./client/kakaoApi");
 const tokenHandller_1 = require("@/modules/tokenHandller");
 let KakaoAuthService = class KakaoAuthService {
-    // 주입해주고 싶다 
+    // 제대로 주입해주고 싶다 
     constructor(userRepository, logger) {
         this.userRepository = userRepository;
         this.logger = logger;

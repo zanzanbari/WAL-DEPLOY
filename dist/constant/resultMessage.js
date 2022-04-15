@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const ResultMessage = {
     NULL_VALUE: "필요한 값이 없습니다",
-    OUT_OF_VALUE: "파라미터 값이 잘못되었습니다",
+    WRONG_PARAMS: "파라미터 값이 잘못되었습니다",
+    WRONG_PARAMS_OR_NULL: "파라미터 값이 없거나 잘못되었습니다",
     DB_ERROR: "디비 에러",
     // 회원가입
     CREATED_USER: "회원 가입 성공",

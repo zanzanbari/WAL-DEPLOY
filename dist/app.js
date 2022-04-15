@@ -8,10 +8,8 @@ const express_1 = __importDefault(require("express"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
-const celebrate_1 = require("celebrate");
 const routes_1 = __importDefault(require("./api/routes"));
 const db_1 = require("./loaders/db");
-// import swaggerFile from "../custom/swagger/swagger-api.json";
 function startServer() {
     const app = (0, express_1.default)();
     const logger = require('./api/middlewares/logger');
@@ -26,12 +24,6 @@ function startServer() {
     app.use(express_1.default.urlencoded({ extended: true }));
     app.use((0, cookie_parser_1.default)());
     // 라우팅
-    // app.use(
-    //     "/api-docs", 
-    //     swaggerUi.serve, 
-    //     swaggerUi.setup(swaggerFile, { explorer: true })
-    // );
-    app.use((0, celebrate_1.errors)());
     app.use("/api/v1", routes_1.default);
     app.use("*", (req, res) => {
         res.status(404).json({

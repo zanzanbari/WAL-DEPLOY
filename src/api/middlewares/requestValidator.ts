@@ -6,8 +6,8 @@ import { ErrorResponse } from "@/modules/apiResponse";
 import { SocialType, TokenDto } from "@/interface/dto/request/authRequest";
 const logger = require("../../api/middlewares/logger");
 
-
-const toLogin = async (
+// fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
+const loginCheck = async (
   req: Request, 
   res: Response, 
   next: NextFunction
@@ -18,7 +18,7 @@ const toLogin = async (
   });
   const loginQuerySchema = Joi.object().keys({
     socialtoken: Joi.string().token().required(),
-    // fcmtoken: Joi.string().token().required()
+    fcmtoken: Joi.string().token().optional()
   });
   
   try {
@@ -52,7 +52,7 @@ const toLogin = async (
 
 
 const validateUtil = {
-  toLogin,
+  loginCheck,
 }
 
 export default validateUtil;

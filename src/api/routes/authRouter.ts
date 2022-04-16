@@ -5,11 +5,21 @@ import validateUtil from "../middlewares/requestValidator";
 
 const router = Router();
 
-// router.get()
 router.post(
     "/:social/login", 
-    validateUtil.toLogin,
+    validateUtil.loginCheck,
     authController.socialLogin
+);
+router.post(
+    "/:social/logout",
+    validateUtil.loginCheck,
+    authUtil.isAuth, 
+    authController.socialResign
+);
+router.get(
+    "/logout", 
+    authUtil.isAuth, 
+    authController.logout
 );
 router.get(
     "/logout", 

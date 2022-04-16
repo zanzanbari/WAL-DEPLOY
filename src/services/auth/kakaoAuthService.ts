@@ -1,8 +1,8 @@
 import { Service } from "typedi";
 import AuthService from "./authService";
-import { KakaoAuthApi } from "./client/kakaoApi";
+import { KakaoAuthApi, KakaoUnlinkApi } from "./client/kakaoApi";
 import { TokenDto } from "@/interface/dto/request/authRequest";
-import { AuthResponse } from "@/interface/dto/response/authResponse";
+import { AuthResponse, UserInfo } from "@/interface/dto/response/authResponse";
 import { issueAccessToken, issueRefreshToken } from "@/modules/tokenHandller";
 
 @Service()
@@ -39,9 +39,24 @@ class KakaoAuthService implements AuthService {
         }
     }
 
-    // public resign(): Promise<any> {
+    public async resign(userId: number, request: TokenDto): Promise<AuthResponse> {
         
-    // }
+        try {
+
+            const unlinkedUser = KakaoUnlinkApi(request.socialtoken);
+            const resignedUser = this.userRepository.findAndDelete(userId);
+
+            await unlinkedUser;
+            return await resignedUser;
+
+        } catch (error) {
+            this.logger.appLogger.log({
+                level: "error",
+                message: error.message
+            });
+            throw new Error(error);
+        }
+    }
 }
 
 export default KakaoAuthService;

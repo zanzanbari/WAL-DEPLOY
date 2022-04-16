@@ -11,12 +11,12 @@ import {
     PrimaryKey, 
     Table, 
     Unique } from "sequelize-typescript"
-import Message from "./messages";
 import Time from "./times";
 import Reservation from "./reservations";
 import rm from "../constant/resultMessage";
 import { Token, UserInfo } from "@/interface/dto/response/authResponse";
 import { TokenDto } from "@/interface/dto/request/authRequest";
+import UserCategory from "./userCategories";
 
 @Table({
     modelName: "User",
@@ -69,9 +69,8 @@ export default class User extends Model {
     @Column(DataType.TEXT)
     public fcmtoken?: string;   
 
-
-    @HasMany(() => Message)
-    messages!: Message[];
+    @HasMany(() => UserCategory)
+    userCategories!: UserCategory[];
 
     @HasOne(() => Time)
     time!: Time

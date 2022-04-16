@@ -5,12 +5,15 @@ import {
     DataType, 
     Model, 
     PrimaryKey,
+    ForeignKey,
+    BelongsTo,
     Table, 
     Unique } from "sequelize-typescript"
+import Category from "./categories";
 
 @Table({
-    modelName: "Fuss",
-    tableName: "fusses",
+    modelName: "Item",
+    tableName: "items",
     freezeTableName: true,
     underscored: false,
     paranoid: false,
@@ -19,7 +22,7 @@ import {
     collate: "utf8_general_ci", // 한국어 설정
 })
 
-export default class Fuss extends Model {
+export default class Item extends Model {
     @PrimaryKey
     @AutoIncrement
     @Unique
@@ -27,14 +30,15 @@ export default class Fuss extends Model {
     public readonly id!: number;
 
 
+    @ForeignKey(() => Category)
+    @Column(DataType.INTEGER)
+    public category_id!: number;
+
+
     @AllowNull(false)
     @Column(DataType.TEXT)
     public content!: string;
 
-
-    @AllowNull(true)
-    @Column(DataType.TEXT)
-    public voice!: string;
-
-
+    @BelongsTo(() => Category)
+    category!: Category
 }

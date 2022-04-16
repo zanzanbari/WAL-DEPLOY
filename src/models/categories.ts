@@ -8,7 +8,8 @@ import {
     PrimaryKey, 
     Table, 
     Unique } from "sequelize-typescript"
-import Message from "./messages";
+import Item from "./items";
+import UserCategory from "./userCategories";
 
 
 @Table({
@@ -32,16 +33,14 @@ export default class Category extends Model {
 
     @AllowNull(false)
     @Column(DataType.STRING(15))
-    public name!: string;
+    public dtype!: string;
 
 
-    @AllowNull(false)
-    @Column(DataType.INTEGER)
-    public length!: number;
+    @HasMany(() => UserCategory)
+    userCategories!: UserCategory[];
 
-
-    @HasMany(() => Message)
-    messages!: Message[];
+    @HasMany(() => Item)
+    items!: Item[];
 
 
 }

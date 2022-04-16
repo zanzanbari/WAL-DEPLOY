@@ -6,3 +6,4 @@ custom/*
 custom/**/*
 *.d.ts
 .DS_Store
+firebase-admin.json

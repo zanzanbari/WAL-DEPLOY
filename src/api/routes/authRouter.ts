@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { celebrate, Joi } from "celebrate";
 import authUtil from "../middlewares/auth";
 import { authController } from "../controllers/authController";
 // import validateUtil from "../middlewares/requestValidator";
@@ -20,6 +19,7 @@ router.post(
     // }),
     authController.socialLogin
 );
+router.post("/:social/logout", authUtil.isAuth, authController.socialResign);
 router.get("/logout", authUtil.isAuth, authController.logout);
 router.post("/reissue/token", authController.reissueToken);
 

@@ -32,4 +32,34 @@ export async function KakaoAuthApi(
         })
         throw new Error("❌ AXIOS_ERROR ❌");
     }
+};
+
+
+
+export async function KakaoUnlinkApi(
+    kakoAccessToken?: Token
+): Promise<void> {
+    try {
+
+        const apiUrl = "https://kapi.kakao.com/v1/user/unlink";
+        const reqConfig = {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": `Bearer ${kakoAccessToken}`
+            }
+        };
+
+        const userData = axios.post(apiUrl, {}, reqConfig);
+        logger.httpLogStream.write({
+            level: "info",
+            message: await userData
+        });
+
+    } catch (error) {
+        logger.appLogger.log({
+            level: 'error',
+            message: error.message
+        })
+        throw new Error("❌ AXIOS_ERROR ❌");
+    }
 }

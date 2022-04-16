@@ -147,5 +147,14 @@ export default class User extends Model {
         return user[0]; // boolean 값 빼고 반환
     }
 
+    // 기본적으로 delete는 유저 정보 반환 안하므로 custom 해줌 (삭제된 유저 정보 얻기 위해)
+    static async findAndDelete(id: number): Promise<User> {
+        return this.findOne({ where: { id } })
+            .then(async resolve => {
+                await this.destroy({ where: { id } });
+                return resolve?.getDataValue("id");
+            });
+    }
+
 
 }

@@ -7,7 +7,7 @@ const router = Router();
 
 router.post(
     "/set-info",
-    validateUtil.loginCheck,
+    validateUtil.initRequestCheck,
     authUtil.isAuth,
     userController.setInfo
 );

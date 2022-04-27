@@ -1,33 +1,32 @@
 import { NextFunction, Request, Response } from "express";
-import { User, UserCategory } from "@/models";
+import { Item, Time, User, UserCategory } from "@/models";
 import { ErrorResponse, SuccessResponse } from "@/modules/apiResponse";
 import sc from "@/constant/resultCode";
 import rm from "@/constant/resultMessage";
 import Error from "@/constant/responseError";
 import { UserSettingDto } from "@/interface/dto/request/userRequest";
+import UserService from "@/services/user/userService";
 const logger = require("../middlewares/logger");
-import setInfoService from "@/services/user/setInfoService";
 
 const setInfo = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const { 
-        nickname, 
-        dtype, 
-        time
-    } = req.body;
 
-    const { id: userId } = req.user;
-    //const userId = 5;
+    const userId = req.user?.id;
+
     try {
-        const userServiceInstance = await setInfoService(userId, req.body);
+        
+        const userServiceInstance = new UserService(User, Time, Item, UserCategory, logger);
 
-        SuccessResponse(res, sc.CREATED, rm.ADD_ONE_POST_SUCCESS, {});
+        const data = await userServiceInstance.initSetInfo(userId, req.body as UserSettingDto);
+
+        SuccessResponse(res, sc.CREATED, rm.SET_USER_INFO_SUCCESS,data);
     } catch (error) {
         console.log(error);
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+        return next(error);
     }
 }
 

@@ -41,4 +41,9 @@ export default class Item extends Model {
 
     @BelongsTo(() => Category)
     category!: Category
+
+    static async getFirstIdEachOfCategory(category_id: number): Promise<number> {
+        const item =  await this.findOne({ where: { category_id } });
+        return item?.getDataValue("id");
+    }
 }

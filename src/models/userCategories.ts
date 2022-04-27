@@ -1,3 +1,4 @@
+import { UserSetCategory } from "@/interface/dto/request/userRequest";
 import { 
     AutoIncrement, 
     BelongsTo, 
@@ -47,4 +48,8 @@ export default class UserCategory extends Model {
 
     @BelongsTo(() => User)
     user!: User;
+
+    static async setUserCategory(request: UserSetCategory): Promise<void> {
+        await this.create({ ...request });
+    }
 }

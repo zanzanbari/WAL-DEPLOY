@@ -1,3 +1,4 @@
+import { UserSetTime } from "@/interface/dto/request/userRequest";
 import { 
     AllowNull, 
     AutoIncrement, 
@@ -57,5 +58,10 @@ export default class Time extends Model {
     @BelongsTo(() => User)
     user!: User
 
-    
+    public static async setTime(id: number, timeInfo: UserSetTime) {
+        await this.create({
+            user_id: id,
+            ...timeInfo
+        });
+    }
 }

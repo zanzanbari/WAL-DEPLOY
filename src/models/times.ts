@@ -12,6 +12,7 @@ import {
     Table, 
     Unique } from "sequelize-typescript"
 import User from "./users";
+import rm from "../constant/resultMessage";
 
 @Table({
     modelName: "Time",
@@ -58,10 +59,19 @@ export default class Time extends Model {
     @BelongsTo(() => User)
     user!: User
 
-    public static async setTime(id: number, timeInfo: UserSetTime) {
+    public static async setTime(id: number, timeInfo: UserSetTime): Promise<void> {
         await this.create({
             user_id: id,
             ...timeInfo
         });
+    }
+
+    public static async findById(id: number): Promise<Time> {
+        const times = await this.findOne({ 
+            where: { id },
+            attributes: ["morning", "afternoon", "night"]
+        });
+        if (!times) throw new Error(rm.NULL_VALUE);
+        return times["dataValues"];
     }
 }

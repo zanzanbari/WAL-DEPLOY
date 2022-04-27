@@ -83,7 +83,7 @@ export default class User extends Model {
      * custom method 
      */
     
-    static async findOneByEmail(email: string): Promise<User> {
+    static async findByEmail(email: string): Promise<User> {
         const user = await this.findOne({ where: { email } });
         if (!user) throw new Error(rm.NO_USER);
         return user;
@@ -95,8 +95,20 @@ export default class User extends Model {
         return user;
     }
 
-    static async findOneByNickname(nickname: string): Promise<User> {
-        const user = await this.findOne({ where: { nickname } });
+    static async findById(id: number): Promise<User> {
+        const user = await this.findOne({ where: { id } });        
+        if (!user) throw new Error(rm.NO_USER);
+        return user;
+    }
+
+
+    static async findByIdAndResetNickname(id: number, nickname: string): Promise<User> {
+        await this.update({
+            nickname
+        }, {
+            where: { id }
+        });
+        const user =  await this.findOne({ where: { id } });
         if (!user) throw new Error(rm.NO_USER);
         return user;
     }
@@ -161,6 +173,20 @@ export default class User extends Model {
         }, {
             where: { id }
         });
+    }
+
+    static async getUserInfo(id: number): Promise<User> {
+        const user = await this.findOne({
+            where: { id },
+            include: [{
+                model: Time, attributes: ["morning", "afternoon", "night"]
+            }, {
+                model: UserCategory, attributes: ["category_id"]
+            }],
+            attributes: ["email", "nickname"]
+        });
+        if (!user) throw new Error(rm.NO_USER);
+        return user;
     }
 
 }

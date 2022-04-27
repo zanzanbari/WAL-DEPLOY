@@ -11,6 +11,11 @@ router.post(
     authUtil.isAuth,
     userController.setInfo
 );
+router.get(
+    "/info",
+    authUtil.isAuth,
+    userController.getInfo
+);
 
 
 export default router;

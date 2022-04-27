@@ -19,18 +19,42 @@ const setInfo = async (
     try {
         
         const userServiceInstance = new UserService(User, Time, Item, UserCategory, logger);
-
         const data = await userServiceInstance.initSetInfo(userId, req.body as UserSettingDto);
 
         SuccessResponse(res, sc.CREATED, rm.SET_USER_INFO_SUCCESS,data);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
 }
 
 
+const getInfo = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+
+    const userId = req.user?.id;
+
+    try {
+        
+        const userServiceInstance = new UserService(User, Time, Item, UserCategory, logger);
+        const data = await userServiceInstance.getInfo(userId);
+
+        SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, data);
+
+    } catch (error) {
+        console.error(error);
+        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+        return next(error);
+    }
+
+}
+
+
 export const userController = {
-    setInfo
+    setInfo,
+    getInfo
 }

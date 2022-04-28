@@ -17,3 +17,12 @@ export interface UserSetCategory {
     category_id?: number,
     next_item_id?: number,
 }
+
+export type ResetCategoryDto = ResetCategory[]
+
+export interface ResetCategory {
+    readonly 0?: boolean,
+    readonly 1?: boolean,
+    readonly 2?: boolean,
+    readonly 3?: boolean,
+}

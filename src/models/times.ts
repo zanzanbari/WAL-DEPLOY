@@ -66,6 +66,14 @@ export default class Time extends Model {
         });
     }
 
+    public static async updateTime(id: number, timeInfo: UserSetTime): Promise<void> {
+        await this.update({
+            ...timeInfo
+        }, {
+            where: { id }
+        });
+    }
+
     public static async findById(id: number): Promise<Time> {
         const times = await this.findOne({ 
             where: { id },

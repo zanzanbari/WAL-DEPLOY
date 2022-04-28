@@ -54,9 +54,19 @@ export default class UserCategory extends Model {
         await this.create({ ...request });
     }
 
-    static async findCategoryByUserId(id: number): Promise<number[]> {
+    static async deleteUserCategory(user_id: number, category_id: number) {
+        await this.destroy({
+            where: {
+                user_id,
+                category_id
+            }
+        });
+    }
+
+
+    static async findCategoryByUserId(user_id: number): Promise<number[]> {
         const isCategories =  await this.findAll({
-            where: { id },
+            where: { user_id },
             attributes: ["category_id"]
         });
         if (!isCategories) throw new Error(rm.NULL_VALUE);

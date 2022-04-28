@@ -175,18 +175,18 @@ export default class User extends Model {
         });
     }
 
-    static async getUserInfo(id: number): Promise<User> {
-        const user = await this.findOne({
-            where: { id },
-            include: [{
-                model: Time, attributes: ["morning", "afternoon", "night"]
-            }, {
-                model: UserCategory, attributes: ["category_id"]
-            }],
-            attributes: ["email", "nickname"]
-        });
-        if (!user) throw new Error(rm.NO_USER);
-        return user;
-    }
+    // static async getUserInfo(id: number): Promise<User> {
+    //     const user = await this.findOne({
+    //         where: { id },
+    //         include: [{
+    //             model: Time, attributes: ["morning", "afternoon", "night"]
+    //         }, {
+    //             model: UserCategory, attributes: ["category_id"]
+    //         }],
+    //         attributes: ["email", "nickname"]
+    //     });
+    //     if (!user) throw new Error(rm.NO_USER);
+    //     return user;
+    // }
 
 }

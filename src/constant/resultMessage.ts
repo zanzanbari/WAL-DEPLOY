@@ -28,6 +28,7 @@ const ResultMessage = {
   // 유저
   SET_USER_INFO_SUCCESS: "유저 정보 등록 성공",
   READ_USER_INFO_SUCCESS: "유저 정보 조회 성공",
+  UPDATE_USER_INFO_SUCCESS: "유저 정보 수정 성공",
   READ_ONE_USER_SUCCESS: "유저 조회 성공",
   READ_ALL_USERS_SUCCESS: "모든 유저 조회 성공",
   UPDATE_ONE_USER_SUCCESS: "유저 수정 성공",

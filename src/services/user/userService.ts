@@ -1,15 +1,19 @@
 import { Service } from "typedi";
 import { 
+    ResetCategory,
+    ResetCategoryDto,
     UserSetCategory, 
     UserSetTime, 
     UserSettingDto } from "@/interface/dto/request/userRequest";
-import { UserInfoResponse, UserSettingResponse } from "@/interface/dto/response/userResponse";
-import { User } from "@/models";
+import { UserSettingResponse } from "@/interface/dto/response/userResponse";
 
 
 @Service()
 class UserService {
-    
+
+    private timeSelection!: UserSetTime;
+    private categorySelection!: UserSetCategory;
+
     constructor(
         private readonly userRepository: any,
         private readonly timeRepository: any,
@@ -17,16 +21,14 @@ class UserService {
         private readonly userCategoryRepository: any,
         private readonly logger: any
     ) {
+        this.timeSelection.morning = false
+        this.timeSelection.afternoon = false,
+        this.timeSelection.night =  false
     }
 
-    private timeSelection: UserSetTime = {
-        morning: false,
-        afternoon: false,
-        night: false
-    };
         
     public async initSetInfo(
-        userId: number | undefined, 
+        userId: number, 
         request: UserSettingDto
     ): Promise<UserSettingResponse> {
 
@@ -41,16 +43,15 @@ class UserService {
             });
 
             // 유형 선택
-            let categorySelection: UserSetCategory;
             request.dtype?.forEach(async it => {
 
                 const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(it) as number;
-                categorySelection = {
+                this.categorySelection = {
                     user_id: userId,
                     category_id: it,
                     next_item_id: firstItemId,
                 };
-                await this.userCategoryRepository.setUserCategory(categorySelection); 
+                await this.userCategoryRepository.setUserCategory(this.categorySelection); 
 
             });
             
@@ -70,24 +71,41 @@ class UserService {
     }
 
 
-    public async getInfo(
-        userId: number | undefined,
-    ): Promise<UserInfoResponse> {
+    public async resetUserCategoryInfo(
+        userId: number,
+        request: ResetCategoryDto
+    ): Promise<number[]> {
 
-        try {
-            // 각각 select 날려서 찾아오기..
-            const user = await this.userRepository.findById(userId) as User;
-            const times = await this.timeRepository.findById(userId) as UserSetTime;
-            const categories = await this.userCategoryRepository.findCategoryByUserId(userId) as number[];
+        try { 
 
-            // const userInfo = await this.userRepository.getUserInfo(userId); // 한번에 join 해서 가져오기,,, 뭐가 더 낫지??? => 가공하기 귀찮을것 같은데 ㅇㅅㅇ
+            const beforeCategoryInfo = request[0]; // 이전 설정값
+            const afterCategoryInfo = request[1]; // 새로운 설정값
 
-            return {
-                nickname: user.getDataValue("nickname"),
-                email: user.getDataValue("email"),
-                times,
-                categories
-            } as UserInfoResponse;
+            const before = this.extractBooleanInfo(beforeCategoryInfo);
+            const after = this.extractBooleanInfo(afterCategoryInfo);
+
+            for (let categoryId = 0 ; categoryId < 4; categoryId ++) {
+
+                if (before[categoryId] === true && after[categoryId] === false) { // 삭제
+
+                    await this.userCategoryRepository.deleteUserCategory(userId, categoryId);
+
+                } else if (before[categoryId] === false && after[categoryId] === true) { // 생성
+
+                    const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(categoryId) as number;
+                    this.categorySelection = {
+                        user_id: userId,
+                        category_id: categoryId,
+                        next_item_id: firstItemId,
+                    };
+                    await this.userCategoryRepository.setUserCategory(this.categorySelection); 
+
+                }
+
+            }
+
+            const resultInfo = this.userCategoryRepository.findCategoryByUserId(userId) as Promise<number[]>;
+            return await resultInfo;
 
         } catch (error) {
             this.logger.appLogger.log({
@@ -98,6 +116,17 @@ class UserService {
         }
 
     }
+
+
+    private extractBooleanInfo(property: ResetCategory): boolean[] {
+        const extractedInfo: boolean[] = [];
+        for (const key in property) { // 객체 탐색 for...in
+            extractedInfo.push(property[key]);
+        }
+        return extractedInfo;
+    }
+
+
 }
 
 

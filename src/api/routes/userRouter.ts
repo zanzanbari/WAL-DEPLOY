@@ -11,11 +11,22 @@ router.post(
     authUtil.isAuth,
     userController.setInfo
 );
-router.get(
-    "/info",
-    authUtil.isAuth,
-    userController.getInfo
-);
+
+router.use("/info", authUtil.isAuth);
+router
+    .route("/nickname")
+    .get(userController.getNicknameInfo)
+    .post(userController.resetNicknameInfo);
+
+router.route("/time")
+    .get(userController.getTimeInfo)
+    .post(validateUtil.timeRequestCheck, 
+        userController.resetTimeInfo
+    );
+        
+router.route("/category")
+    .get(userController.getCategoryInfo)
+    .post(userController.resetUserCategoryInfo);
 
 
 export default router;

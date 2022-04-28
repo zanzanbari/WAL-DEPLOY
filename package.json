@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "rebuild": "rm -rf ./dist && npm run build",
     "serve": "nodemon",
+    "test": "mocha tests/**/*.ts -r ts-node/register",
     "swagger-gen": "node custom/swagger/swagger.js",
     "start": "node custom/swagger/swagger.js && nodemon",
     "test-start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/app.js"
@@ -32,7 +33,6 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "express-validator": "^6.14.0",
-    "jest": "^27.5.1",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",

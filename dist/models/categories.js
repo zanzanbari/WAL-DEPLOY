@@ -13,7 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const messages_1 = __importDefault(require("./messages"));
+const items_1 = __importDefault(require("./items"));
+const userCategories_1 = __importDefault(require("./userCategories"));
 let Category = class Category extends sequelize_typescript_1.Model {
 };
 __decorate([
@@ -27,16 +28,15 @@ __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING(15)),
     __metadata("design:type", String)
-], Category.prototype, "name", void 0);
+], Category.prototype, "dtype", void 0);
 __decorate([
-    (0, sequelize_typescript_1.AllowNull)(false),
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
-    __metadata("design:type", Number)
-], Category.prototype, "length", void 0);
-__decorate([
-    (0, sequelize_typescript_1.HasMany)(() => messages_1.default),
+    (0, sequelize_typescript_1.HasMany)(() => userCategories_1.default),
     __metadata("design:type", Array)
-], Category.prototype, "messages", void 0);
+], Category.prototype, "userCategories", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => items_1.default),
+    __metadata("design:type", Array)
+], Category.prototype, "items", void 0);
 Category = __decorate([
     (0, sequelize_typescript_1.Table)({
         modelName: "Category",

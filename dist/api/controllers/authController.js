@@ -48,9 +48,33 @@ const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         return next(error);
     }
 });
-const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const socialResign = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const { social } = req.params;
+    try {
+        let data;
+        switch (social) {
+            case "kakao":
+                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, logger);
+                data = yield kakaoAuthServiceInstance
+                    .resign((_a = req.user) === null || _a === void 0 ? void 0 : _a.id, req.query);
+                break;
+            // case "apple":
+        }
+        return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_USER, data);
+    }
+    catch (error) {
+        logger.appLogger.log({
+            level: "error",
+            message: error.message
+        });
+        (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
+        return next(error);
+    }
+});
+const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
+    const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
     try {
         yield models_1.User.update({
             refreshtoken: null,
@@ -89,6 +113,7 @@ const reissueToken = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 exports.authController = {
     socialLogin,
     logout,
-    reissueToken
+    reissueToken,
+    socialResign
 };
 //# sourceMappingURL=authController.js.map

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KakaoAuthApi = void 0;
+exports.KakaoUnlinkApi = exports.KakaoAuthApi = void 0;
 const axios_1 = __importDefault(require("axios"));
 const logger = require("../../../api/middlewares/logger");
 function KakaoAuthApi(kakoAccessToken) {
@@ -43,4 +43,31 @@ function KakaoAuthApi(kakoAccessToken) {
     });
 }
 exports.KakaoAuthApi = KakaoAuthApi;
+;
+function KakaoUnlinkApi(kakoAccessToken) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const apiUrl = "https://kapi.kakao.com/v1/user/unlink";
+            const reqConfig = {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Authorization": `Bearer ${kakoAccessToken}`
+                }
+            };
+            const userData = axios_1.default.post(apiUrl, {}, reqConfig);
+            logger.httpLogStream.write({
+                level: "info",
+                message: yield userData
+            });
+        }
+        catch (error) {
+            logger.appLogger.log({
+                level: 'error',
+                message: error.message
+            });
+            throw new Error("❌ AXIOS_ERROR ❌");
+        }
+    });
+}
+exports.KakaoUnlinkApi = KakaoUnlinkApi;
 //# sourceMappingURL=kakaoApi.js.map

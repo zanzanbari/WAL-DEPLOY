@@ -63,10 +63,9 @@ const getTimeInfo = async (
 
     try {
 
-        const times = await Time.findById(req.user?.id as number) as UserSetTime;
-        if (!times) return ErrorResponse(res, sc.DB_ERROR, rm.DB_ERROR);
+        const data = await Time.findById(req.user?.id as number) as UserSetTime;
+        if (!data) return ErrorResponse(res, sc.DB_ERROR, rm.DB_ERROR);
 
-        const data = { times } as UserInfoResponse;
 
         SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, data);
 
@@ -117,7 +116,7 @@ const resetNicknameInfo = async (
 
         const data = { nickname: user.getDataValue("nickname") } as UserInfoResponse;
 
-        SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, data);
+        SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, data);
 
     } catch (error) {
         logger.appLogger.log({ level: "error", message: error.message });
@@ -159,7 +158,7 @@ const resetUserCategoryInfo = async (
     try {
 
         const userServiceInstance = new UserService(User, Time, Item, UserCategory, logger);
-        const data = await userServiceInstance.resetUserCategoryInfo(req.user?.id as number, req.body as ResetCategoryDto);
+        const data = await userServiceInstance.resetUserCategoryInfo(req.user?.id as number, req.body.data as ResetCategoryDto);
 
         SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, data);
 

@@ -6,12 +6,17 @@ import {
     UserSetTime, 
     UserSettingDto } from "@/interface/dto/request/userRequest";
 import { UserSettingResponse } from "@/interface/dto/response/userResponse";
+import { User } from "@/models";
 
 
 @Service()
 class UserService {
 
-    private timeSelection!: UserSetTime;
+    private timeSelection: UserSetTime = {
+        morning: false,
+        afternoon: false,
+        night: false
+    }
     private categorySelection!: UserSetCategory;
 
     constructor(
@@ -21,9 +26,6 @@ class UserService {
         private readonly userCategoryRepository: any,
         private readonly logger: any
     ) {
-        this.timeSelection.morning = false
-        this.timeSelection.afternoon = false,
-        this.timeSelection.night =  false
     }
 
         
@@ -83,7 +85,7 @@ class UserService {
 
             const before = this.extractBooleanInfo(beforeCategoryInfo);
             const after = this.extractBooleanInfo(afterCategoryInfo);
-
+            // FIXME: category pk의 인덱스 번호 차이
             for (let categoryId = 0 ; categoryId < 4; categoryId ++) {
 
                 if (before[categoryId] === true && after[categoryId] === false) { // 삭제
@@ -91,7 +93,7 @@ class UserService {
                     await this.userCategoryRepository.deleteUserCategory(userId, categoryId);
 
                 } else if (before[categoryId] === false && after[categoryId] === true) { // 생성
-
+                    // FIXME: item 당연히 있겠지마는~~ ㄹㅇ 없을땐 어캄? -> 고민 ㄱ
                     const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(categoryId) as number;
                     this.categorySelection = {
                         user_id: userId,

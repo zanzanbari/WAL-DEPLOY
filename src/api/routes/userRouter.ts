@@ -12,21 +12,23 @@ router.post(
     userController.setInfo
 );
 
-router.use("/info", authUtil.isAuth);
 router
-    .route("/nickname")
+    .route("/info/nickname")
     .get(userController.getNicknameInfo)
-    .post(userController.resetNicknameInfo);
+    .post(authUtil.isAuth, userController.resetNicknameInfo);
 
-router.route("/time")
-    .get(userController.getTimeInfo)
-    .post(validateUtil.timeRequestCheck, 
+router
+    .route("/info/time")
+    .get(authUtil.isAuth, userController.getTimeInfo)
+    .post(validateUtil.timeRequestCheck,
+        authUtil.isAuth,
         userController.resetTimeInfo
     );
         
-router.route("/category")
-    .get(userController.getCategoryInfo)
-    .post(userController.resetUserCategoryInfo);
+router
+    .route("/info/category")
+    .get(authUtil.isAuth, userController.getCategoryInfo)
+    .post(authUtil.isAuth, userController.resetUserCategoryInfo);
 
 
 export default router;

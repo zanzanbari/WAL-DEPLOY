@@ -46,7 +46,7 @@ function startServer() {
       `);
     })
         .on("error", (err) => {
-        logger.appLogger().log({
+        logger.appLogger.log({
             level: 'error',
             message: err.message
         });

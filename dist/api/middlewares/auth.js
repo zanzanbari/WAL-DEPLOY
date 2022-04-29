@@ -22,7 +22,7 @@ const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { accesstoken } = req.headers;
-    if (!accesstoken) { // validation 써서 전역으로 할 수 있지 않을까 - 굳이 안해도 될듯
+    if (!accesstoken) {
         return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.TOKEN_EMPTY);
     }
     try {

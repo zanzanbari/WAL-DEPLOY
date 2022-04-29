@@ -13,52 +13,51 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const users_1 = __importDefault(require("./users"));
 const categories_1 = __importDefault(require("./categories"));
-let Message = class Message extends sequelize_typescript_1.Model {
+const users_1 = __importDefault(require("./users"));
+let UserCategory = class UserCategory extends sequelize_typescript_1.Model {
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
     sequelize_typescript_1.AutoIncrement,
     sequelize_typescript_1.Unique,
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    sequelize_typescript_1.Column,
     __metadata("design:type", Number)
-], Message.prototype, "id", void 0);
+], UserCategory.prototype, "id", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => users_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Message.prototype, "user_id", void 0);
+], UserCategory.prototype, "user_id", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => categories_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Message.prototype, "category_id", void 0);
+], UserCategory.prototype, "category_id", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Default)(1),
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Message.prototype, "idx", void 0);
-__decorate([
-    (0, sequelize_typescript_1.BelongsTo)(() => users_1.default),
-    __metadata("design:type", users_1.default)
-], Message.prototype, "user", void 0);
+], UserCategory.prototype, "next_item_id", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => categories_1.default),
     __metadata("design:type", categories_1.default)
-], Message.prototype, "category", void 0);
-Message = __decorate([
+], UserCategory.prototype, "comment", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => users_1.default),
+    __metadata("design:type", users_1.default)
+], UserCategory.prototype, "user", void 0);
+UserCategory = __decorate([
     (0, sequelize_typescript_1.Table)({
-        modelName: "Message",
-        tableName: "messages",
+        modelName: "UserCategory",
+        tableName: "userCategories",
         freezeTableName: true,
         underscored: false,
         paranoid: false,
-        timestamps: true,
+        timestamps: false,
         charset: "utf8",
-        collate: "utf8_general_ci", // 한국어 설정
+        collate: "utf8_general_ci",
     })
-], Message);
-exports.default = Message;
-//# sourceMappingURL=messages.js.map
+], UserCategory);
+exports.default = UserCategory;
+//# sourceMappingURL=userCategories.js.map

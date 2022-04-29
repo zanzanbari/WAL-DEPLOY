@@ -17,13 +17,14 @@ const resultCode_1 = __importDefault(require("@/constant/resultCode"));
 const resultMessage_1 = __importDefault(require("@/constant/resultMessage"));
 const apiResponse_1 = require("@/modules/apiResponse");
 const logger = require("../../api/middlewares/logger");
-const toLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+// fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
+const loginCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const loginParamSchema = joi_1.default.object().keys({
         social: joi_1.default.string().required().valid("apple", "kakao"),
     });
     const loginQuerySchema = joi_1.default.object().keys({
         socialtoken: joi_1.default.string().token().required(),
-        // fcmtoken: Joi.string().token().required()
+        fcmtoken: joi_1.default.string().token().optional()
     });
     try {
         // validate 쓰면 error 속성 존재, validateAsync 쓰면 없고 catch error 해줘야함 
@@ -50,7 +51,7 @@ const toLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 const validateUtil = {
-    toLogin,
+    loginCheck,
 };
 exports.default = validateUtil;
 //# sourceMappingURL=requestValidator.js.map

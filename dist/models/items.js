@@ -8,9 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-let Fuss = class Fuss extends sequelize_typescript_1.Model {
+const categories_1 = __importDefault(require("./categories"));
+let Item = class Item extends sequelize_typescript_1.Model {
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -18,21 +22,25 @@ __decorate([
     sequelize_typescript_1.Unique,
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Fuss.prototype, "id", void 0);
+], Item.prototype, "id", void 0);
+__decorate([
+    (0, sequelize_typescript_1.ForeignKey)(() => categories_1.default),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    __metadata("design:type", Number)
+], Item.prototype, "category_id", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.TEXT),
     __metadata("design:type", String)
-], Fuss.prototype, "content", void 0);
+], Item.prototype, "content", void 0);
 __decorate([
-    (0, sequelize_typescript_1.AllowNull)(true),
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.TEXT),
-    __metadata("design:type", String)
-], Fuss.prototype, "voice", void 0);
-Fuss = __decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => categories_1.default),
+    __metadata("design:type", categories_1.default)
+], Item.prototype, "category", void 0);
+Item = __decorate([
     (0, sequelize_typescript_1.Table)({
-        modelName: "Fuss",
-        tableName: "fusses",
+        modelName: "Item",
+        tableName: "items",
         freezeTableName: true,
         underscored: false,
         paranoid: false,
@@ -40,6 +48,6 @@ Fuss = __decorate([
         charset: "utf8",
         collate: "utf8_general_ci", // 한국어 설정
     })
-], Fuss);
-exports.default = Fuss;
-//# sourceMappingURL=fusses.js.map
+], Item);
+exports.default = Item;
+//# sourceMappingURL=items.js.map

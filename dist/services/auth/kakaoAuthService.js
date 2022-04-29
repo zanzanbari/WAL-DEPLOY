@@ -22,7 +22,7 @@ const typedi_1 = require("typedi");
 const kakaoApi_1 = require("./client/kakaoApi");
 const tokenHandller_1 = require("@/modules/tokenHandller");
 let KakaoAuthService = class KakaoAuthService {
-    // 제대로 주입해주고 싶다 
+    // 주입해주고 싶다 
     constructor(userRepository, logger) {
         this.userRepository = userRepository;
         this.logger = logger;
@@ -40,6 +40,23 @@ let KakaoAuthService = class KakaoAuthService {
                     refreshtoken
                 };
                 return user;
+            }
+            catch (error) {
+                this.logger.appLogger.log({
+                    level: "error",
+                    message: error.message
+                });
+                throw new Error(error);
+            }
+        });
+    }
+    resign(userId, request) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const unlinkedUser = (0, kakaoApi_1.KakaoUnlinkApi)(request.socialtoken);
+                const resignedUser = this.userRepository.findAndDelete(userId);
+                yield unlinkedUser;
+                return yield resignedUser;
             }
             catch (error) {
                 this.logger.appLogger.log({

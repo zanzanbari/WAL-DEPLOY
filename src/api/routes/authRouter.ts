@@ -7,19 +7,14 @@ const router = Router();
 
 router.post(
     "/:social/login", 
-    validateUtil.loginCheck,
+    validateUtil.loginRequestCheck,
     authController.socialLogin
 );
 router.post(
     "/:social/logout",
-    validateUtil.loginCheck,
+    validateUtil.loginRequestCheck,
     authUtil.isAuth, 
     authController.socialResign
-);
-router.get(
-    "/logout", 
-    authUtil.isAuth, 
-    authController.logout
 );
 router.get(
     "/logout", 

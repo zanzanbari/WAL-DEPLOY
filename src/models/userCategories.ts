@@ -1,3 +1,4 @@
+import { UserSetCategory } from "@/interface/dto/request/userRequest";
 import { 
     AutoIncrement, 
     BelongsTo, 
@@ -11,6 +12,7 @@ import {
     Unique } from "sequelize-typescript"
 import Category from "./categories";
 import User from "./users";
+import rm from "../constant/resultMessage";
 
 @Table({ // 테이블 설정
     modelName: "UserCategory",
@@ -47,4 +49,32 @@ export default class UserCategory extends Model {
 
     @BelongsTo(() => User)
     user!: User;
+
+    static async setUserCategory(request: UserSetCategory): Promise<void> {
+        await this.create({ ...request });
+    }
+
+    static async deleteUserCategory(user_id: number, category_id: number) {
+        await this.destroy({
+            where: {
+                user_id,
+                category_id
+            }
+        });
+    }
+
+
+    static async findCategoryByUserId(user_id: number): Promise<number[]> {
+        const isCategories =  await this.findAll({
+            where: { user_id },
+            attributes: ["category_id"]
+        });
+        if (!isCategories) throw new Error(rm.NULL_VALUE);
+        const categories: number[] = [];
+        isCategories.forEach(it => {
+            const item = it.getDataValue("category_id") as number;
+            categories.push(item);
+        });
+        return categories;
+    }
 }

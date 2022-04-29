@@ -1,3 +1,4 @@
+import { UserSetTime } from "@/interface/dto/request/userRequest";
 import { 
     AllowNull, 
     AutoIncrement, 
@@ -11,6 +12,7 @@ import {
     Table, 
     Unique } from "sequelize-typescript"
 import User from "./users";
+import rm from "../constant/resultMessage";
 
 @Table({
     modelName: "Time",
@@ -57,5 +59,27 @@ export default class Time extends Model {
     @BelongsTo(() => User)
     user!: User
 
-    
+    public static async setTime(id: number, timeInfo: UserSetTime): Promise<void> {
+        await this.create({
+            user_id: id,
+            ...timeInfo
+        });
+    }
+
+    public static async updateTime(user_id: number, timeInfo: UserSetTime): Promise<void> {
+        await this.update({
+            ...timeInfo
+        }, {
+            where: { user_id }
+        });
+    }
+
+    public static async findById(user_id: number): Promise<Time> {
+        const times = await this.findOne({ 
+            where: { user_id },
+            attributes: ["morning", "afternoon", "night"]
+        });
+        if (!times) throw new Error(rm.NULL_VALUE);
+        return times["dataValues"];
+    }
 }

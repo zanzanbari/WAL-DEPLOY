@@ -30,7 +30,7 @@ let User = class User extends sequelize_typescript_1.Model {
     /*
      * custom method
      */
-    static findOneByEmail(email) {
+    static findByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.findOne({ where: { email } });
             if (!user)
@@ -46,9 +46,22 @@ let User = class User extends sequelize_typescript_1.Model {
             return user;
         });
     }
-    static findOneByNickname(nickname) {
+    static findById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.findOne({ where: { nickname } });
+            const user = yield this.findOne({ where: { id } });
+            if (!user)
+                throw new Error(resultMessage_1.default.NO_USER);
+            return user;
+        });
+    }
+    static findByIdAndResetNickname(id, nickname) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.update({
+                nickname
+            }, {
+                where: { id }
+            });
+            const user = yield this.findOne({ where: { id } });
             if (!user)
                 throw new Error(resultMessage_1.default.NO_USER);
             return user;
@@ -92,11 +105,20 @@ let User = class User extends sequelize_typescript_1.Model {
     // 기본적으로 delete는 유저 정보 반환 안하므로 custom 해줌 (삭제된 유저 정보 얻기 위해)
     static findAndDelete(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.findOne({ where: { id } })
+            return yield this.findOne({ where: { id } })
                 .then((resolve) => __awaiter(this, void 0, void 0, function* () {
                 yield this.destroy({ where: { id } });
                 return resolve === null || resolve === void 0 ? void 0 : resolve.getDataValue("id");
             }));
+        });
+    }
+    static setNickname(id, nickname) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.update({
+                nickname,
+            }, {
+                where: { id }
+            });
         });
     }
 };

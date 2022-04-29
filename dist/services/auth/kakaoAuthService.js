@@ -20,7 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
 const kakaoApi_1 = require("./client/kakaoApi");
-const tokenHandller_1 = require("@/modules/tokenHandller");
+const tokenHandller_1 = require("../../modules/tokenHandller");
 let KakaoAuthService = class KakaoAuthService {
     // 주입해주고 싶다 
     constructor(userRepository, logger) {

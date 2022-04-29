@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const models_1 = require("@/models");
-const apiResponse_1 = require("@/modules/apiResponse");
-const tokenHandller_1 = require("@/modules/tokenHandller");
-const resultCode_1 = __importDefault(require("@/constant/resultCode"));
-const resultMessage_1 = __importDefault(require("@/constant/resultMessage"));
+const models_1 = require("../../models");
+const apiResponse_1 = require("../../modules/apiResponse");
+const tokenHandller_1 = require("../../modules/tokenHandller");
+const resultCode_1 = __importDefault(require("../../constant/resultCode"));
+const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const logger = require("../../api/middlewares/logger");
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;

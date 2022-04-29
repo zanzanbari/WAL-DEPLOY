@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const joi_1 = __importDefault(require("joi"));
-const resultCode_1 = __importDefault(require("@/constant/resultCode"));
-const resultMessage_1 = __importDefault(require("@/constant/resultMessage"));
-const apiResponse_1 = require("@/modules/apiResponse");
+const resultCode_1 = __importDefault(require("../../constant/resultCode"));
+const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
+const apiResponse_1 = require("../../modules/apiResponse");
 const logger = require("../../api/middlewares/logger");
 // fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
 const loginCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

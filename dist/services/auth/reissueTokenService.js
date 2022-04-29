@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const validator_1 = require("@/modules/validator");
-const tokenHandller_1 = require("@/modules/tokenHandller");
+const validator_1 = require("../../modules/validator");
+const tokenHandller_1 = require("../../modules/tokenHandller");
 class ReissueTokenService {
     constructor(userRepository, logger) {
         this.userRepository = userRepository;

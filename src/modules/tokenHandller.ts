@@ -1,11 +1,9 @@
 import * as jwt from "jsonwebtoken";
 import { Token, UserInfo } from "../interface/dto/response/authResponse";
 import dotenv from "dotenv";
-dotenv.config();
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
-import dotenv from "dotenv";
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET as string;

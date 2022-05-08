@@ -1,23 +1,22 @@
 import { Service } from "typedi";
 import { 
-    ResetCategory,
     ResetCategoryDto,
-    UserSetCategory, 
-    UserSetTime, 
-    UserSettingDto } from "@/interface/dto/request/userRequest";
-import { UserSettingResponse } from "@/interface/dto/response/userResponse";
-import { User } from "@/models";
+    ISetUserCategory, 
+    UserSettingDto, 
+    ISetCategory} from "../../interface/dto/request/userRequest";
+import { UserSettingResponse } from "../../interface/dto/response/userResponse";
 
 
 @Service()
 class UserService {
 
-    private timeSelection: UserSetTime = {
-        morning: false,
-        afternoon: false,
-        night: false
-    }
-    private categorySelection!: UserSetCategory;
+    private infoToUserCategoryDB!: ISetUserCategory;
+    private categorySelection: ISetCategory = {
+        joke: false,
+        compliment: false,
+        condolence: false,
+        scolding: false
+    };
 
     constructor(
         private readonly userRepository: any,
@@ -34,30 +33,32 @@ class UserService {
         request: UserSettingDto
     ): Promise<UserSettingResponse> {
 
-        try {
-            // 시간 선택
-            request.time?.forEach(it => {
+        try {            
+            // 유형 선택
+            // 각각 T/F 뽑아서 => T면 새로운 배열에 그 인덱스 번호 넣어, F면 넣지마
+            const dtypeBoolInfo = this.extractBooleanInfo(request.dtype as ISetCategory);
 
-                if (it === "morning") this.timeSelection.morning = true;
-                if (it === "afternoon") this.timeSelection.afternoon = true;
-                if (it === "night") this.timeSelection.night = true;
+            const dtypeIdx: number[] = [];
 
+            dtypeBoolInfo.forEach(it => {
+                if (it === true) {
+                    dtypeIdx.push(dtypeBoolInfo.indexOf(it))
+                }
             });
 
-            // 유형 선택
-            request.dtype?.forEach(async it => {
+            dtypeIdx.forEach(async categoryId => {
 
-                const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(it) as number;
-                this.categorySelection = {
+                const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(categoryId) as number;
+                this.infoToUserCategoryDB = {
                     user_id: userId,
-                    category_id: it,
+                    category_id: categoryId,
                     next_item_id: firstItemId,
                 };
-                await this.userCategoryRepository.setUserCategory(this.categorySelection); 
-
+                await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB); 
+                
             });
-            
-            await this.timeRepository.setTime(userId, this.timeSelection);
+
+            await this.timeRepository.setTime(userId, request.time);
             await this.userRepository.setNickname(userId, request.nickname);
 
             return { nickname: request.nickname };
@@ -73,10 +74,31 @@ class UserService {
     }
 
 
+
+    public async getCategoryInfo(userId: number): Promise<ISetCategory> {
+
+        try {
+
+            const dtypeInfo = this.userCategoryRepository.findCategoryByUserId(userId) as Promise<string[]>;
+            this.setCategoryInfo(await dtypeInfo);
+
+            return this.categorySelection;
+
+        } catch (error) {
+            this.logger.appLogger.log({
+                level: "error",
+                message: error.message
+            });
+            throw new Error(error);
+        }
+    }
+
+
+
     public async resetUserCategoryInfo(
         userId: number,
         request: ResetCategoryDto
-    ): Promise<number[]> {
+    ): Promise<ISetCategory> {
 
         try { 
 
@@ -85,7 +107,7 @@ class UserService {
 
             const before = this.extractBooleanInfo(beforeCategoryInfo);
             const after = this.extractBooleanInfo(afterCategoryInfo);
-            // FIXME: category pk의 인덱스 번호 차이
+
             for (let categoryId = 0 ; categoryId < 4; categoryId ++) {
 
                 if (before[categoryId] === true && after[categoryId] === false) { // 삭제
@@ -93,21 +115,23 @@ class UserService {
                     await this.userCategoryRepository.deleteUserCategory(userId, categoryId);
 
                 } else if (before[categoryId] === false && after[categoryId] === true) { // 생성
-                    // FIXME: item 당연히 있겠지마는~~ ㄹㅇ 없을땐 어캄? -> 고민 ㄱ
+
                     const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(categoryId) as number;
-                    this.categorySelection = {
+                    this.infoToUserCategoryDB = {
                         user_id: userId,
                         category_id: categoryId,
                         next_item_id: firstItemId,
                     };
-                    await this.userCategoryRepository.setUserCategory(this.categorySelection); 
+                    await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB); 
 
                 }
 
             }
 
-            const resultInfo = this.userCategoryRepository.findCategoryByUserId(userId) as Promise<number[]>;
-            return await resultInfo;
+            const dtypeInfo = this.userCategoryRepository.findCategoryByUserId(userId) as Promise<string[]>;
+            this.setCategoryInfo(await dtypeInfo);
+            
+            return this.categorySelection;
 
         } catch (error) {
             this.logger.appLogger.log({
@@ -120,7 +144,7 @@ class UserService {
     }
 
 
-    private extractBooleanInfo(property: ResetCategory): boolean[] {
+    private extractBooleanInfo(property: ISetCategory): boolean[] {
         const extractedInfo: boolean[] = [];
         for (const key in property) { // 객체 탐색 for...in
             extractedInfo.push(property[key]);
@@ -128,6 +152,14 @@ class UserService {
         return extractedInfo;
     }
 
+    private setCategoryInfo(data: string[]): void {
+        data.forEach(it => {
+            if (it === "joke") this.categorySelection.joke = true;
+            if (it === "compliment") this.categorySelection.compliment = true;
+            if (it === "condolence") this.categorySelection.condolence = true;
+            if (it === "scolding") this.categorySelection.scolding = true;
+        });
+    }
 
 }
 

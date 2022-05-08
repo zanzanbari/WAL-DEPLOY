@@ -1,10 +1,10 @@
 import axios from "axios";
-import { Token, UserInfo } from "@/interface/dto/response/authResponse";
-const logger = require("../../../api/middlewares/logger");
+import { Token, UserInfo } from "../../../interface/dto/response/authResponse";
+import logger from "../../../api/middlewares/logger";
 
 
 export async function KakaoAuthApi(
-    kakoAccessToken?: Token
+    kakaoAccessToken: Token
 ): Promise<UserInfo | undefined> { // 제발 오류처리 어케 할거야
     try {
 
@@ -12,7 +12,7 @@ export async function KakaoAuthApi(
         const reqConfig = {
             headers: {
                 "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
-                "Authorization": `Bearer ${kakoAccessToken}`
+                "Authorization": `Bearer ${kakaoAccessToken}`
             }
         };
 
@@ -29,15 +29,15 @@ export async function KakaoAuthApi(
         logger.appLogger.log({
             level: 'error',
             message: error.message
-        })
-        throw new Error("❌ AXIOS_ERROR ❌");
+        }); // FIXME 이놈은 서버에러인가?? 클라가 잘못된 토큰 보내준거 아닌가 ㅇㅅㅇ
+        throw new Error(`❌ AXIOS_ERROR : ${error.message} ❌`);
     }
 };
 
 
 
 export async function KakaoUnlinkApi(
-    kakoAccessToken?: Token
+    kakaoAccessToken?: Token
 ): Promise<void> {
     try {
 
@@ -45,14 +45,14 @@ export async function KakaoUnlinkApi(
         const reqConfig = {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
-                "Authorization": `Bearer ${kakoAccessToken}`
+                "Authorization": `Bearer ${kakaoAccessToken}`
             }
         };
 
-        const userData = axios.post(apiUrl, {}, reqConfig);
+        const userData = await axios.post(apiUrl, {}, reqConfig);
         logger.httpLogStream.write({
             level: "info",
-            message: await userData
+            message: userData
         });
 
     } catch (error) {
@@ -62,4 +62,11 @@ export async function KakaoUnlinkApi(
         })
         throw new Error("❌ AXIOS_ERROR ❌");
     }
-}
+};
+
+const kakaoApiUtil = {
+    KakaoAuthApi,
+    KakaoUnlinkApi,
+};
+
+export default kakaoApiUtil;

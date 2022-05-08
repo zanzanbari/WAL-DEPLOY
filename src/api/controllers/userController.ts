@@ -1,13 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { Item, Time, User, UserCategory } from "@/models";
-import { ErrorResponse, SuccessResponse } from "@/modules/apiResponse";
-import sc from "@/constant/resultCode";
-import rm from "@/constant/resultMessage";
-import Error from "@/constant/responseError";
-import { ResetCategoryDto, UserSetTime, UserSettingDto } from "@/interface/dto/request/userRequest";
-import { UserInfoResponse } from "@/interface/dto/response/userResponse";
-import UserService from "@/services/user/userService";
-const logger = require("../middlewares/logger");
+import { Item, Time, User, UserCategory } from "../../models";
+import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
+import sc from "../../constant/resultCode";
+import rm from "../../constant/resultMessage";
+import { ResetCategoryDto, ISetTime, UserSettingDto } from "../../interface/dto/request/userRequest";
+import { UserInfoResponse } from "../../interface/dto/response/userResponse";
+import UserService from "../../services/user/userService";
+import logger from "../middlewares/logger";
 
 const setInfo = async (
     req: Request,
@@ -22,7 +21,6 @@ const setInfo = async (
 
         SuccessResponse(res, sc.CREATED, rm.SET_USER_INFO_SUCCESS,data);
     } catch (error) {
-        console.error(error);
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -34,6 +32,8 @@ const getNicknameInfo = async (
     res: Response,
     next: NextFunction
 ) => {
+    
+    if (!req.body.nickname) return ErrorResponse(res, sc.BAD_REQUEST, rm.WRONG_BODY_OR_NULL);
 
     try {
 
@@ -48,7 +48,6 @@ const getNicknameInfo = async (
         SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, data);
 
     } catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -63,14 +62,13 @@ const getTimeInfo = async (
 
     try {
 
-        const data = await Time.findById(req.user?.id as number) as UserSetTime;
+        const data = await Time.findById(req.user?.id as number) as ISetTime;
         if (!data) return ErrorResponse(res, sc.DB_ERROR, rm.DB_ERROR);
 
 
         SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, data);
 
     } catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -85,15 +83,12 @@ const getCategoryInfo = async (
 
     try {
 
-        const categories = await UserCategory.findCategoryByUserId(req.user?.id as number) as number[];
-        if (!categories) return ErrorResponse(res, sc.DB_ERROR, rm.DB_ERROR);
-
-        const data = { categories } as UserInfoResponse;
+        const userServiceInstance = new UserService(User, Time, Item, UserCategory, logger);
+        const data = await userServiceInstance.getCategoryInfo(req.user?.id as number);
 
         SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, data);
 
     } catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -119,7 +114,6 @@ const resetNicknameInfo = async (
         SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, data);
 
     } catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -137,11 +131,11 @@ const resetTimeInfo = async (
 
     try {
 
-        await Time.updateTime(userId, req.body as UserSetTime);
-        SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, userId);
+        await Time.updateTime(userId, req.body as ISetTime);
+        const data = Time.findById(userId);
+        SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, await data);
 
     } catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -163,7 +157,6 @@ const resetUserCategoryInfo = async (
         SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, data);
 
     } catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }

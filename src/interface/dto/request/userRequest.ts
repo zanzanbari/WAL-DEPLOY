@@ -1,28 +1,29 @@
 // user initial info
 export interface UserSettingDto {
     readonly nickname?: string,
-    readonly dtype?: number[],
-    readonly time?: string[]
+    readonly dtype?: ISetCategory,
+    readonly time?: ISetTime,
 }
 
-export interface UserSetTime {
+export interface ISetTime {
     // [ time: string ]: boolean
     morning?: boolean,
     afternoon?: boolean,
     night?: boolean,
 }
 
-export interface UserSetCategory {
+export interface ISetUserCategory {
     user_id?: number,
     category_id?: number,
     next_item_id?: number,
 }
 
-export type ResetCategoryDto = ResetCategory[]
+export type ResetCategoryDto = ISetCategory[]
 
-export interface ResetCategory {
-    readonly 0?: boolean,
-    readonly 1?: boolean,
-    readonly 2?: boolean,
-    readonly 3?: boolean,
+
+export interface ISetCategory {
+    joke: boolean,
+    compliment: boolean,
+    condolence: boolean,
+    scolding: boolean
 }

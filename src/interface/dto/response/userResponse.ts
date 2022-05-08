@@ -1,4 +1,4 @@
-import { UserSetTime } from "../request/userRequest";
+import { ISetTime } from "../request/userRequest";
 import { UserInfo } from "./authResponse";
 
 export interface UserSettingResponse {
@@ -6,6 +6,6 @@ export interface UserSettingResponse {
 }
 
 export interface UserInfoResponse extends UserInfo {
-  readonly times?: UserSetTime,
+  readonly times?: ISetTime,
   readonly categories?: number[]
 }

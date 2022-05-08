@@ -2,6 +2,7 @@ const ResultMessage = {
   NULL_VALUE: "필요한 값이 없습니다",
   WRONG_PARAMS: "파라미터 값이 잘못되었습니다",
   WRONG_PARAMS_OR_NULL: "파라미터 값이 없거나 잘못되었습니다",
+  WRONG_BODY_OR_NULL: "파라미터 값이 없거나 잘못되었습니다",
   DB_ERROR: "디비 에러",
   
   // 회원가입
@@ -57,6 +58,18 @@ const ResultMessage = {
   TOKEN_INVALID: "토큰이 유효하지 않습니다.",
   TOKEN_EXPIRED_OR_INVALID: "토믄이 만료되었가나 유효하지 않습니다",
   TOKEN_EMPTY: "토큰이 없습니다.",
+
+  // 왈소리 맹글기
+  READ_RESERVED_DATE_SUCCESS: "예약날짜 조회 성공",
+  NO_RESERVATION_DATE: "예약날짜 없음",
+  ADD_RESERVATION_SUCCESS: "왈소리 맹글기 성공",
+  INVALID_RESERVATION_DATE: "이미 예약된 날짜",
+  READ_RESERVATIONS_SUCCESS: "왈소리 히스토리 조회 성공",
+  NO_RESERVATION: "왈소리 히스토리가 없음",
+  DELETE_RESERVATION_SUCCESS: "왈소리 예약 취소 성공",
+  DELETE_COMPLETED_RESERVATION_SUCCESS: "왈소리 히스토리 삭제 성공",
+  NO_OR_UNCOMPLETED_RESERVATION: "해당하는 왈소리가 없거나 전송되지 않았음",
+  NO_OR_COMPLETED_RESERVATION: "해당하는 왈소리가 없거나 이미 전송됐음",
 } // as const;
 
 export default ResultMessage;

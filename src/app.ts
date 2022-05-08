@@ -1,10 +1,11 @@
 import 'reflect-metadata';
 import express from 'express';
-import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
-import cors from 'cors';
+const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
+const cors = require('cors');
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
+const { updateToday } = require("./services/pushAlarm");
 
 function startServer() {
     const app = express();
@@ -13,6 +14,7 @@ function startServer() {
 
     // db 연결
     connectDB();
+    updateToday(); //자정마다 todayWal 업데이트
     
     app.use(cors());
     app.use(morgan('HTTP/:http-version :method :url :status', { 

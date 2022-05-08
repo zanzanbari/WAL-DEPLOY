@@ -1,4 +1,4 @@
-import { UserSetCategory } from "@/interface/dto/request/userRequest";
+import { ISetUserCategory } from "@/interface/dto/request/userRequest";
 import { 
     AutoIncrement, 
     BelongsTo, 
@@ -50,7 +50,7 @@ export default class UserCategory extends Model {
     @BelongsTo(() => User)
     user!: User;
 
-    static async setUserCategory(request: UserSetCategory): Promise<void> {
+    static async setUserCategory(request: ISetUserCategory): Promise<void> {
         await this.create({ ...request });
     }
 
@@ -64,15 +64,19 @@ export default class UserCategory extends Model {
     }
 
 
-    static async findCategoryByUserId(user_id: number): Promise<number[]> {
+    static async findCategoryByUserId(user_id: number): Promise<string[]> {
         const isCategories =  await this.findAll({
             where: { user_id },
-            attributes: ["category_id"]
+            attributes: ["category_id"],
+            include: [{ model: Category, attributes: ["dtype"] }]
         });
-        if (!isCategories) throw new Error(rm.NULL_VALUE);
-        const categories: number[] = [];
+        if (!isCategories) throw new Error(rm.DB_ERROR);
+
+        const categories: string[] = [];
         isCategories.forEach(it => {
-            const item = it.getDataValue("category_id") as number;
+            const item = it
+                .getDataValue("comment")
+                .getDataValue("dtype") as string;
             categories.push(item);
         });
         return categories;

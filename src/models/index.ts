@@ -6,6 +6,7 @@ import Item from './items';
 import Time from './times';
 import Reservation from './reservations';
 import UserCategory from './userCategories';
+import TodayWal from './todayWals';
 
 const sequelize = new Sequelize({
     host: dbConfig.development.host,
@@ -15,6 +16,11 @@ const sequelize = new Sequelize({
     dialect: "postgres",
     logging: false,
     timezone: "+09:00",
+    dialectOptions: {
+        charset: 'utf8mb4',
+        dateStrings: true,
+        typeCast: true
+    }
 });
 
 sequelize.addModels([
@@ -23,7 +29,8 @@ sequelize.addModels([
     UserCategory,
     Item,
     Time,
-    Reservation
+    Reservation,
+    TodayWal
 ]);
 
 export {
@@ -32,7 +39,8 @@ export {
     UserCategory,
     Item,
     Time,
-    Reservation
+    Reservation,
+    TodayWal
 };
 
 export default sequelize;

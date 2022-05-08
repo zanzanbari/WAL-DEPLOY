@@ -1,12 +1,12 @@
 import { Service } from "typedi";
-import AuthService from "./authService";
+import IAuthService from "./authService";
 import { KakaoAuthApi, KakaoUnlinkApi } from "./client/kakaoApi";
-import { TokenDto } from "@/interface/dto/request/authRequest";
-import { AuthResponse, UserInfo } from "@/interface/dto/response/authResponse";
-import { issueAccessToken, issueRefreshToken } from "@/modules/tokenHandller";
+import { TokenDto } from "../../interface/dto/request/authRequest";
+import { AuthResponse } from "../../interface/dto/response/authResponse";
+import { issueAccessToken, issueRefreshToken } from "../../modules/tokenHandller";
 
 @Service()
-class KakaoAuthService implements AuthService {
+class KakaoAuthService implements IAuthService {
     // 주입해주고 싶다 
     constructor(
         private readonly userRepository: any,
@@ -18,7 +18,7 @@ class KakaoAuthService implements AuthService {
 
         try {
             
-            const userData = await KakaoAuthApi(request.socialtoken);
+            const userData = await KakaoAuthApi(request.socialtoken as string);
             const refreshtoken = await issueRefreshToken();
             const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
             const accesstoken = await issueAccessToken(socialUser);

@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "@/models";
-import { ErrorResponse } from "@/modules/apiResponse";
-import { verifyToken } from "@/modules/tokenHandller";
-import sc from "@/constant/resultCode";
-import rm from "@/constant/resultMessage";
-import { TokenDto } from "@/interface/dto/request/authRequest";
-import { UserInfo } from "@/interface/dto/response/authResponse";
-const logger = require("../../api/middlewares/logger");
+import { User } from "../../models";
+import { ErrorResponse } from "../../modules/apiResponse";
+import { verifyToken } from "../../modules/tokenHandller";
+import sc from "../../constant/resultCode";
+import rm from "../../constant/resultMessage";
+import { TokenDto } from "../../interface/dto/request/authRequest";
+import { UserInfo } from "../../interface/dto/response/authResponse";
+import logger from "../../api/middlewares/logger";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
@@ -35,7 +35,8 @@ const isAuth = async (
         }
 
         const userId = accessTokenDecoded.id as number;
-        const user = await User.findOne({ where: { id: userId } });
+        const user = await User.findOne({ where: { id: userId } }) as User;
+        if (!user) return ErrorResponse(res, sc.BAD_REQUEST, rm.NO_USER);
 
         req.user = user as UserInfo;
         next();

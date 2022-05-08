@@ -3,7 +3,6 @@ import {
     AutoIncrement, 
     Column, 
     DataType, 
-    Default,
     HasOne,
     HasMany, 
     IsEmail, 
@@ -14,8 +13,8 @@ import {
 import Time from "./times";
 import Reservation from "./reservations";
 import rm from "../constant/resultMessage";
-import { Token, UserInfo } from "@/interface/dto/response/authResponse";
-import { TokenDto } from "@/interface/dto/request/authRequest";
+import { Token, UserInfo } from "../interface/dto/response/authResponse";
+import { TokenDto } from "../interface/dto/request/authRequest";
 import UserCategory from "./userCategories";
 
 @Table({
@@ -44,7 +43,7 @@ export default class User extends Model {
     @AllowNull(false)
     @IsEmail
     @Unique
-    @Column(DataType.STRING(40))
+    @Column(DataType.STRING(50))
     public email!: string;
 
 

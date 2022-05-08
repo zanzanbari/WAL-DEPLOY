@@ -14,7 +14,7 @@ router.post(
 
 router
     .route("/info/nickname")
-    .get(userController.getNicknameInfo)
+    .get(authUtil.isAuth, userController.getNicknameInfo)
     .post(authUtil.isAuth, userController.resetNicknameInfo);
 
 router
@@ -28,7 +28,9 @@ router
 router
     .route("/info/category")
     .get(authUtil.isAuth, userController.getCategoryInfo)
-    .post(authUtil.isAuth, userController.resetUserCategoryInfo);
+    .post(validateUtil.categoryRequestCheck, 
+        authUtil.isAuth, 
+        userController.resetUserCategoryInfo);
 
 
 export default router;

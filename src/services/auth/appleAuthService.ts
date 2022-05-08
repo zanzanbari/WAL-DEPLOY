@@ -1,41 +1,51 @@
-// import AuthService from "./authService";
-// import { TokenDto } from "@/interface/dto/request/authRequest";
-// import { AuthResponse } from "@/interface/dto/response/authResponse";
+import * as jwt from "jsonwebtoken";
+import IAuthService from "./authService";
+import { TokenDto } from "../../interface/dto/request/authRequest";
+import { AuthResponse, IAppleUserInfo, Token } from "../../interface/dto/response/authResponse";
+import { issueAccessToken, issueRefreshToken } from "../../modules/tokenHandller";
 
-// class AppleAuthService implement AuthService {
-//     constructor(
-//         private readonly userRepositroy,
-        // private readonly logger;
-//     ) {
-//     }
+class AppleAuthService implements IAuthService {
+    constructor(
+        private readonly userRepository: any,
+        private readonly logger: any
+    ) {
+    }
+    
+    public async login(request: TokenDto): Promise<AuthResponse | undefined> {
+      
+      try {
+        // 결국 해야되는건 -> id_token 받아서 
+        // apple server 공개 키로 jwt 해독 (해야하는데 실패) -> 나중에 다시 시도
+        const payload = jwt.decode(request.socialtoken as string) as IAppleUserInfo;
+        const userData = { email: payload.email, nickname: null };
+      
+        const refreshtoken = await issueRefreshToken();
+        const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
+        const accesstoken = await issueAccessToken(socialUser);
 
-//     public async login(request: TokenDto): Promise<AuthResponse | undefined> {
-
-//         try {
-//             let socialUser = await KakaoAuthApi(request.socialtoken);
-//             socialUser = await this.userRepository.findOneByEmail(socialUser?.email);
-//             const accesstoken = await this.issueAccessToken(socialUser);
-//             const refreshtoken = await this.issueRefreshToken();
-//             socialUser = await this.userRepository.createSocialUser("kakao", socialUser, request, refreshtoken);
-            
-//             const user = {
-//                 nickname: socialUser?.nickname,
-//                 accesstoken,
-//                 refreshtoken
-//             }
-//             return user;
+        const user: AuthResponse = {
+          nickname: socialUser.nickname,
+          accesstoken,
+          refreshtoken
+        }
+        return user;
         
-//         } catch (error) {
-//             console.error(error);
-            // this.logger.appLogger.log({
-            //     level: "error",
-            //     message: error.message
-            // });
-//             throw new Error(error);
-//         }
+      } catch (error) {
+        console.error(error);
+        this.logger.appLogger.log({
+          level: "error",
+          message: error.message
+        });
+        throw new Error(error);
+      }
+      
+    }
+    
+    resign(userId: number, token: TokenDto): Promise<any> {
+      throw new Error("Method not implemented.");
+    }
 
-//     }
 
-// }
-
-// export default AppleAuthService;
+  }
+  
+  export default AppleAuthService;

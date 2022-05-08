@@ -60,7 +60,7 @@ const httpLogStream = {
   },
 };
 
-module.exports = { 
+export default { 
   appLogger, 
   httpLogStream 
 }

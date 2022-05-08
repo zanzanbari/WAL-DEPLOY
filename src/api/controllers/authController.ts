@@ -1,17 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "@/models";
-import { ErrorResponse, SuccessResponse } from "@/modules/apiResponse";
-import sc from "@/constant/resultCode";
-import rm from "@/constant/resultMessage";
-import Error from "@/constant/responseError";
-// import AppleAuthService from "@/services/auth/appleAuthService";
-import KakaoAuthService from "@/services/auth/kakaoAuthService";
-import { TokenDto } from "@/interface/dto/request/authRequest";
-import { AuthResponse } from "@/interface/dto/response/authResponse";
-import ReissueTokenService from "@/services/auth/reissueTokenService";
-const logger = require("../middlewares/logger");
-
-// TODO controller class 만들어서 해도 될듯? 
+import { User } from "../../models";
+import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
+import sc from "../../constant/resultCode";
+import rm from "../../constant/resultMessage";
+import Error from "../../constant/responseError";
+import AppleAuthService from "../../services/auth/appleAuthService";
+import KakaoAuthService from "../../services/auth/kakaoAuthService";
+import { TokenDto } from "../../interface/dto/request/authRequest";
+import { AuthResponse } from "../../interface/dto/response/authResponse";
+import ReissueTokenService from "../../services/auth/reissueTokenService";
+import logger from "../middlewares/logger";
 
 const socialLogin = async (
     req: Request, 
@@ -29,19 +27,15 @@ const socialLogin = async (
                 const kakaoAuthServiceInstance = new KakaoAuthService(User, logger);
                 data = await kakaoAuthServiceInstance.login(req.query as TokenDto);
                 break;
-            // case "apple":
-            //     const appleAuthServiceInstance = new AppleAuthService(User);
-            //     data = await appleAuthServiceInstance.login(req.query as TokenDto);
-            //     break;
+            case "apple":
+                const appleAuthServiceInstance = new AppleAuthService(User, logger);
+                data = await appleAuthServiceInstance.login(req.query as TokenDto);
+                break;
         }
 
         return SuccessResponse(res, sc.OK, rm.LOGIN_SUCCESS, data);
 
     } catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -73,10 +67,6 @@ const socialResign = async (
         return SuccessResponse(res, sc.OK, rm.DELETE_USER, data)
 
     } catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -103,10 +93,6 @@ const logout = async (
         return SuccessResponse(res, sc.OK, rm.LOGOUT_SUCCESS, userId);
 
     } catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -131,10 +117,6 @@ const reissueToken = async (
         return SuccessResponse(res, sc.OK, rm.REISSUE_TOKEN, data);
 
     } catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
         return next(error);
     }

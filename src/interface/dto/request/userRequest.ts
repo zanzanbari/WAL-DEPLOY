@@ -18,7 +18,8 @@ export interface ISetUserCategory {
     next_item_id?: number,
 }
 
-export type ResetCategoryDto = ISetCategory[]
+export type ResetTimeDto = ISetTime[];
+export type ResetCategoryDto = ISetCategory[];
 
 
 export interface ISetCategory {

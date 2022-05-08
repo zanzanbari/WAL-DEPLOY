@@ -1,10 +1,9 @@
-import { Time } from "../../models";
 import { morningQueue, afternoonQueue, nightQueue } from './';
-
-const logger = require("../../api/middlewares/logger");
 import {morningFunc, afterFunc, nightFunc} from './consumer';
+import { Time } from "../../models";
+import logger from "../../api/middlewares/logger";
 
-export async function addUserTime(userId): Promise<void> {
+export async function addUserTime(userId: number): Promise<void> {
 
     try {
         //user id를 data로 전달
@@ -40,7 +39,7 @@ export async function addUserTime(userId): Promise<void> {
             await nightQueue.process(nightFunc)
 
     }  catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger.appLogger.log({ level: "error", message: err.message });
     }
     
 }

@@ -3,7 +3,6 @@ import {  messageQueue } from './';
 import { Job, DoneCallback } from "bull";
 import dayjs from "dayjs";
 import { messageFunc } from "./messageConsumer";
-
 import logger from "../../api/middlewares/logger";
 
 async function getTokenMessage(time: Date, userId: number) {
@@ -40,7 +39,7 @@ async function getTokenMessage(time: Date, userId: number) {
           return data;
 
     } catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger.appLogger.log({ level: "error", message: err.message });
     }
     
 }
@@ -64,7 +63,7 @@ export const morningFunc = async (job: Job, done: DoneCallback) => {
         done();
 
     } catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger.appLogger.log({ level: "error", message: err.message });
     }
 
 }
@@ -89,7 +88,7 @@ export const afterFunc = async (job: Job, done: DoneCallback) => {
             done();
     
         } catch (err) {
-            console.log({ level: "error", message: err.message });
+            logger.appLogger.log({ level: "error", message: err.message });
         }
     
 }
@@ -112,7 +111,7 @@ export const nightFunc = async (job: Job, done: DoneCallback) => {
         done();
 
     } catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger.appLogger.log({ level: "error", message: err.message });
     }
 
 }

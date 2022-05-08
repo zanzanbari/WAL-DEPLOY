@@ -28,7 +28,7 @@ export const messageFunc = async (job: Job, done: DoneCallback) => {
         done();
 
     } catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger.appLogger.log({ level: "error", message: err.message });
     }
 
 }

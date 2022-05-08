@@ -2,7 +2,6 @@ import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 import Queue from "bull";
 import dayjs from "dayjs";
 import schedule from 'node-schedule';
-import logger from "../../api/middlewares/logger";
 
 export const morningQueue = new Queue(
   'morning-queue', {
@@ -112,7 +111,7 @@ async function getRandCategoryCurrentItem(user: User) {
     }) as Item[];
   
 
-    let itemIdx, nextItemIdx, nextItemId;
+    let itemIdx: number, nextItemIdx: number, nextItemId;
     for(const item of sameCategoryItems) {
         if (item.getDataValue("id") === currentItemId) {
             itemIdx = sameCategoryItems.indexOf(item); //배열상 인덱스

@@ -1,7 +1,7 @@
 import { Job, DoneCallback } from "bull";
 import admin from "firebase-admin";
 
-const logger = require("../../api/middlewares/logger");
+import logger from "../../api/middlewares/logger";
 
 export const messageFunc = async (job: Job, done: DoneCallback) => {
     try {

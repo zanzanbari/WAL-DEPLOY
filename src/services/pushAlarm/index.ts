@@ -2,8 +2,7 @@ import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 import Queue from "bull";
 import dayjs from "dayjs";
 import schedule from 'node-schedule';
-
-const logger = require("../../api/middlewares/logger");
+import logger from "../../api/middlewares/logger";
 
 export const morningQueue = new Queue(
   'morning-queue', {

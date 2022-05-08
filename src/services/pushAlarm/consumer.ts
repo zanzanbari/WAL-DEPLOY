@@ -4,7 +4,7 @@ import { Job, DoneCallback } from "bull";
 import dayjs from "dayjs";
 import { messageFunc } from "./messageConsumer";
 
-const logger = require("../../api/middlewares/logger");
+import logger from "../../api/middlewares/logger";
 
 async function getTokenMessage(time: Date, userId: number) {
 

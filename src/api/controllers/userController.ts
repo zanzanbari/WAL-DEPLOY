@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Item, Time, User, UserCategory } from "../../models";
+import { Item, Time, TodayWal, User, UserCategory } from "../../models";
 import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
@@ -16,7 +16,7 @@ const setInfo = async (
 
     try {
         
-        const userServiceInstance = new UserService(User, Time, Item, UserCategory, logger);
+        const userServiceInstance = new UserService(User, Time, Item, UserCategory, TodayWal, logger);
         const data = await userServiceInstance.initSetInfo(req.user?.id as number, req.body as UserSettingDto);
 
         SuccessResponse(res, sc.CREATED, rm.SET_USER_INFO_SUCCESS,data);
@@ -83,7 +83,7 @@ const getCategoryInfo = async (
 
     try {
 
-        const userServiceInstance = new UserService(User, Time, Item, UserCategory, logger);
+        const userServiceInstance = new UserService(User, Time, Item, UserCategory, TodayWal,logger);
         const data = await userServiceInstance.getCategoryInfo(req.user?.id as number);
 
         SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, data);
@@ -151,7 +151,7 @@ const resetUserCategoryInfo = async (
 
     try {
 
-        const userServiceInstance = new UserService(User, Time, Item, UserCategory, logger);
+        const userServiceInstance = new UserService(User, Time, Item, UserCategory, TodayWal,logger);
         const data = await userServiceInstance.resetUserCategoryInfo(req.user?.id as number, req.body.data as ResetCategoryDto);
 
         SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, data);

@@ -25,7 +25,7 @@ export async function addUserTime(userId): Promise<void> {
             const addjob = await afternoonQueue.add(
                 userId,
                 {
-                repeat: { cron: `* 12 * * *` }
+                repeat: { cron: `* 14 * * *` }
                 });
             console.log(addjob.finished());
             await afternoonQueue.process(afterFunc)

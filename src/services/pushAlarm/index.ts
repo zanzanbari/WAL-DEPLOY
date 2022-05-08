@@ -71,8 +71,8 @@ export async function updateTodayWal() {
         if (times.getDataValue("morning")) { //8
             selectedTime.push(new Date(`${dateString} 08:00:00`))
         }
-        if (times.getDataValue("afternoon")) { //12
-            selectedTime.push(new Date(`${dateString} 12:00:00`))
+        if (times.getDataValue("afternoon")) { //2시
+            selectedTime.push(new Date(`${dateString} 14:00:00`))
         }
         if (times.getDataValue("night")) { //20
             selectedTime.push(new Date(`${dateString} 20:00:00`))

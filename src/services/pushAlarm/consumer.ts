@@ -78,7 +78,7 @@ export const afterFunc = async (job: Job, done: DoneCallback) => {
     
             const dateString = dayjs(new Date()).format("YYYY-MM-DD");
 
-            const data = await getTokenMessage(new Date(`${dateString} 12:00:00`), userId);
+            const data = await getTokenMessage(new Date(`${dateString} 14:00:00`), userId);
 
             await messageQueue.add(data, { //message를 보내는 작업, 5번 시도
                 attempts: 5

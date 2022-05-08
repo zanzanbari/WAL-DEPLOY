@@ -17,11 +17,11 @@ const models_1 = require("../../models");
 const bull_1 = __importDefault(require("bull"));
 const dayjs_1 = __importDefault(require("dayjs"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
-const logger = require("../../api/middlewares/logger");
 exports.morningQueue = new bull_1.default('morning-queue', {
     redis: {
-        host: "localhost",
-        port: 6379
+        host: process.env.REDIS_HOST,
+        port: 16916,
+        password: process.env.REDIS_PASSWORD
     }
 });
 exports.afternoonQueue = new bull_1.default('afternoon-queue', {
@@ -69,8 +69,8 @@ function updateTodayWal() {
             if (times.getDataValue("morning")) { //8
                 selectedTime.push(new Date(`${dateString} 08:00:00`));
             }
-            if (times.getDataValue("afternoon")) { //12
-                selectedTime.push(new Date(`${dateString} 12:00:00`));
+            if (times.getDataValue("afternoon")) { //2시
+                selectedTime.push(new Date(`${dateString} 14:00:00`));
             }
             if (times.getDataValue("night")) { //20
                 selectedTime.push(new Date(`${dateString} 20:00:00`));

@@ -17,14 +17,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const timeHandler_1 = __importDefault(require("../../modules/timeHandler"));
 const typedi_1 = require("typedi");
 let UserService = class UserService {
-    constructor(userRepository, timeRepository, itemRepository, userCategoryRepository, logger) {
+    constructor(userRepository, timeRepository, itemRepository, userCategoryRepository, todayWalRepository, logger) {
         this.userRepository = userRepository;
         this.timeRepository = timeRepository;
         this.itemRepository = itemRepository;
         this.userCategoryRepository = userCategoryRepository;
+        this.todayWalRepository = todayWalRepository;
         this.logger = logger;
         this.categorySelection = {
             joke: false,
@@ -34,17 +39,18 @@ let UserService = class UserService {
         };
     }
     initSetInfo(userId, request) {
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // 유형 선택
                 // 각각 T/F 뽑아서 => T면 새로운 배열에 그 인덱스 번호 넣어, F면 넣지마
                 const dtypeBoolInfo = this.extractBooleanInfo(request.dtype);
                 const dtypeIdx = [];
-                dtypeBoolInfo.forEach(it => {
-                    if (it === true) {
-                        dtypeIdx.push(dtypeBoolInfo.indexOf(it));
+                for (let i = 0; i < dtypeBoolInfo.length; i++) {
+                    if (dtypeBoolInfo[i] === true) {
+                        dtypeIdx.push(i);
                     }
-                });
+                }
                 dtypeIdx.forEach((categoryId) => __awaiter(this, void 0, void 0, function* () {
                     const firstItemId = yield this.itemRepository.getFirstIdEachOfCategory(categoryId);
                     this.infoToUserCategoryDB = {
@@ -54,6 +60,42 @@ let UserService = class UserService {
                     };
                     yield this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
                 }));
+                // todayWals에 들어갈 놈   
+                // FIXME randomIdx 뽑는거 다시 생각 ㄲ
+                if (((_a = request.time) === null || _a === void 0 ? void 0 : _a.morning) === true) {
+                    // 카테고리 아이디를 랜덤으로 뽑자 
+                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                    const randCategoryId = dtypeIdx[randIdx];
+                    const data = {
+                        user_id: userId,
+                        category_id: randCategoryId,
+                        item_id: yield this.itemRepository.getFirstIdEachOfCategory(randCategoryId),
+                        time: timeHandler_1.default.getMorning() // morning이면 8시, afternoon이면 12시, night면 20시.......
+                    };
+                    yield this.todayWalRepository.setTodayWal(data);
+                }
+                if (((_b = request.time) === null || _b === void 0 ? void 0 : _b.afternoon) === true) {
+                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                    const randCategoryId = dtypeIdx[randIdx];
+                    const data = {
+                        user_id: userId,
+                        category_id: randCategoryId,
+                        item_id: yield this.itemRepository.getFirstIdEachOfCategory(randCategoryId),
+                        time: timeHandler_1.default.getAfternoon()
+                    };
+                    yield this.todayWalRepository.setTodayWal(data);
+                }
+                if (((_c = request.time) === null || _c === void 0 ? void 0 : _c.night) === true) {
+                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                    const randCategoryId = dtypeIdx[randIdx];
+                    const data = {
+                        user_id: userId,
+                        category_id: randCategoryId,
+                        item_id: yield this.itemRepository.getFirstIdEachOfCategory(randCategoryId),
+                        time: timeHandler_1.default.getNight()
+                    };
+                    yield this.todayWalRepository.setTodayWal(data);
+                }
                 yield this.timeRepository.setTime(userId, request.time);
                 yield this.userRepository.setNickname(userId, request.nickname);
                 return { nickname: request.nickname };
@@ -73,6 +115,30 @@ let UserService = class UserService {
                 const dtypeInfo = this.userCategoryRepository.findCategoryByUserId(userId);
                 this.setCategoryInfo(yield dtypeInfo);
                 return this.categorySelection;
+            }
+            catch (error) {
+                this.logger.appLogger.log({
+                    level: "error",
+                    message: error.message
+                });
+                throw new Error(error);
+            }
+        });
+    }
+    resetTimeInfo(userId, request) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const beforeTimeInfo = request[0]; // 이전 설정값
+                const afterTimeInfo = request[1]; // 새로운 설정값
+                const before = this.extractBooleanInfo(beforeTimeInfo);
+                const after = this.extractBooleanInfo(afterTimeInfo);
+                for (let i = 0; i < 3; i++) {
+                    if (before[i] == true && after[i] === false) { // todayWals에서 삭제하고 queue에서 빼야함
+                    }
+                    else if (before[i] === false && after[i] === true) { // todayWals에 추가하고 queue에 추가
+                    }
+                }
+                return yield this.timeRepository.findById(userId);
             }
             catch (error) {
                 this.logger.appLogger.log({
@@ -139,7 +205,7 @@ let UserService = class UserService {
 };
 UserService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], UserService);
 exports.default = UserService;
 //# sourceMappingURL=userService.js.map

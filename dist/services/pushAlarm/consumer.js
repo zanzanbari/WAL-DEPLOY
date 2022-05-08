@@ -17,7 +17,6 @@ const models_1 = require("../../models");
 const _1 = require("./");
 const dayjs_1 = __importDefault(require("dayjs"));
 const messageConsumer_1 = require("./messageConsumer");
-const logger = require("../../api/middlewares/logger");
 function getTokenMessage(time, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -74,7 +73,7 @@ const afterFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         const userId = job.data;
         const dateString = (0, dayjs_1.default)(new Date()).format("YYYY-MM-DD");
-        const data = yield getTokenMessage(new Date(`${dateString} 12:00:00`), userId);
+        const data = yield getTokenMessage(new Date(`${dateString} 14:00:00`), userId);
         yield _1.messageQueue.add(data, {
             attempts: 5
         });

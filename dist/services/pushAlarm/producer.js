@@ -29,7 +29,7 @@ function addUserTime(userId) {
             }
             if (times.afternoon) {
                 const addjob = yield _1.afternoonQueue.add(userId, {
-                    repeat: { cron: `* 12 * * *` }
+                    repeat: { cron: `* 14 * * *` }
                 });
                 console.log(addjob.finished());
                 yield _1.afternoonQueue.process(consumer_1.afterFunc);

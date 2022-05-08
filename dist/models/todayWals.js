@@ -8,6 +8,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -17,6 +26,11 @@ const users_1 = __importDefault(require("./users"));
 const items_1 = __importDefault(require("./items"));
 const reservations_1 = __importDefault(require("./reservations"));
 let TodayWal = class TodayWal extends sequelize_typescript_1.Model {
+    static setTodayWal(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.create(Object.assign({}, data));
+        });
+    }
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,

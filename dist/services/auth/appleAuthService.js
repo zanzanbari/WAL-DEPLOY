@@ -45,7 +45,7 @@ class AppleAuthService {
                 // 결국 해야되는건 -> id_token 받아서 
                 // apple server 공개 키로 jwt 해독 (해야하는데 실패) -> 나중에 다시 시도
                 const payload = jwt.decode(request.socialtoken);
-                const userData = { email: payload.email, nickname: null };
+                const userData = { email: payload.sub, nickname: null };
                 const refreshtoken = yield (0, tokenHandller_1.issueRefreshToken)();
                 const socialUser = yield this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
                 const accesstoken = yield (0, tokenHandller_1.issueAccessToken)(socialUser);

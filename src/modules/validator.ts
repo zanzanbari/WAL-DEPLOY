@@ -7,6 +7,12 @@ export const passwordValidator = (pwd: string) => {
     else return true;
 };
 
+export const isEmail = (email: string) => {
+    const validator = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!validator.test(email)) return false;
+    else return true;
+}
+
 export function isTokenExpired (decoded: any) {
     return decoded === TOKEN_EXPIRED || decoded === TOKEN_INVALID
 }

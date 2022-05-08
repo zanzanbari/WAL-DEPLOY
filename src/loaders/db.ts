@@ -11,7 +11,7 @@ export const connectDB = () => {
         });
     
     // 시퀄라이즈 모델 DB에 싱크
-    sequelize.sync({ alter: true })
+    sequelize.sync({ alter: false })
         .then(() => {
             console.log('✅ Sync Models to DB');
         })

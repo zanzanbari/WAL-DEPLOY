@@ -41,7 +41,6 @@ export default class User extends Model {
 
 
     @AllowNull(false)
-    @IsEmail
     @Unique
     @Column(DataType.STRING(50))
     public email!: string;

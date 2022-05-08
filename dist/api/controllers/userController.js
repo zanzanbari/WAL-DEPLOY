@@ -18,22 +18,23 @@ const apiResponse_1 = require("../../modules/apiResponse");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const userService_1 = __importDefault(require("../../services/user/userService"));
-const logger = require("../middlewares/logger");
+const logger_1 = __importDefault(require("../middlewares/logger"));
 const setInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, logger);
+        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, logger_1.default);
         const data = yield userServiceInstance.initSetInfo((_a = req.user) === null || _a === void 0 ? void 0 : _a.id, req.body);
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.CREATED, resultMessage_1.default.SET_USER_INFO_SUCCESS, data);
     }
     catch (error) {
-        console.error(error);
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
 });
 const getNicknameInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
+    if (!req.body.nickname)
+        return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_BODY_OR_NULL);
     try {
         const user = yield models_1.User.findById((_b = req.user) === null || _b === void 0 ? void 0 : _b.id);
         if (!user)
@@ -45,7 +46,6 @@ const getNicknameInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_USER_INFO_SUCCESS, data);
     }
     catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -59,7 +59,6 @@ const getTimeInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_USER_INFO_SUCCESS, data);
     }
     catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -67,14 +66,11 @@ const getTimeInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 const getCategoryInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _d;
     try {
-        const categories = yield models_1.UserCategory.findCategoryByUserId((_d = req.user) === null || _d === void 0 ? void 0 : _d.id);
-        if (!categories)
-            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.DB_ERROR, resultMessage_1.default.DB_ERROR);
-        const data = { categories };
+        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, logger_1.default);
+        const data = yield userServiceInstance.getCategoryInfo((_d = req.user) === null || _d === void 0 ? void 0 : _d.id);
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_USER_INFO_SUCCESS, data);
     }
     catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -91,7 +87,6 @@ const resetNicknameInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.UPDATE_USER_INFO_SUCCESS, data);
     }
     catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -101,10 +96,10 @@ const resetTimeInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     const userId = (_f = req.user) === null || _f === void 0 ? void 0 : _f.id;
     try {
         yield models_1.Time.updateTime(userId, req.body);
-        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.UPDATE_USER_INFO_SUCCESS, userId);
+        const data = models_1.Time.findById(userId);
+        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.UPDATE_USER_INFO_SUCCESS, yield data);
     }
     catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -112,12 +107,11 @@ const resetTimeInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 const resetUserCategoryInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _g;
     try {
-        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, logger);
+        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, logger_1.default);
         const data = yield userServiceInstance.resetUserCategoryInfo((_g = req.user) === null || _g === void 0 ? void 0 : _g.id, req.body.data);
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.UPDATE_USER_INFO_SUCCESS, data);
     }
     catch (error) {
-        logger.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }

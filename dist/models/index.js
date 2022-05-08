@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Reservation = exports.Time = exports.Item = exports.UserCategory = exports.Category = exports.User = void 0;
+exports.TodayWal = exports.Reservation = exports.Time = exports.Item = exports.UserCategory = exports.Category = exports.User = void 0;
 const dbConfig_1 = __importDefault(require("../config/dbConfig"));
 const sequelize_typescript_1 = require("sequelize-typescript");
 const users_1 = __importDefault(require("./users"));
@@ -18,6 +18,8 @@ const reservations_1 = __importDefault(require("./reservations"));
 exports.Reservation = reservations_1.default;
 const userCategories_1 = __importDefault(require("./userCategories"));
 exports.UserCategory = userCategories_1.default;
+const todayWals_1 = __importDefault(require("./todayWals"));
+exports.TodayWal = todayWals_1.default;
 const sequelize = new sequelize_typescript_1.Sequelize({
     host: dbConfig_1.default.development.host,
     database: dbConfig_1.default.development.database,
@@ -26,6 +28,11 @@ const sequelize = new sequelize_typescript_1.Sequelize({
     dialect: "postgres",
     logging: false,
     timezone: "+09:00",
+    dialectOptions: {
+        charset: 'utf8mb4',
+        dateStrings: true,
+        typeCast: true
+    }
 });
 sequelize.addModels([
     users_1.default,
@@ -33,7 +40,8 @@ sequelize.addModels([
     userCategories_1.default,
     items_1.default,
     times_1.default,
-    reservations_1.default
+    reservations_1.default,
+    todayWals_1.default
 ]);
 exports.default = sequelize;
 //# sourceMappingURL=index.js.map

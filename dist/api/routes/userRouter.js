@@ -11,7 +11,7 @@ const router = (0, express_1.Router)();
 router.post("/set-info", requestValidator_1.default.initRequestCheck, auth_1.default.isAuth, userController_1.userController.setInfo);
 router
     .route("/info/nickname")
-    .get(userController_1.userController.getNicknameInfo)
+    .get(auth_1.default.isAuth, userController_1.userController.getNicknameInfo)
     .post(auth_1.default.isAuth, userController_1.userController.resetNicknameInfo);
 router
     .route("/info/time")
@@ -20,6 +20,6 @@ router
 router
     .route("/info/category")
     .get(auth_1.default.isAuth, userController_1.userController.getCategoryInfo)
-    .post(auth_1.default.isAuth, userController_1.userController.resetUserCategoryInfo);
+    .post(requestValidator_1.default.categoryRequestCheck, auth_1.default.isAuth, userController_1.userController.resetUserCategoryInfo);
 exports.default = router;
 //# sourceMappingURL=userRouter.js.map

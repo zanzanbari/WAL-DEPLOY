@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const { createLogger, format, transports } = require('winston');
 const path = require('path');
 const mt = require('moment-timezone');
@@ -40,7 +42,7 @@ const httpLogStream = {
         });
     },
 };
-module.exports = {
+exports.default = {
     appLogger,
     httpLogStream
 };

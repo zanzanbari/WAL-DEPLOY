@@ -16,15 +16,15 @@ const joi_1 = __importDefault(require("joi"));
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const apiResponse_1 = require("../../modules/apiResponse");
-const logger = require("../../api/middlewares/logger");
+const logger_1 = __importDefault(require("../../api/middlewares/logger"));
 // fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
 const loginRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const loginParamSchema = joi_1.default.object().keys({
         social: joi_1.default.string().required().valid("apple", "kakao"),
     });
     const loginQuerySchema = joi_1.default.object().keys({
-        socialtoken: joi_1.default.string().token().required(),
-        fcmtoken: joi_1.default.string().token().optional()
+        socialtoken: joi_1.default.string().required(),
+        fcmtoken: joi_1.default.string().optional()
     });
     try {
         // validate 쓰면 error 속성 존재, validateAsync 쓰면 없고 catch error 해줘야함 
@@ -42,28 +42,37 @@ const loginRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
     catch (error) {
         console.error(`[VALIDATE ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
-        logger.appLogger.log({ level: "error", message: error.message });
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
     }
 });
 const initRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const setInfoSchema = joi_1.default.object().keys({
         nickname: joi_1.default.string().required().max(10),
-        dtype: joi_1.default.array().items(joi_1.default.string()).required(),
-        time: joi_1.default.array().items(joi_1.default.string()).required()
+        dtype: {
+            joke: joi_1.default.boolean().required(),
+            compliment: joi_1.default.boolean().required(),
+            condolence: joi_1.default.boolean().required(),
+            scolding: joi_1.default.boolean().required(),
+        },
+        time: {
+            morning: joi_1.default.boolean().required(),
+            afternoon: joi_1.default.boolean().required(),
+            night: joi_1.default.boolean().required(),
+        }
     });
     try {
         const bodyError = yield setInfoSchema
             .validateAsync(req.body)
             .catch(err => { return err; });
         if (bodyError.details) {
-            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_PARAMS_OR_NULL);
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_BODY_OR_NULL);
         }
         next();
     }
     catch (error) {
         console.error(`[VALIDATE ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
-        logger.appLogger.log({ level: "error", message: error.message });
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
     }
 });
@@ -78,20 +87,53 @@ const timeRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             .validateAsync(req.body)
             .catch(err => { return err; });
         if (bodyError.details) {
-            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_PARAMS_OR_NULL);
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_BODY_OR_NULL);
         }
         next();
     }
     catch (error) {
         console.error(`[VALIDATE ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
-        logger.appLogger.log({ level: "error", message: error.message });
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
+        (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
+    }
+});
+const categoryRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const categorySchema = joi_1.default.object().keys({
+        data: joi_1.default
+            .array()
+            .length(2)
+            .items({
+            joke: joi_1.default.boolean().required(),
+            compliment: joi_1.default.boolean().required(),
+            condolence: joi_1.default.boolean().required(),
+            scolding: joi_1.default.boolean().required(),
+        }, {
+            joke: joi_1.default.boolean().required(),
+            compliment: joi_1.default.boolean().required(),
+            condolence: joi_1.default.boolean().required(),
+            scolding: joi_1.default.boolean().required(),
+        })
+    });
+    try {
+        const bodyError = yield categorySchema
+            .validateAsync(req.body)
+            .catch(err => { return err; });
+        if (bodyError.details) {
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_BODY_OR_NULL);
+        }
+        next();
+    }
+    catch (error) {
+        console.error(`[VALIDATE ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
     }
 });
 const validateUtil = {
     loginRequestCheck,
     initRequestCheck,
-    timeRequestCheck
+    timeRequestCheck,
+    categoryRequestCheck
 };
 exports.default = validateUtil;
 //# sourceMappingURL=requestValidator.js.map

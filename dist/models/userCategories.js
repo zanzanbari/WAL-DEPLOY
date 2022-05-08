@@ -45,13 +45,16 @@ let UserCategory = class UserCategory extends sequelize_typescript_1.Model {
         return __awaiter(this, void 0, void 0, function* () {
             const isCategories = yield this.findAll({
                 where: { user_id },
-                attributes: ["category_id"]
+                attributes: ["category_id"],
+                include: [{ model: categories_1.default, attributes: ["dtype"] }]
             });
             if (!isCategories)
-                throw new Error(resultMessage_1.default.NULL_VALUE);
+                throw new Error(resultMessage_1.default.DB_ERROR);
             const categories = [];
             isCategories.forEach(it => {
-                const item = it.getDataValue("category_id");
+                const item = it
+                    .getDataValue("comment")
+                    .getDataValue("dtype");
                 categories.push(item);
             });
             return categories;

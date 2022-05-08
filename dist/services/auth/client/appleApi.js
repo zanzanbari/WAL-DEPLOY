@@ -12,17 +12,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.appleAuthApi = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-function appleAuthApi(appleAccessToken) {
+exports.getPublicKey = void 0;
+const axios_1 = __importDefault(require("axios"));
+const logger_1 = __importDefault(require("../../../api/middlewares/logger"));
+// apple public key 가져오는 함수
+function getPublicKey() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const userData = jsonwebtoken_1.default.decode(appleAccessToken);
-            return;
+            const keys = yield axios_1.default.get("https://appleid.apple.com/auth/keys")
+                .then(resolve => { return resolve.data["keys"]; })
+                .catch(err => { return err; });
+            return keys;
         }
         catch (error) {
+            logger_1.default.appLogger.log({
+                level: "error",
+                message: error.message
+            });
+            throw new Error(error.message);
         }
     });
 }
-exports.appleAuthApi = appleAuthApi;
+exports.getPublicKey = getPublicKey;
+const appleApiUtil = {
+    getPublicKey
+};
+exports.default = appleApiUtil;
 //# sourceMappingURL=appleApi.js.map

@@ -17,7 +17,7 @@ const apiResponse_1 = require("../../modules/apiResponse");
 const tokenHandller_1 = require("../../modules/tokenHandller");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
-const logger = require("../../api/middlewares/logger");
+const logger_1 = __importDefault(require("../../api/middlewares/logger"));
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -38,12 +38,14 @@ const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         }
         const userId = accessTokenDecoded.id;
         const user = yield models_1.User.findOne({ where: { id: userId } });
+        if (!user)
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.NO_USER);
         req.user = user;
         next();
     }
     catch (error) {
         console.error(`[AUTH ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, accesstoken);
-        logger.appLogger.log({ level: "error", message: error.message });
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
     }
 });

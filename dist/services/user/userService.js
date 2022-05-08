@@ -26,38 +26,53 @@ let UserService = class UserService {
         this.itemRepository = itemRepository;
         this.userCategoryRepository = userCategoryRepository;
         this.logger = logger;
-        this.timeSelection = {
-            morning: false,
-            afternoon: false,
-            night: false
+        this.categorySelection = {
+            joke: false,
+            compliment: false,
+            condolence: false,
+            scolding: false
         };
     }
     initSetInfo(userId, request) {
-        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // 시간 선택
-                (_a = request.time) === null || _a === void 0 ? void 0 : _a.forEach(it => {
-                    if (it === "morning")
-                        this.timeSelection.morning = true;
-                    if (it === "afternoon")
-                        this.timeSelection.afternoon = true;
-                    if (it === "night")
-                        this.timeSelection.night = true;
-                });
                 // 유형 선택
-                (_b = request.dtype) === null || _b === void 0 ? void 0 : _b.forEach((it) => __awaiter(this, void 0, void 0, function* () {
-                    const firstItemId = yield this.itemRepository.getFirstIdEachOfCategory(it);
-                    this.categorySelection = {
+                // 각각 T/F 뽑아서 => T면 새로운 배열에 그 인덱스 번호 넣어, F면 넣지마
+                const dtypeBoolInfo = this.extractBooleanInfo(request.dtype);
+                const dtypeIdx = [];
+                dtypeBoolInfo.forEach(it => {
+                    if (it === true) {
+                        dtypeIdx.push(dtypeBoolInfo.indexOf(it));
+                    }
+                });
+                dtypeIdx.forEach((categoryId) => __awaiter(this, void 0, void 0, function* () {
+                    const firstItemId = yield this.itemRepository.getFirstIdEachOfCategory(categoryId);
+                    this.infoToUserCategoryDB = {
                         user_id: userId,
-                        category_id: it,
+                        category_id: categoryId,
                         next_item_id: firstItemId,
                     };
-                    yield this.userCategoryRepository.setUserCategory(this.categorySelection);
+                    yield this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
                 }));
-                yield this.timeRepository.setTime(userId, this.timeSelection);
+                yield this.timeRepository.setTime(userId, request.time);
                 yield this.userRepository.setNickname(userId, request.nickname);
                 return { nickname: request.nickname };
+            }
+            catch (error) {
+                this.logger.appLogger.log({
+                    level: "error",
+                    message: error.message
+                });
+                throw new Error(error);
+            }
+        });
+    }
+    getCategoryInfo(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const dtypeInfo = this.userCategoryRepository.findCategoryByUserId(userId);
+                this.setCategoryInfo(yield dtypeInfo);
+                return this.categorySelection;
             }
             catch (error) {
                 this.logger.appLogger.log({
@@ -75,24 +90,23 @@ let UserService = class UserService {
                 const afterCategoryInfo = request[1]; // 새로운 설정값
                 const before = this.extractBooleanInfo(beforeCategoryInfo);
                 const after = this.extractBooleanInfo(afterCategoryInfo);
-                // FIXME: category pk의 인덱스 번호 차이
                 for (let categoryId = 0; categoryId < 4; categoryId++) {
                     if (before[categoryId] === true && after[categoryId] === false) { // 삭제
                         yield this.userCategoryRepository.deleteUserCategory(userId, categoryId);
                     }
                     else if (before[categoryId] === false && after[categoryId] === true) { // 생성
-                        // FIXME: item 당연히 있겠지마는~~ ㄹㅇ 없을땐 어캄? -> 고민 ㄱ
                         const firstItemId = yield this.itemRepository.getFirstIdEachOfCategory(categoryId);
-                        this.categorySelection = {
+                        this.infoToUserCategoryDB = {
                             user_id: userId,
                             category_id: categoryId,
                             next_item_id: firstItemId,
                         };
-                        yield this.userCategoryRepository.setUserCategory(this.categorySelection);
+                        yield this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
                     }
                 }
-                const resultInfo = this.userCategoryRepository.findCategoryByUserId(userId);
-                return yield resultInfo;
+                const dtypeInfo = this.userCategoryRepository.findCategoryByUserId(userId);
+                this.setCategoryInfo(yield dtypeInfo);
+                return this.categorySelection;
             }
             catch (error) {
                 this.logger.appLogger.log({
@@ -109,6 +123,18 @@ let UserService = class UserService {
             extractedInfo.push(property[key]);
         }
         return extractedInfo;
+    }
+    setCategoryInfo(data) {
+        data.forEach(it => {
+            if (it === "joke")
+                this.categorySelection.joke = true;
+            if (it === "compliment")
+                this.categorySelection.compliment = true;
+            if (it === "condolence")
+                this.categorySelection.condolence = true;
+            if (it === "scolding")
+                this.categorySelection.scolding = true;
+        });
     }
 };
 UserService = __decorate([

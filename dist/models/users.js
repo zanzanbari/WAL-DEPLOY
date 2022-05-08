@@ -138,7 +138,7 @@ __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     sequelize_typescript_1.IsEmail,
     sequelize_typescript_1.Unique,
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING(40)),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING(50)),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([

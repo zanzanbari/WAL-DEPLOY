@@ -17,11 +17,10 @@ const models_1 = require("../../models");
 const apiResponse_1 = require("../../modules/apiResponse");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
-// import AppleAuthService from "@/services/auth/appleAuthService";
+const appleAuthService_1 = __importDefault(require("../../services/auth/appleAuthService"));
 const kakaoAuthService_1 = __importDefault(require("../../services/auth/kakaoAuthService"));
 const reissueTokenService_1 = __importDefault(require("../../services/auth/reissueTokenService"));
-const logger = require("../middlewares/logger");
-// TODO controller class 만들어서 해도 될듯? 
+const logger_1 = __importDefault(require("../middlewares/logger"));
 const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { social } = req.params;
     try {
@@ -29,21 +28,17 @@ const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         switch (social) {
             case "kakao":
                 // TODO: typedi container 써서 logger, repository 주입 - 나중에
-                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, logger);
+                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, logger_1.default);
                 data = yield kakaoAuthServiceInstance.login(req.query);
                 break;
-            // case "apple":
-            //     const appleAuthServiceInstance = new AppleAuthService(User);
-            //     data = await appleAuthServiceInstance.login(req.query as TokenDto);
-            //     break;
+            case "apple":
+                const appleAuthServiceInstance = new appleAuthService_1.default(models_1.User, logger_1.default);
+                data = yield appleAuthServiceInstance.login(req.query);
+                break;
         }
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.LOGIN_SUCCESS, data);
     }
     catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -55,7 +50,7 @@ const socialResign = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         let data;
         switch (social) {
             case "kakao":
-                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, logger);
+                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, logger_1.default);
                 data = yield kakaoAuthServiceInstance
                     .resign((_a = req.user) === null || _a === void 0 ? void 0 : _a.id, req.query);
                 break;
@@ -64,10 +59,6 @@ const socialResign = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_USER, data);
     }
     catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
@@ -84,17 +75,13 @@ const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.LOGOUT_SUCCESS, userId);
     }
     catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }
 });
 const reissueToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const reissueTokenServiceInstance = new reissueTokenService_1.default(models_1.User, logger);
+        const reissueTokenServiceInstance = new reissueTokenService_1.default(models_1.User, logger_1.default);
         const data = yield reissueTokenServiceInstance.reissueToken(req.headers);
         if (data === 17 /* TOKEN_EXPIRES */) {
             return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.UNAUTHORIZED, resultMessage_1.default.PLEASE_LOGIN_AGAIN);
@@ -102,10 +89,6 @@ const reissueToken = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.REISSUE_TOKEN, data);
     }
     catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         return next(error);
     }

@@ -10,7 +10,7 @@
     "serve": "nodemon",
     "test": "mocha tests/**/*.ts -r ts-node/register",
     "swagger-gen": "node custom/swagger/swagger.js",
-    "start": "node custom/swagger/swagger.js && nodemon",
+    "start": "nodemon",
     "test-start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/app.js"
   },
   "repository": {
@@ -41,6 +41,7 @@
     "node-schedule": "^2.1.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
+    "pm2": "^5.2.0",
     "qs": "^6.10.3",
     "redis": "^4.0.6",
     "reflect-metadata": "^0.1.13",

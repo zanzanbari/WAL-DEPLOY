@@ -1,6 +1,6 @@
-const { createLogger, format, transports } = require('winston');
-const path = require('path');
-const mt = require('moment-timezone');
+import { createLogger, format, transports } from 'winston';
+import path from 'path';
+import mt from 'moment-timezone';
 const date = mt().tz('Asia/Seoul');
 const koreaTime = format((info) => {
   info.timestamp = date.format();

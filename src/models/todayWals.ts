@@ -64,4 +64,8 @@ export default class TodayWal extends Model {
     @BelongsTo(() => Reservation)
     reservation!: Reservation;
 
+    static async setTodayWal(data) {
+        await this.create({ ...data });
+    }
+
 }

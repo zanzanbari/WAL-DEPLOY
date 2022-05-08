@@ -1,9 +1,12 @@
+import timeHandler from "../../modules/timeHandler";
 import { Service } from "typedi";
 import { 
     ResetCategoryDto,
     ISetUserCategory, 
     UserSettingDto, 
-    ISetCategory} from "../../interface/dto/request/userRequest";
+    ISetCategory,
+    ISetTime,
+    ResetTimeDto} from "../../interface/dto/request/userRequest";
 import { UserSettingResponse } from "../../interface/dto/response/userResponse";
 
 
@@ -23,6 +26,7 @@ class UserService {
         private readonly timeRepository: any,
         private readonly itemRepository: any,
         private readonly userCategoryRepository: any,
+        private readonly todayWalRepository: any,
         private readonly logger: any
     ) {
     }
@@ -33,22 +37,24 @@ class UserService {
         request: UserSettingDto
     ): Promise<UserSettingResponse> {
 
-        try {            
+        try {
             // 유형 선택
             // 각각 T/F 뽑아서 => T면 새로운 배열에 그 인덱스 번호 넣어, F면 넣지마
             const dtypeBoolInfo = this.extractBooleanInfo(request.dtype as ISetCategory);
 
             const dtypeIdx: number[] = [];
 
-            dtypeBoolInfo.forEach(it => {
-                if (it === true) {
-                    dtypeIdx.push(dtypeBoolInfo.indexOf(it))
+            for (let i = 0; i < dtypeBoolInfo.length; i++) {
+                if (dtypeBoolInfo[i] === true) {
+                    dtypeIdx.push(i);
                 }
-            });
+            }
+
 
             dtypeIdx.forEach(async categoryId => {
 
                 const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(categoryId) as number;
+
                 this.infoToUserCategoryDB = {
                     user_id: userId,
                     category_id: categoryId,
@@ -57,6 +63,47 @@ class UserService {
                 await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB); 
                 
             });
+
+            // todayWals에 들어갈 놈   
+            // FIXME randomIdx 뽑는거 다시 생각 ㄲ
+            if (request.time?.morning === true) {
+                // 카테고리 아이디를 랜덤으로 뽑자 
+                const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                const randCategoryId = dtypeIdx[randIdx];
+                const data = {
+                    user_id: userId,
+                    category_id: randCategoryId, // 이새끼..는 선택한 애중에 랜뽑
+                    item_id: await this.itemRepository.getFirstIdEachOfCategory(randCategoryId) as number, // db에서 가져와야 함 => 이새끼가 문젠데... 랜뽑한 카테고리 아이디로 가져오면 겹칠텐데 ㅅㅂㅅㅂㅅㅂ
+                    time: timeHandler.getMorning() // morning이면 8시, afternoon이면 12시, night면 20시.......
+                };
+                await this.todayWalRepository.setTodayWal(data);
+
+            } 
+            if (request.time?.afternoon === true) {
+
+                const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                const randCategoryId = dtypeIdx[randIdx];
+                const data = {
+                    user_id: userId,
+                    category_id: randCategoryId, 
+                    item_id: await this.itemRepository.getFirstIdEachOfCategory(randCategoryId) as number, 
+                    time: timeHandler.getAfternoon()
+                };
+                await this.todayWalRepository.setTodayWal(data);
+            }
+            if (request.time?.night === true) {
+
+                const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                const randCategoryId = dtypeIdx[randIdx];
+                const data = {
+                    user_id: userId,
+                    category_id: randCategoryId, 
+                    item_id: await this.itemRepository.getFirstIdEachOfCategory(randCategoryId) as number, 
+                    time: timeHandler.getNight()
+                };
+                await this.todayWalRepository.setTodayWal(data);
+            }
+
 
             await this.timeRepository.setTime(userId, request.time);
             await this.userRepository.setNickname(userId, request.nickname);
@@ -84,6 +131,44 @@ class UserService {
 
             return this.categorySelection;
 
+        } catch (error) {
+            this.logger.appLogger.log({
+                level: "error",
+                message: error.message
+            });
+            throw new Error(error);
+        }
+    }
+
+
+
+    public async resetTimeInfo(
+        userId: number,
+        request: ResetTimeDto
+    ) {
+        
+        try {
+
+            const beforeTimeInfo = request[0]; // 이전 설정값
+            const afterTimeInfo = request[1]; // 새로운 설정값
+
+            const before = this.extractBooleanInfo(beforeTimeInfo);
+            const after = this.extractBooleanInfo(afterTimeInfo);
+
+            for (let i = 0; i < 3; i++) {
+                if (before[i] == true && after[i] === false) { // todayWals에서 삭제하고 queue에서 빼야함
+
+                    
+
+                } else if (before[i] === false && after[i] === true) { // todayWals에 추가하고 queue에 추가
+
+
+
+                }
+            }
+
+            return await this.timeRepository.findById(userId);
+            
         } catch (error) {
             this.logger.appLogger.log({
                 level: "error",
@@ -144,7 +229,7 @@ class UserService {
     }
 
 
-    private extractBooleanInfo(property: ISetCategory): boolean[] {
+    private extractBooleanInfo(property: ISetCategory | ISetTime): boolean[] {
         const extractedInfo: boolean[] = [];
         for (const key in property) { // 객체 탐색 for...in
             extractedInfo.push(property[key]);

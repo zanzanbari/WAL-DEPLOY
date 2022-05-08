@@ -3,7 +3,11 @@ import { Token, UserInfo } from "../interface/dto/response/authResponse";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
+import dotenv from "dotenv";
+dotenv.config();
+
 const jwtSecret = process.env.JWT_SECRET as string;
+
 
 export const issueAccessToken = async (user?: UserInfo): Promise<Token> => {
     const payload = {

@@ -1,15 +1,15 @@
 import 'reflect-metadata';
 import express from 'express';
-const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
-const cors = require('cors');
+import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
+import cors from 'cors';
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
-const { updateToday } = require("./services/pushAlarm");
+import { updateToday } from './services/pushAlarm';
+import logger from './api/middlewares/logger';
 
-function startServer() {
+function startServer(): void {
     const app = express();
-    const logger = require('./api/middlewares/logger');
     const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
 
     // db 연결

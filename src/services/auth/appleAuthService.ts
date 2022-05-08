@@ -20,7 +20,7 @@ class AppleAuthService implements IAuthService {
         const userData = { email: payload.sub, nickname: null };
       
         const refreshtoken = await issueRefreshToken();
-        const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
+        const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("apple", userData, request, refreshtoken);
         const accesstoken = await issueAccessToken(socialUser);
 
         const user: AuthResponse = {

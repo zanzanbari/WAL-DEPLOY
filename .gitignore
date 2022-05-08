@@ -5,4 +5,5 @@ log/*
 *.d.ts
 .DS_Store
 firebase-admin.json
+*.pem
 

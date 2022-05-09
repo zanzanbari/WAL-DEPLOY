@@ -17,6 +17,7 @@ const models_1 = require("../../models");
 const _1 = require("./");
 const dayjs_1 = __importDefault(require("dayjs"));
 const messageConsumer_1 = require("./messageConsumer");
+const logger_1 = __importDefault(require("../../api/middlewares/logger"));
 function getTokenMessage(time, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -48,7 +49,7 @@ function getTokenMessage(time, userId) {
             return data;
         }
         catch (err) {
-            console.log({ level: "error", message: err.message });
+            logger_1.default.appLogger.log({ level: "error", message: err.message });
         }
     });
 }
@@ -65,7 +66,7 @@ const morningFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
         done();
     }
     catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger_1.default.appLogger.log({ level: "error", message: err.message });
     }
 });
 exports.morningFunc = morningFunc;
@@ -81,7 +82,7 @@ const afterFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () 
         done();
     }
     catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger_1.default.appLogger.log({ level: "error", message: err.message });
     }
 });
 exports.afterFunc = afterFunc;
@@ -97,7 +98,7 @@ const nightFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () 
         done();
     }
     catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger_1.default.appLogger.log({ level: "error", message: err.message });
     }
 });
 exports.nightFunc = nightFunc;

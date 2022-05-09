@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -27,11 +31,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = exports.issueRefreshToken = exports.issueAccessToken = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const logger_1 = __importDefault(require("../api/middlewares/logger"));
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
+dotenv_1.default.config();
 const jwtSecret = process.env.JWT_SECRET;
 const issueAccessToken = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const payload = {
@@ -62,15 +72,15 @@ const verifyToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) {
         if (error.message === "jwt expired") {
-            console.log("토큰이 만료되었습니다");
+            logger_1.default.appLogger.log({ level: "error", message: "토큰이 만료되었습니다" });
             return TOKEN_EXPIRED;
         }
         else if (error.message === "jwt invalid") {
-            console.log("토큰이 유효하지 않습니다");
+            logger_1.default.appLogger.log({ level: "error", message: "토큰이 유효하지 않습니다" });
             return TOKEN_INVALID;
         }
         else {
-            console.log("토큰 검증 오류");
+            logger_1.default.appLogger.log({ level: "error", message: "토큰 검증 오류" });
             return TOKEN_INVALID;
         }
     }

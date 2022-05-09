@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KakaoUnlinkApi = exports.KakaoAuthApi = void 0;
 const axios_1 = __importDefault(require("axios"));
 const logger_1 = __importDefault(require("../../../api/middlewares/logger"));
-function KakaoAuthApi(kakaoAccessToken) {
+const validator_1 = require("../../../modules/validator");
+function auth(kakaoAccessToken) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const apiUrl = "https://kapi.kakao.com/v2/user/me";
@@ -31,20 +31,19 @@ function KakaoAuthApi(kakaoAccessToken) {
                 const email = resolve.data.kakao_account["email"];
                 return { nickname, email };
             });
+            if (!(0, validator_1.isEmail)(userData.email)) {
+                throw new Error("Validation isEmail on email failed");
+            }
             return userData;
         }
         catch (error) {
-            logger_1.default.appLogger.log({
-                level: 'error',
-                message: error.message
-            }); // FIXME 이놈은 서버에러인가?? 클라가 잘못된 토큰 보내준거 아닌가 ㅇㅅㅇ
-            throw new Error(`❌ AXIOS_ERROR : ${error.message} ❌`);
+            logger_1.default.appLogger.log({ level: 'error', message: error.message }); // FIXME 이놈은 서버에러인가?? 클라가 잘못된 토큰 보내준거 아닌가 ㅇㅅㅇ
+            throw new Error("AXIOS_ERROR");
         }
     });
 }
-exports.KakaoAuthApi = KakaoAuthApi;
 ;
-function KakaoUnlinkApi(kakaoAccessToken) {
+function unlink(kakaoAccessToken) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const apiUrl = "https://kapi.kakao.com/v1/user/unlink";
@@ -55,25 +54,18 @@ function KakaoUnlinkApi(kakaoAccessToken) {
                 }
             };
             const userData = yield axios_1.default.post(apiUrl, {}, reqConfig);
-            logger_1.default.httpLogStream.write({
-                level: "info",
-                message: userData
-            });
+            logger_1.default.httpLogStream.write({ level: "info", message: userData });
         }
         catch (error) {
-            logger_1.default.appLogger.log({
-                level: 'error',
-                message: error.message
-            });
-            throw new Error("❌ AXIOS_ERROR ❌");
+            logger_1.default.appLogger.log({ level: 'error', message: error.message });
+            throw new Error("AXIOS_ERROR");
         }
     });
 }
-exports.KakaoUnlinkApi = KakaoUnlinkApi;
 ;
 const kakaoApiUtil = {
-    KakaoAuthApi,
-    KakaoUnlinkApi,
+    auth,
+    unlink,
 };
 exports.default = kakaoApiUtil;
 //# sourceMappingURL=kakaoApi.js.map

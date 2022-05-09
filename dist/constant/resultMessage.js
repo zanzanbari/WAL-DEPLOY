@@ -4,7 +4,7 @@ const ResultMessage = {
     NULL_VALUE: "필요한 값이 없습니다",
     WRONG_PARAMS: "파라미터 값이 잘못되었습니다",
     WRONG_PARAMS_OR_NULL: "파라미터 값이 없거나 잘못되었습니다",
-    WRONG_BODY_OR_NULL: "파라미터 값이 없거나 잘못되었습니다",
+    WRONG_BODY_OR_NULL: "바디 값이 없거나 잘못되었습니다",
     DB_ERROR: "디비 에러",
     // 회원가입
     CREATED_USER: "회원 가입 성공",
@@ -19,6 +19,7 @@ const ResultMessage = {
     MISS_MATCH_PW: "비밀번호가 맞지 않습니다.",
     WRONG_EMAIL_CONVENTION: "이메일 형식이 잘못되었습니다.",
     PLEASE_LOGIN_AGAIN: "다시 로그인 하십시오.",
+    AXIOS_VALIDATE_ERROR: "카카오 토큰이 만료되었습니다.",
     // 로그아웃
     LOGOUT_SUCCESS: "로그아웃 성공",
     // 프로필 조회

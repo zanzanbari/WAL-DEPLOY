@@ -101,11 +101,8 @@ let UserService = class UserService {
                 return { nickname: request.nickname };
             }
             catch (error) {
-                this.logger.appLogger.log({
-                    level: "error",
-                    message: error.message
-                });
-                throw new Error(error);
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
             }
         });
     }
@@ -117,11 +114,8 @@ let UserService = class UserService {
                 return this.categorySelection;
             }
             catch (error) {
-                this.logger.appLogger.log({
-                    level: "error",
-                    message: error.message
-                });
-                throw new Error(error);
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
             }
         });
     }
@@ -141,11 +135,8 @@ let UserService = class UserService {
                 return yield this.timeRepository.findById(userId);
             }
             catch (error) {
-                this.logger.appLogger.log({
-                    level: "error",
-                    message: error.message
-                });
-                throw new Error(error);
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
             }
         });
     }
@@ -175,11 +166,8 @@ let UserService = class UserService {
                 return this.categorySelection;
             }
             catch (error) {
-                this.logger.appLogger.log({
-                    level: "error",
-                    message: error.message
-                });
-                throw new Error(error);
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
             }
         });
     }

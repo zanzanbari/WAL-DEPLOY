@@ -8,12 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addUserTime = void 0;
-const models_1 = require("../../models");
 const _1 = require("./");
-const logger = require("../../api/middlewares/logger");
 const consumer_1 = require("./consumer");
+const models_1 = require("../../models");
+const logger_1 = __importDefault(require("../../api/middlewares/logger"));
 function addUserTime(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -42,7 +45,7 @@ function addUserTime(userId) {
             yield _1.nightQueue.process(consumer_1.nightFunc);
         }
         catch (err) {
-            console.log({ level: "error", message: err.message });
+            logger_1.default.appLogger.log({ level: "error", message: err.message });
         }
     });
 }

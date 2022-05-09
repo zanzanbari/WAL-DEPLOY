@@ -39,7 +39,12 @@ const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.LOGIN_SUCCESS, data);
     }
     catch (error) {
-        (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
+        switch (error.message) {
+            case ("AXIOS_ERROR"):
+                return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.AXIOS_VALIDATE_ERROR);
+            default:
+                (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
+        }
         return next(error);
     }
 });

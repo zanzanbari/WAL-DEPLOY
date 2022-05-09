@@ -24,7 +24,7 @@ const connectDB = () => {
         console.log("TT : ", err);
     });
     // 시퀄라이즈 모델 DB에 싱크
-    models_1.default.sync({ alter: true })
+    models_1.default.sync({ alter: false })
         .then(() => {
         console.log('✅ Sync Models to DB');
     })

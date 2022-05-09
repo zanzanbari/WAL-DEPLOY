@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.messageFunc = void 0;
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
+const logger_1 = __importDefault(require("../../api/middlewares/logger"));
 const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { fcmtoken, content } = job.data;
@@ -36,7 +37,7 @@ const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
         done();
     }
     catch (err) {
-        console.log({ level: "error", message: err.message });
+        logger_1.default.appLogger.log({ level: "error", message: err.message });
     }
 });
 exports.messageFunc = messageFunc;

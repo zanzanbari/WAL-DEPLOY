@@ -32,10 +32,7 @@ class AppleAuthService implements IAuthService {
         
       } catch (error) {
         console.error(error);
-        this.logger.appLogger.log({
-          level: "error",
-          message: error.message
-        });
+        this.logger.appLogger.log({ level: "error", message: error.message });
         throw new Error(error);
       }
       

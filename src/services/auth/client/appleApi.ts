@@ -1,6 +1,4 @@
-import jwt from "jsonwebtoken";
-import qs from "qs";
-import { IApplePublicKeys, IAppleUserInfo, Token } from "../../../interface/dto/response/authResponse";
+import { IApplePublicKeys } from "../../../interface/dto/response/authResponse";
 import axios from "axios";
 import logger from "../../../api/middlewares/logger";
 
@@ -16,10 +14,7 @@ export async function getPublicKey(): Promise<IApplePublicKeys> {
         return keys;
         
     } catch (error) {
-        logger.appLogger.log({
-            level: "error",
-            message: error.message
-        });
+        logger.appLogger.log({ level: "error", message: error.message });
         throw new Error(error.message);
     }
 

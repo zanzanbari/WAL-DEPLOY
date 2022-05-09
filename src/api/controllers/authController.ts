@@ -36,7 +36,12 @@ const socialLogin = async (
         return SuccessResponse(res, sc.OK, rm.LOGIN_SUCCESS, data);
 
     } catch (error) {
-        ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+        switch(error.message) {
+            case("AXIOS_ERROR"): 
+                return ErrorResponse(res, sc.BAD_REQUEST, rm.AXIOS_VALIDATE_ERROR);
+            default:
+                ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+        }
         return next(error);
     }
 };

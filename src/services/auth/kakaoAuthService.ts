@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import IAuthService from "./authService";
-import { KakaoAuthApi, KakaoUnlinkApi } from "./client/kakaoApi";
+import kakaoApiUtil from "./client/kakaoApi";
 import { TokenDto } from "../../interface/dto/request/authRequest";
 import { AuthResponse } from "../../interface/dto/response/authResponse";
 import { issueAccessToken, issueRefreshToken } from "../../modules/tokenHandller";
@@ -18,7 +18,7 @@ class KakaoAuthService implements IAuthService {
 
         try {
             
-            const userData = await KakaoAuthApi(request.socialtoken as string);
+            const userData = await kakaoApiUtil.auth(request.socialtoken as string);
             const refreshtoken = await issueRefreshToken();
             const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
             const accesstoken = await issueAccessToken(socialUser);
@@ -31,11 +31,8 @@ class KakaoAuthService implements IAuthService {
             return user;
         
         } catch (error) {
-            this.logger.appLogger.log({
-                level: "error",
-                message: error.message
-            });
-            throw new Error(error);
+            this.logger.appLogger.log({ level: "error", message: error.message });
+            throw error;
         }
     }
 
@@ -43,18 +40,15 @@ class KakaoAuthService implements IAuthService {
         
         try {
 
-            const unlinkedUser = KakaoUnlinkApi(request.socialtoken);
+            const unlinkedUser = kakaoApiUtil.unlink(request.socialtoken);
             const resignedUser = this.userRepository.findAndDelete(userId);
 
             await unlinkedUser;
             return await resignedUser;
 
         } catch (error) {
-            this.logger.appLogger.log({
-                level: "error",
-                message: error.message
-            });
-            throw new Error(error);
+            this.logger.appLogger.log({ level: "error", message: error.message });
+            throw error;
         }
     }
 }

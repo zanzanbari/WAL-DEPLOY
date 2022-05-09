@@ -4,7 +4,7 @@ import logger from "../../../api/middlewares/logger";
 import { isEmail } from "../../../modules/validator";
 
 
-export async function KakaoAuthApi(
+async function auth(
     kakaoAccessToken: Token
 ): Promise<UserInfo | undefined> { // 제발 오류처리 어케 할거야
     try {
@@ -31,17 +31,14 @@ export async function KakaoAuthApi(
         return userData;
 
     } catch (error) {
-        logger.appLogger.log({
-            level: 'error',
-            message: error.message
-        }); // FIXME 이놈은 서버에러인가?? 클라가 잘못된 토큰 보내준거 아닌가 ㅇㅅㅇ
-        throw new Error(`❌ AXIOS_ERROR : ${error.message} ❌`);
+        logger.appLogger.log({ level: 'error', message: error.message }); // FIXME 이놈은 서버에러인가?? 클라가 잘못된 토큰 보내준거 아닌가 ㅇㅅㅇ
+        throw new Error("AXIOS_ERROR");
     }
 };
 
 
 
-export async function KakaoUnlinkApi(
+async function unlink(
     kakaoAccessToken?: Token
 ): Promise<void> {
     try {
@@ -55,23 +52,17 @@ export async function KakaoUnlinkApi(
         };
 
         const userData = await axios.post(apiUrl, {}, reqConfig);
-        logger.httpLogStream.write({
-            level: "info",
-            message: userData
-        });
+        logger.httpLogStream.write({ level: "info", message: userData });
 
     } catch (error) {
-        logger.appLogger.log({
-            level: 'error',
-            message: error.message
-        })
-        throw new Error("❌ AXIOS_ERROR ❌");
+        logger.appLogger.log({ level: 'error', message: error.message });
+        throw new Error("AXIOS_ERROR");
     }
 };
 
 const kakaoApiUtil = {
-    KakaoAuthApi,
-    KakaoUnlinkApi,
+    auth,
+    unlink,
 };
 
 export default kakaoApiUtil;

@@ -1,13 +1,13 @@
 import * as jwt from "jsonwebtoken";
-import { Token, UserInfo } from "../interface/dto/response/authResponse";
 import dotenv from "dotenv";
+import logger from "../api/middlewares/logger";
+import { Token, UserInfo } from "../interface/dto/response/authResponse";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET as string;
-
 
 export const issueAccessToken = async (user?: UserInfo): Promise<Token> => {
     const payload = {
@@ -45,13 +45,13 @@ export const verifyToken = async (token?: string) => {
         decoded = jwt.verify(token as string, jwtSecret);
     } catch (error) {
         if (error.message === "jwt expired") {
-            console.log("토큰이 만료되었습니다");
+            logger.appLogger.log({ level: "error", message: "토큰이 만료되었습니다"});
             return TOKEN_EXPIRED;
         } else if (error.message === "jwt invalid") {
-            console.log("토큰이 유효하지 않습니다");
+            logger.appLogger.log({ level: "error", message: "토큰이 유효하지 않습니다"});
             return TOKEN_INVALID;
         } else {
-            console.log("토큰 검증 오류")
+            logger.appLogger.log({ level: "error", message: "토큰 검증 오류"});
             return TOKEN_INVALID;
         }
     }

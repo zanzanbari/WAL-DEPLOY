@@ -86,13 +86,13 @@ const logout = async (
     next: NextFunction
 ) => {
     const userId = req.user?.id;
-
+    console.log("userId : ", userId);
     try {
 
         await User.update({
             refreshtoken: null,
         }, {
-            where: { userId }
+            where: { id: userId }
         });
         
         return SuccessResponse(res, sc.OK, rm.LOGOUT_SUCCESS, userId);

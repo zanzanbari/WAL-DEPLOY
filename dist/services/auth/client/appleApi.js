@@ -25,10 +25,7 @@ function getPublicKey() {
             return keys;
         }
         catch (error) {
-            logger_1.default.appLogger.log({
-                level: "error",
-                message: error.message
-            });
+            logger_1.default.appLogger.log({ level: "error", message: error.message });
             throw new Error(error.message);
         }
     });

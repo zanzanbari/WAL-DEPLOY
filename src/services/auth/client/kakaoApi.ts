@@ -6,7 +6,7 @@ import { isEmail } from "../../../modules/validator";
 
 async function auth(
     kakaoAccessToken: Token
-): Promise<UserInfo | undefined> { // 제발 오류처리 어케 할거야
+): Promise<UserInfo | undefined> { 
     try {
 
         const apiUrl = "https://kapi.kakao.com/v2/user/me";
@@ -31,7 +31,7 @@ async function auth(
         return userData;
 
     } catch (error) {
-        logger.appLogger.log({ level: 'error', message: error.message }); // FIXME 이놈은 서버에러인가?? 클라가 잘못된 토큰 보내준거 아닌가 ㅇㅅㅇ
+        logger.appLogger.log({ level: 'error', message: error.message }); 
         throw new Error("AXIOS_ERROR");
     }
 };

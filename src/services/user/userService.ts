@@ -142,28 +142,23 @@ class UserService {
     public async resetTimeInfo(
         userId: number,
         request: ResetTimeDto
-    ) {
+    ): Promise<ISetTime> {
         
         try {
 
-            const beforeSetTime = request[0];
-            const afterSetTime = request[1];
+            const beforeSetTime = request[0]; // 이전 설정값
+            const afterSetTime = request[1]; // 새로운 설정값
 
-            if (beforeSetTime.morning === true && afterSetTime.morning === false) updateUserTime(userId, "morning", "remove");
-            else if (beforeSetTime.morning === false && afterSetTime.morning === true) updateUserTime(userId, "morning", "add");
-
-            if (beforeSetTime.afternoon === true && afterSetTime.afternoon === false) updateUserTime(userId, "afternoon", "remove");
-            else if (beforeSetTime.afternoon === false && afterSetTime.afternoon === true) updateUserTime(userId, "afternoon", "add");
-
-            if (beforeSetTime.night === true && afterSetTime.night === false) updateUserTime(userId, "night", "remove");
-            else if (beforeSetTime.night === false && afterSetTime.night === true) updateUserTime(userId, "night", "add");
+            this.compareMorningSetAndControlQueueByUserId(beforeSetTime.morning, afterSetTime.morning, userId);
+            this.compareAfternoonSetAndControlQueueByUserId(beforeSetTime.afternoon, afterSetTime.afternoon, userId);
+            this.compareNightSetAndControlQueueByUserId(beforeSetTime.night, afterSetTime.night, userId);
 
 
             await this.timeRepository.updateTime(userId, afterSetTime);
             await this.todayWalRepository.deleteTodayWal(userId);
-            await updateTodayWal();
+            await updateTodayWal(); // 오버 스펙인거 같은데 어케 생각하는지
 
-            return await this.timeRepository.findById(userId);
+            return await this.timeRepository.findById(userId) as ISetTime;
             
         } catch (error) {
             this.logger.appLogger.log({ level: "error", message: error.message });
@@ -219,7 +214,7 @@ class UserService {
     }
 
 
-    private extractBooleanInfo(property: ISetCategory | ISetTime): boolean[] {
+    private extractBooleanInfo(property: ISetCategory): boolean[] {
         const extractedInfo: boolean[] = [];
         for (const key in property) { // 객체 탐색 for...in
             extractedInfo.push(property[key]);
@@ -235,6 +230,32 @@ class UserService {
             if (it === "scolding") this.categorySelection.scolding = true;
         });
     }
+    
+    // TODO: 비동기 처리 
+    // FIXME: 함수 일 줄이기 (단일책임), true 설정 시간대가 현재 시간 기준 이전인지 이후인지 
+    // 이전 => queue에 추가할 필요 없음
+    // 이후 => queue에 추가 필수
+    private compareNightSetAndControlQueueByUserId(beforeNight: boolean, afterNight: boolean, _userId: number) {
+        if (beforeNight === true && afterNight === false)
+            updateUserTime(_userId, "night", "remove");
+        else if (beforeNight === false && afterNight === true)
+            updateUserTime(_userId, "night", "add");
+    }
+
+    private compareAfternoonSetAndControlQueueByUserId(beforeAfternoon: boolean, afterAfternoon: boolean, _userId: number) {
+        if (beforeAfternoon === true && afterAfternoon === false)
+            updateUserTime(_userId, "afternoon", "remove");
+        else if (beforeAfternoon === false && afterAfternoon === true)
+            updateUserTime(_userId, "afternoon", "add");
+    }
+
+    private compareMorningSetAndControlQueueByUserId(beforeMorning: boolean, afterMorning: boolean, _userId: number) {
+        if (beforeMorning === true && afterMorning === false)
+            updateUserTime(_userId, "morning", "remove");
+        else if (beforeMorning === false && afterMorning === true)
+            updateUserTime(_userId, "morning", "add");
+    }
+
 
 }
 

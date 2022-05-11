@@ -127,12 +127,12 @@ const resetTimeInfo = async (
     next: NextFunction
 ) => {
 
-    const userId = req.user?.id as number;
 
     try {
 
-        await Time.updateTime(userId, req.body as ISetTime);
-        const data = Time.findById(userId);
+        const userServiceInstance = new UserService(User, Time, Item, UserCategory, TodayWal, logger);
+        const data = await userServiceInstance.resetTimeInfo(req.user?.id as number, req.body as ISetTime);
+        
         SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, await data);
 
     } catch (error) {

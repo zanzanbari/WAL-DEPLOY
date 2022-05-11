@@ -125,23 +125,14 @@ let UserService = class UserService {
     resetTimeInfo(userId, request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const beforeSetTime = request[0];
-                const afterSetTime = request[1];
-                if (beforeSetTime.morning === true && afterSetTime.morning === false)
-                    (0, producer_1.updateUserTime)(userId, "morning", "remove");
-                else if (beforeSetTime.morning === false && afterSetTime.morning === true)
-                    (0, producer_1.updateUserTime)(userId, "morning", "add");
-                if (beforeSetTime.afternoon === true && afterSetTime.afternoon === false)
-                    (0, producer_1.updateUserTime)(userId, "afternoon", "remove");
-                else if (beforeSetTime.afternoon === false && afterSetTime.afternoon === true)
-                    (0, producer_1.updateUserTime)(userId, "afternoon", "add");
-                if (beforeSetTime.night === true && afterSetTime.night === false)
-                    (0, producer_1.updateUserTime)(userId, "night", "remove");
-                else if (beforeSetTime.night === false && afterSetTime.night === true)
-                    (0, producer_1.updateUserTime)(userId, "night", "add");
+                const beforeSetTime = request[0]; // 이전 설정값
+                const afterSetTime = request[1]; // 새로운 설정값
+                this.compareMorningSetAndControlQueueByUserId(beforeSetTime.morning, afterSetTime.morning, userId);
+                this.compareAfternoonSetAndControlQueueByUserId(beforeSetTime.afternoon, afterSetTime.afternoon, userId);
+                this.compareNightSetAndControlQueueByUserId(beforeSetTime.night, afterSetTime.night, userId);
                 yield this.timeRepository.updateTime(userId, afterSetTime);
                 yield this.todayWalRepository.deleteTodayWal(userId);
-                yield (0, pushAlarm_1.updateTodayWal)();
+                yield (0, pushAlarm_1.updateTodayWal)(); // 오버 스펙인거 같은데 어케 생각하는지
                 return yield this.timeRepository.findById(userId);
             }
             catch (error) {
@@ -199,6 +190,28 @@ let UserService = class UserService {
             if (it === "scolding")
                 this.categorySelection.scolding = true;
         });
+    }
+    // TODO: 비동기 처리 
+    // FIXME: 함수 일 줄이기 (단일책임), true 설정 시간대가 현재 시간 기준 이전인지 이후인지 
+    // 이전 => queue에 추가할 필요 없음
+    // 이후 => queue에 추가 필수
+    compareNightSetAndControlQueueByUserId(beforeNight, afterNight, _userId) {
+        if (beforeNight === true && afterNight === false)
+            (0, producer_1.updateUserTime)(_userId, "night", "remove");
+        else if (beforeNight === false && afterNight === true)
+            (0, producer_1.updateUserTime)(_userId, "night", "add");
+    }
+    compareAfternoonSetAndControlQueueByUserId(beforeAfternoon, afterAfternoon, _userId) {
+        if (beforeAfternoon === true && afterAfternoon === false)
+            (0, producer_1.updateUserTime)(_userId, "afternoon", "remove");
+        else if (beforeAfternoon === false && afterAfternoon === true)
+            (0, producer_1.updateUserTime)(_userId, "afternoon", "add");
+    }
+    compareMorningSetAndControlQueueByUserId(beforeMorning, afterMorning, _userId) {
+        if (beforeMorning === true && afterMorning === false)
+            (0, producer_1.updateUserTime)(_userId, "morning", "remove");
+        else if (beforeMorning === false && afterMorning === true)
+            (0, producer_1.updateUserTime)(_userId, "morning", "add");
     }
 };
 UserService = __decorate([

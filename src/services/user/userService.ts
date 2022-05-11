@@ -8,7 +8,8 @@ import {
     ISetTime,
     ResetTimeDto} from "../../interface/dto/request/userRequest";
 import { UserSettingResponse } from "../../interface/dto/response/userResponse";
-import { addUserTime } from "../pushAlarm/producer";
+import { addUserTime, updateUserTime } from "../pushAlarm/producer";
+import { updateTodayWal } from "../pushAlarm";
 
 
 @Service()
@@ -140,28 +141,14 @@ class UserService {
 
     public async resetTimeInfo(
         userId: number,
-        request: ResetTimeDto
+        request: ISetTime
     ) {
         
         try {
 
-            const beforeTimeInfo = request[0]; // 이전 설정값
-            const afterTimeInfo = request[1]; // 새로운 설정값
-
-            const before = this.extractBooleanInfo(beforeTimeInfo);
-            const after = this.extractBooleanInfo(afterTimeInfo);
-
-            for (let i = 0; i < 3; i++) {
-                if (before[i] == true && after[i] === false) { // todayWals에서 삭제하고 queue에서 빼야함
-
-                    
-
-                } else if (before[i] === false && after[i] === true) { // todayWals에 추가하고 queue에 추가
-
-
-
-                }
-            }
+            await this.timeRepository.updateTime(userId, request);
+            await this.todayWalRepository.deleteTodayWal(userId);
+            await updateTodayWal();
 
             return await this.timeRepository.findById(userId);
             

@@ -23,6 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const timeHandler_1 = __importDefault(require("../../modules/timeHandler"));
 const typedi_1 = require("typedi");
+const producer_1 = require("../pushAlarm/producer");
 let UserService = class UserService {
     constructor(userRepository, timeRepository, itemRepository, userCategoryRepository, todayWalRepository, logger) {
         this.userRepository = userRepository;
@@ -42,6 +43,8 @@ let UserService = class UserService {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                yield this.timeRepository.setTime(userId, request.time);
+                yield this.userRepository.setNickname(userId, request.nickname);
                 // 유형 선택
                 // 각각 T/F 뽑아서 => T면 새로운 배열에 그 인덱스 번호 넣어, F면 넣지마
                 const dtypeBoolInfo = this.extractBooleanInfo(request.dtype);
@@ -96,8 +99,7 @@ let UserService = class UserService {
                     };
                     yield this.todayWalRepository.setTodayWal(data);
                 }
-                yield this.timeRepository.setTime(userId, request.time);
-                yield this.userRepository.setNickname(userId, request.nickname);
+                (0, producer_1.addUserTime)(userId);
                 return { nickname: request.nickname };
             }
             catch (error) {

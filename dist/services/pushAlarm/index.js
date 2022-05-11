@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateTodayWal = exports.updateToday = exports.messageQueue = exports.nightQueue = exports.afternoonQueue = exports.morningQueue = void 0;
+exports.updateTodayWal = exports.updateToday = exports.messageQueue = exports.reservationQueue = exports.nightQueue = exports.afternoonQueue = exports.morningQueue = void 0;
 const models_1 = require("../../models");
 const bull_1 = __importDefault(require("bull"));
 const dayjs_1 = __importDefault(require("dayjs"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
+const sequelize_1 = require("sequelize");
 exports.morningQueue = new bull_1.default('morning-queue', {
     redis: {
         host: process.env.REDIS_HOST,
@@ -36,10 +37,18 @@ exports.nightQueue = new bull_1.default('night-queue', {
         port: 6379
     }
 });
+exports.reservationQueue = new bull_1.default('reservation-queue', {
+    redis: {
+        host: "localhost",
+        port: 6379
+    }
+});
 exports.messageQueue = new bull_1.default('message-queue', {
     redis: {
         host: "localhost",
         port: 6379
+    }, defaultJobOptions: {
+        removeOnComplete: true //job 완료 시 삭제
     }
 });
 function updateToday() {
@@ -54,7 +63,14 @@ function updateToday() {
 exports.updateToday = updateToday;
 function updateTodayWal() {
     return __awaiter(this, void 0, void 0, function* () {
+        const settingExists = yield models_1.Time.findAll({
+            attributes: ["user_id"]
+        }); //초기 설정을 한 유저만
+        const existSet = settingExists.map((user) => {
+            return user.user_id;
+        });
         const users = yield models_1.User.findAll({
+            where: { id: { [sequelize_1.Op.in]: existSet } },
             include: [
                 { model: models_1.Time, attributes: ["morning", "afternoon", "night"] },
                 { model: models_1.UserCategory, attributes: ["category_id", "next_item_id"] },

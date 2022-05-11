@@ -71,11 +71,12 @@ const socialResign = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
+    console.log("userId : ", userId);
     try {
         yield models_1.User.update({
             refreshtoken: null,
         }, {
-            where: { userId }
+            where: { id: userId }
         });
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.LOGOUT_SUCCESS, userId);
     }

@@ -173,6 +173,14 @@ export default class User extends Model {
         });
     }
 
+    static async getFCMToken(id: number): Promise<String|undefined> {
+        const user = await this.findOne({
+            where: {id},
+            attributes: ["fcmtoken"]
+        });
+        return user?.fcmtoken;
+    }
+
     // static async getUserInfo(id: number): Promise<User> {
     //     const user = await this.findOne({
     //         where: { id },

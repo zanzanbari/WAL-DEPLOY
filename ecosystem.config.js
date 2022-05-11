@@ -12,13 +12,13 @@ module.exports = {
                 ".env",
                 "package.json"
             ],
-            instance_var: 'INSTANCE_ID',
+            instance_var: 'NODE_APP_INSTANCE',
             instances: -1,
             exec_mode: 'cluster',
             min_uptime: 5000,
             max_restarts: 5,
             args: '',
-            env: { NODE_ENV:'production' }
+            env: { PORT: 8080, NODE_ENV:'production' }
         }
     ]
 };

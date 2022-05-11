@@ -61,7 +61,7 @@ const getTodayWals = async (
         
         const todayWal = await getMainResponse(todayWals);
 
-        SuccessResponse(res, sc.OK, rm.DELETE_COMPLETED_RESERVATION_SUCCESS, {todayWal});
+        SuccessResponse(res, sc.OK, rm.READ_TODAY_WAL_SUCCESS, {todayWal});
 
     } catch (err){
         logger.appLogger.log({ level: "error", message: err.message });

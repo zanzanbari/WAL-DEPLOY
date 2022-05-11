@@ -5,17 +5,44 @@ import morgan from 'morgan';
 import cors from 'cors';
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
-import { updateToday } from './services/pushAlarm';
+import { updateToday,updateTodayWal } from './services/pushAlarm';
 import logger from './api/middlewares/logger';
+import {addUserTime} from "./services/pushAlarm/producer"
+import admin from "firebase-admin";
+import { FirebaseApp } from '@firebase/app'
+
+const serviceAccount = require("../firebase-admin.json");
 
 function startServer(): void {
     const app = express();
     const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
-
+    let message = { 
+        notification: { 
+            title: '왈소리 와써💛', 
+            body: "그만하자",
+        }, 
+        token: "fCRwgfoiSUyhtoZ0PrnJze:APA91bHDjRWuGxInIdyxWCIes75vIZjHKp9K8JuGmYmTPNFHQ9i_b_PGnlhZVhCP1VMb0PtiK9xmjA4GqFp8I3qqBN7zd5F8yxUDQzkFpf-R32kdC4r_jUoSIxoSBR1KsOJ4rrjlTSRa", 
+    }
+   
+    admin
+      .initializeApp({
+        credential: admin.credential?.cert(serviceAccount),
+      });
+    admin
+      .messaging() 
+      .send(message) 
+      .then(function (response) { 
+          console.log('Successfully sent message: : ', response)
+      }) 
+      .catch(function (err) { 
+          console.log('Error Sending message!!! : ', err)
+      });
+    
     // db 연결
     connectDB();
     updateToday(); //자정마다 todayWal 업데이트
-    
+    addUserTime(1)
+ 
     app.use(cors());
     app.use(morgan('HTTP/:http-version :method :url :status', { 
         stream: logger.httpLogStream 

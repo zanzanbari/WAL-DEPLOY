@@ -141,12 +141,25 @@ class UserService {
 
     public async resetTimeInfo(
         userId: number,
-        request: ISetTime
+        request: ResetTimeDto
     ) {
         
         try {
 
-            await this.timeRepository.updateTime(userId, request);
+            const beforeSetTime = request[0];
+            const afterSetTime = request[1];
+
+            if (beforeSetTime.morning === true && afterSetTime.morning === false) updateUserTime(userId, "morning", "remove");
+            else if (beforeSetTime.morning === false && afterSetTime.morning === true) updateUserTime(userId, "morning", "add");
+
+            if (beforeSetTime.afternoon === true && afterSetTime.afternoon === false) updateUserTime(userId, "afternoon", "remove");
+            else if (beforeSetTime.afternoon === false && afterSetTime.afternoon === true) updateUserTime(userId, "afternoon", "add");
+
+            if (beforeSetTime.night === true && afterSetTime.night === false) updateUserTime(userId, "night", "remove");
+            else if (beforeSetTime.night === false && afterSetTime.night === true) updateUserTime(userId, "night", "add");
+
+
+            await this.timeRepository.updateTime(userId, afterSetTime);
             await this.todayWalRepository.deleteTodayWal(userId);
             await updateTodayWal();
 

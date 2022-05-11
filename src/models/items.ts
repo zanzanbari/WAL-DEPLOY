@@ -46,4 +46,9 @@ export default class Item extends Model {
         const item =  await this.findOne({ where: { category_id } });
         return item?.getDataValue("id");
     }
+
+    static async getItemById(id: number): Promise<Item|null> {
+        const item =  await this.findOne({ where: { id } });
+        return item;
+    }
 }

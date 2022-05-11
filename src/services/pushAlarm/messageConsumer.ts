@@ -1,5 +1,6 @@
 import { Job, DoneCallback } from "bull";
 import admin from "firebase-admin";
+const serviceAccount = require("../../../firebase-admin.json");
 
 import logger from "../../api/middlewares/logger";
 
@@ -14,8 +15,12 @@ export const messageFunc = async (job: Job, done: DoneCallback) => {
             }, 
             token: fcmtoken, 
         }
-    
-        admin 
+        let firebase: admin.app.App;
+        if (admin.apps.length === 0) {
+        admin
+          .initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+          })
           .messaging() 
           .send(message) 
           .then(function (response) { 
@@ -24,7 +29,7 @@ export const messageFunc = async (job: Job, done: DoneCallback) => {
           .catch(function (err) { 
               console.log('Error Sending message!!! : ', err)
           });
-
+        }
         done();
 
     } catch (err) {

@@ -2,6 +2,7 @@ import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 import Queue from "bull";
 import dayjs from "dayjs";
 import schedule from 'node-schedule';
+import { Op } from "sequelize";
 
 export const morningQueue = new Queue(
   'morning-queue', {
@@ -51,7 +52,17 @@ export function updateToday() {
 }
 
 export async function updateTodayWal() {
+
+    const settingExists = await Time.findAll({
+      attributes: ["user_id"]
+    }); //초기 설정을 한 유저만
+
+    const existSet = settingExists.map((user)=>{
+      return user.user_id
+    })
+    
     const users = await User.findAll({
+    where: { id: { [Op.in]: existSet } },
     include: [
         { model: Time, attributes: ["morning", "afternoon", "night"] }, 
         { model: UserCategory, attributes: ["category_id", "next_item_id"] },

@@ -4,7 +4,7 @@ import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import { ErrorResponse } from "../../modules/apiResponse";
 import { SocialType, TokenDto } from "../../interface/dto/request/authRequest";
-import { ISetCategory, ISetTime, UserSettingDto } from "../../interface/dto/request/userRequest";
+import { ISetCategory, ISetTime, ResetTimeDto, UserSettingDto } from "../../interface/dto/request/userRequest";
 import logger from "../../api/middlewares/logger";
 
 // fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
@@ -96,16 +96,26 @@ const timeRequestCheck = async (
   next: NextFunction
 ) => {
 
+
   const timeSchema = Joi.object().keys({
-    morning: Joi.boolean().required(),
-    afternoon: Joi.boolean().required(),
-    night: Joi.boolean().required(),
+    data: Joi
+      .array()
+      .length(2)
+      .items({
+        morning: Joi.boolean().required(),
+        afternoon: Joi.boolean().required(),
+        night: Joi.boolean().required(),
+      }, {
+        morning: Joi.boolean().required(),
+        afternoon: Joi.boolean().required(),
+        night: Joi.boolean().required(),
+      })
   });
 
   try {
 
     const bodyError = await timeSchema
-      .validateAsync(req.body as ISetTime)
+      .validateAsync(req.body as ResetTimeDto)
       .catch(err => { return err; });
 
     if (bodyError.details) {

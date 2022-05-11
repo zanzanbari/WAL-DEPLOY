@@ -8,6 +8,7 @@ import {
     ISetTime,
     ResetTimeDto} from "../../interface/dto/request/userRequest";
 import { UserSettingResponse } from "../../interface/dto/response/userResponse";
+import { addUserTime } from "../pushAlarm/producer";
 
 
 @Service()
@@ -38,6 +39,9 @@ class UserService {
     ): Promise<UserSettingResponse> {
 
         try {
+
+            await this.timeRepository.setTime(userId, request.time);
+            await this.userRepository.setNickname(userId, request.nickname);
             // 유형 선택
             // 각각 T/F 뽑아서 => T면 새로운 배열에 그 인덱스 번호 넣어, F면 넣지마
             const dtypeBoolInfo = this.extractBooleanInfo(request.dtype as ISetCategory);
@@ -104,9 +108,7 @@ class UserService {
                 await this.todayWalRepository.setTodayWal(data);
             }
 
-
-            await this.timeRepository.setTime(userId, request.time);
-            await this.userRepository.setNickname(userId, request.nickname);
+            addUserTime(userId);
 
             return { nickname: request.nickname };
 

@@ -8,7 +8,8 @@ import {
     ISetTime,
     ResetTimeDto} from "../../interface/dto/request/userRequest";
 import { UserSettingResponse } from "../../interface/dto/response/userResponse";
-import { addUserTime } from "../pushAlarm/producer";
+import { addUserTime, updateUserTime } from "../pushAlarm/producer";
+import { updateTodayWal } from "../pushAlarm";
 
 
 @Service()
@@ -141,29 +142,23 @@ class UserService {
     public async resetTimeInfo(
         userId: number,
         request: ResetTimeDto
-    ) {
+    ): Promise<ISetTime> {
         
         try {
 
-            const beforeTimeInfo = request[0]; // 이전 설정값
-            const afterTimeInfo = request[1]; // 새로운 설정값
+            const beforeSetTime = request[0]; // 이전 설정값
+            const afterSetTime = request[1]; // 새로운 설정값
 
-            const before = this.extractBooleanInfo(beforeTimeInfo);
-            const after = this.extractBooleanInfo(afterTimeInfo);
-
-            for (let i = 0; i < 3; i++) {
-                if (before[i] == true && after[i] === false) { // todayWals에서 삭제하고 queue에서 빼야함
-
-                    
-
-                } else if (before[i] === false && after[i] === true) { // todayWals에 추가하고 queue에 추가
+            this.compareMorningSetAndControlQueueByUserId(beforeSetTime.morning, afterSetTime.morning, userId);
+            this.compareAfternoonSetAndControlQueueByUserId(beforeSetTime.afternoon, afterSetTime.afternoon, userId);
+            this.compareNightSetAndControlQueueByUserId(beforeSetTime.night, afterSetTime.night, userId);
 
 
+            await this.timeRepository.updateTime(userId, afterSetTime);
+            await this.todayWalRepository.deleteTodayWal(userId);
+            await updateTodayWal(); // 오버 스펙인거 같은데 어케 생각하는지
 
-                }
-            }
-
-            return await this.timeRepository.findById(userId);
+            return await this.timeRepository.findById(userId) as ISetTime;
             
         } catch (error) {
             this.logger.appLogger.log({ level: "error", message: error.message });
@@ -219,7 +214,7 @@ class UserService {
     }
 
 
-    private extractBooleanInfo(property: ISetCategory | ISetTime): boolean[] {
+    private extractBooleanInfo(property: ISetCategory): boolean[] {
         const extractedInfo: boolean[] = [];
         for (const key in property) { // 객체 탐색 for...in
             extractedInfo.push(property[key]);
@@ -235,6 +230,32 @@ class UserService {
             if (it === "scolding") this.categorySelection.scolding = true;
         });
     }
+    
+    // TODO: 비동기 처리 
+    // FIXME: 함수 일 줄이기 (단일책임), true 설정 시간대가 현재 시간 기준 이전인지 이후인지 
+    // 이전 => queue에 추가할 필요 없음
+    // 이후 => queue에 추가 필수
+    private compareNightSetAndControlQueueByUserId(beforeNight: boolean, afterNight: boolean, _userId: number) {
+        if (beforeNight === true && afterNight === false)
+            updateUserTime(_userId, "night", "remove");
+        else if (beforeNight === false && afterNight === true)
+            updateUserTime(_userId, "night", "add");
+    }
+
+    private compareAfternoonSetAndControlQueueByUserId(beforeAfternoon: boolean, afterAfternoon: boolean, _userId: number) {
+        if (beforeAfternoon === true && afterAfternoon === false)
+            updateUserTime(_userId, "afternoon", "remove");
+        else if (beforeAfternoon === false && afterAfternoon === true)
+            updateUserTime(_userId, "afternoon", "add");
+    }
+
+    private compareMorningSetAndControlQueueByUserId(beforeMorning: boolean, afterMorning: boolean, _userId: number) {
+        if (beforeMorning === true && afterMorning === false)
+            updateUserTime(_userId, "morning", "remove");
+        else if (beforeMorning === false && afterMorning === true)
+            updateUserTime(_userId, "morning", "add");
+    }
+
 
 }
 

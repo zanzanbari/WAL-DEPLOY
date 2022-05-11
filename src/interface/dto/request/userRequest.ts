@@ -7,9 +7,9 @@ export interface UserSettingDto {
 
 export interface ISetTime {
     // [ time: string ]: boolean
-    morning?: boolean,
-    afternoon?: boolean,
-    night?: boolean,
+    morning: boolean,
+    afternoon: boolean,
+    night: boolean,
 };
 
 export interface ISetUserCategory {

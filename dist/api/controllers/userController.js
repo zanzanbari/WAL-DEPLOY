@@ -93,10 +93,9 @@ const resetNicknameInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 const resetTimeInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _f;
-    const userId = (_f = req.user) === null || _f === void 0 ? void 0 : _f.id;
     try {
-        yield models_1.Time.updateTime(userId, req.body);
-        const data = models_1.Time.findById(userId);
+        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, models_1.TodayWal, logger_1.default);
+        const data = yield userServiceInstance.resetTimeInfo((_f = req.user) === null || _f === void 0 ? void 0 : _f.id, req.body.data);
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.UPDATE_USER_INFO_SUCCESS, yield data);
     }
     catch (error) {

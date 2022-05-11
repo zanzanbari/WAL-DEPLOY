@@ -24,6 +24,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const timeHandler_1 = __importDefault(require("../../modules/timeHandler"));
 const typedi_1 = require("typedi");
 const producer_1 = require("../pushAlarm/producer");
+const pushAlarm_1 = require("../pushAlarm");
 let UserService = class UserService {
     constructor(userRepository, timeRepository, itemRepository, userCategoryRepository, todayWalRepository, logger) {
         this.userRepository = userRepository;
@@ -124,16 +125,14 @@ let UserService = class UserService {
     resetTimeInfo(userId, request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const beforeTimeInfo = request[0]; // 이전 설정값
-                const afterTimeInfo = request[1]; // 새로운 설정값
-                const before = this.extractBooleanInfo(beforeTimeInfo);
-                const after = this.extractBooleanInfo(afterTimeInfo);
-                for (let i = 0; i < 3; i++) {
-                    if (before[i] == true && after[i] === false) { // todayWals에서 삭제하고 queue에서 빼야함
-                    }
-                    else if (before[i] === false && after[i] === true) { // todayWals에 추가하고 queue에 추가
-                    }
-                }
+                const beforeSetTime = request[0]; // 이전 설정값
+                const afterSetTime = request[1]; // 새로운 설정값
+                this.compareMorningSetAndControlQueueByUserId(beforeSetTime.morning, afterSetTime.morning, userId);
+                this.compareAfternoonSetAndControlQueueByUserId(beforeSetTime.afternoon, afterSetTime.afternoon, userId);
+                this.compareNightSetAndControlQueueByUserId(beforeSetTime.night, afterSetTime.night, userId);
+                yield this.timeRepository.updateTime(userId, afterSetTime);
+                yield this.todayWalRepository.deleteTodayWal(userId);
+                yield (0, pushAlarm_1.updateTodayWal)(); // 오버 스펙인거 같은데 어케 생각하는지
                 return yield this.timeRepository.findById(userId);
             }
             catch (error) {
@@ -191,6 +190,28 @@ let UserService = class UserService {
             if (it === "scolding")
                 this.categorySelection.scolding = true;
         });
+    }
+    // TODO: 비동기 처리 
+    // FIXME: 함수 일 줄이기 (단일책임), true 설정 시간대가 현재 시간 기준 이전인지 이후인지 
+    // 이전 => queue에 추가할 필요 없음
+    // 이후 => queue에 추가 필수
+    compareNightSetAndControlQueueByUserId(beforeNight, afterNight, _userId) {
+        if (beforeNight === true && afterNight === false)
+            (0, producer_1.updateUserTime)(_userId, "night", "remove");
+        else if (beforeNight === false && afterNight === true)
+            (0, producer_1.updateUserTime)(_userId, "night", "add");
+    }
+    compareAfternoonSetAndControlQueueByUserId(beforeAfternoon, afterAfternoon, _userId) {
+        if (beforeAfternoon === true && afterAfternoon === false)
+            (0, producer_1.updateUserTime)(_userId, "afternoon", "remove");
+        else if (beforeAfternoon === false && afterAfternoon === true)
+            (0, producer_1.updateUserTime)(_userId, "afternoon", "add");
+    }
+    compareMorningSetAndControlQueueByUserId(beforeMorning, afterMorning, _userId) {
+        if (beforeMorning === true && afterMorning === false)
+            (0, producer_1.updateUserTime)(_userId, "morning", "remove");
+        else if (beforeMorning === false && afterMorning === true)
+            (0, producer_1.updateUserTime)(_userId, "morning", "add");
     }
 };
 UserService = __decorate([

@@ -25,7 +25,7 @@ async function addTimeQueue(userId: number, flag: number): Promise<void> { //fla
             case 2:
                 await nightQueue.add(userId, { 
                         jobId: userId,
-                        //repeat: { cron: `* 20 * * *` }
+                        repeat: { cron: `* 20 * * *` }
                     });
             
                 await nightQueue.process(nightFunc)

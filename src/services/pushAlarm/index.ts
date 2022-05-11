@@ -32,15 +32,6 @@ export const nightQueue = new Queue(
   }
 );
 
-export const reservationQueue = new Queue(
-  'reservation-queue', {
-    redis: { 
-      host: "localhost", 
-      port: 6379
-    }
-  }
-);
-
 export const messageQueue = new Queue(
     'message-queue', {
       redis: { 
@@ -75,9 +66,8 @@ export async function updateTodayWal() {
     const users = await User.findAll({
     where: { id: { [Op.in]: existSet } },
     include: [
-        { model: Time, attributes: ["morning", "afternoon", "night"] }, 
-        { model: UserCategory, attributes: ["category_id", "next_item_id"] },
-    ],
+        { model: Time, attributes: ["morning", "afternoon", "night"] },
+    ], //{ model: UserCategory, attributes: ["category_id", "next_item_id"] } 가져오면 update후의 usercategory가 반복문 안에서 반영 안됨-> 똑같은 카테고리 선택 시 같은 NEXT_ITEM_ID 가져와버림
     attributes: ["id"]
     }) as User[];
 
@@ -113,18 +103,17 @@ export async function updateTodayWal() {
 async function getRandCategoryCurrentItem(user: User) {
 
     const userId = user.getDataValue("id") as number;
+
     //가진 카테고리 중 하나 선택
+    const userCategories = await UserCategory.findAll({
+      where: { user_id: userId }
+    })
     const randomIdx = Math.floor(
-      Math.random() * (user.getDataValue("userCategories").length - 1)
+      Math.random() * (userCategories.length - 1)
     ); 
-    const currentItemId = user
-      .getDataValue("userCategories")[randomIdx]
-      .getDataValue("next_item_id");
-  
+    const currentItemId = userCategories[randomIdx].getDataValue("next_item_id");
     //해당 카테고리의 Table상 id
-    const category_id = user
-    .getDataValue("userCategories")[randomIdx]
-    .getDataValue("category_id");
+    const category_id = userCategories[randomIdx].getDataValue("category_id");
   
     const sameCategoryItems = await Item.findAll({
       where: {

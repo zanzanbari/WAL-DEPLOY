@@ -15,6 +15,7 @@ import User from "./users";
 import Item from "./items";
 import Reservation from "./reservations";
 import rm from "../constant/resultMessage";
+import { ISetTodayWal } from "@/interface/dto/request/userRequest";
 
 @Table({ // 테이블 설정
     modelName: "TodayWal",
@@ -64,8 +65,12 @@ export default class TodayWal extends Model {
     @BelongsTo(() => Reservation)
     reservation!: Reservation;
 
-    static async setTodayWal(data) {
+    static async setTodayWal(data: ISetTodayWal) {
         await this.create({ ...data });
+    }
+
+    static async deleteTodayWal(userId: number) {
+        await this.destroy({ where: { user_id: userId } });
     }
 
 }

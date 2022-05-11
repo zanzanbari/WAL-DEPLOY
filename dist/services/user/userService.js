@@ -125,7 +125,21 @@ let UserService = class UserService {
     resetTimeInfo(userId, request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield this.timeRepository.updateTime(userId, request);
+                const beforeSetTime = request[0];
+                const afterSetTime = request[1];
+                if (beforeSetTime.morning === true && afterSetTime.morning === false)
+                    (0, producer_1.updateUserTime)(userId, "morning", "remove");
+                else if (beforeSetTime.morning === false && afterSetTime.morning === true)
+                    (0, producer_1.updateUserTime)(userId, "morning", "add");
+                if (beforeSetTime.afternoon === true && afterSetTime.afternoon === false)
+                    (0, producer_1.updateUserTime)(userId, "afternoon", "remove");
+                else if (beforeSetTime.afternoon === false && afterSetTime.afternoon === true)
+                    (0, producer_1.updateUserTime)(userId, "afternoon", "add");
+                if (beforeSetTime.night === true && afterSetTime.night === false)
+                    (0, producer_1.updateUserTime)(userId, "night", "remove");
+                else if (beforeSetTime.night === false && afterSetTime.night === true)
+                    (0, producer_1.updateUserTime)(userId, "night", "add");
+                yield this.timeRepository.updateTime(userId, afterSetTime);
                 yield this.todayWalRepository.deleteTodayWal(userId);
                 yield (0, pushAlarm_1.updateTodayWal)();
                 return yield this.timeRepository.findById(userId);

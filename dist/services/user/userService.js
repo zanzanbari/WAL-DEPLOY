@@ -24,6 +24,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const timeHandler_1 = __importDefault(require("../../modules/timeHandler"));
 const typedi_1 = require("typedi");
 const producer_1 = require("../pushAlarm/producer");
+const pushAlarm_1 = require("../pushAlarm");
 let UserService = class UserService {
     constructor(userRepository, timeRepository, itemRepository, userCategoryRepository, todayWalRepository, logger) {
         this.userRepository = userRepository;
@@ -124,16 +125,9 @@ let UserService = class UserService {
     resetTimeInfo(userId, request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const beforeTimeInfo = request[0]; // 이전 설정값
-                const afterTimeInfo = request[1]; // 새로운 설정값
-                const before = this.extractBooleanInfo(beforeTimeInfo);
-                const after = this.extractBooleanInfo(afterTimeInfo);
-                for (let i = 0; i < 3; i++) {
-                    if (before[i] == true && after[i] === false) { // todayWals에서 삭제하고 queue에서 빼야함
-                    }
-                    else if (before[i] === false && after[i] === true) { // todayWals에 추가하고 queue에 추가
-                    }
-                }
+                yield this.timeRepository.updateTime(userId, request);
+                yield this.todayWalRepository.deleteTodayWal(userId);
+                yield (0, pushAlarm_1.updateTodayWal)();
                 return yield this.timeRepository.findById(userId);
             }
             catch (error) {

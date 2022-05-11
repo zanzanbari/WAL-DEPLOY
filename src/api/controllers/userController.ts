@@ -3,7 +3,7 @@ import { Item, Time, TodayWal, User, UserCategory } from "../../models";
 import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
-import { ResetCategoryDto, ISetTime, UserSettingDto } from "../../interface/dto/request/userRequest";
+import { ResetCategoryDto, ISetTime, UserSettingDto, ResetTimeDto } from "../../interface/dto/request/userRequest";
 import { UserInfoResponse } from "../../interface/dto/response/userResponse";
 import UserService from "../../services/user/userService";
 import logger from "../middlewares/logger";
@@ -131,7 +131,7 @@ const resetTimeInfo = async (
     try {
 
         const userServiceInstance = new UserService(User, Time, Item, UserCategory, TodayWal, logger);
-        const data = await userServiceInstance.resetTimeInfo(req.user?.id as number, req.body as ISetTime);
+        const data = await userServiceInstance.resetTimeInfo(req.user?.id as number, req.body.data as ResetTimeDto);
         
         SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, await data);
 

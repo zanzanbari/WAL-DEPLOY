@@ -78,9 +78,18 @@ const initRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 });
 const timeRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const timeSchema = joi_1.default.object().keys({
-        morning: joi_1.default.boolean().required(),
-        afternoon: joi_1.default.boolean().required(),
-        night: joi_1.default.boolean().required(),
+        data: joi_1.default
+            .array()
+            .length(2)
+            .items({
+            morning: joi_1.default.boolean().required(),
+            afternoon: joi_1.default.boolean().required(),
+            night: joi_1.default.boolean().required(),
+        }, {
+            morning: joi_1.default.boolean().required(),
+            afternoon: joi_1.default.boolean().required(),
+            night: joi_1.default.boolean().required(),
+        })
     });
     try {
         const bodyError = yield timeSchema

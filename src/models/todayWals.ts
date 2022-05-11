@@ -68,4 +68,16 @@ export default class TodayWal extends Model {
         await this.create({ ...data });
     }
 
+    static async getTodayWalsByUserId(id: number): Promise<TodayWal[]> {
+        const todayWals = await this.findAll({
+            where: {
+                user_id: id,
+            },
+            order: [
+                ["time", "ASC"]
+            ]
+        })
+        return todayWals;
+    }
+
 }

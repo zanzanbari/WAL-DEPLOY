@@ -125,6 +125,18 @@ export default class Reservation extends Model {
         return reservation.id;
     }
 
+    static async getReservationById(id: number): Promise<Reservation|null> {
+
+        const reservation = await this.findOne({ 
+            where: { 
+                id
+            }
+        });
+
+        return reservation;
+        
+    }
+
     static async getReservationsFromTomorrow(id: number): Promise<Reservation[]> {
 
         const reservations = await this.findAll({

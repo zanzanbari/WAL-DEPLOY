@@ -57,13 +57,13 @@ function addUserTime(userId) {
                 where: { user_id: userId }
             });
             if (times.morning) {
-                yield addTimeQueue(userId, 0);
+                addTimeQueue(userId, 0);
             }
             if (times.afternoon) {
-                yield addTimeQueue(userId, 1);
+                addTimeQueue(userId, 1);
             }
             if (times.night) {
-                yield addTimeQueue(userId, 2);
+                addTimeQueue(userId, 2);
             }
         }
         catch (err) {

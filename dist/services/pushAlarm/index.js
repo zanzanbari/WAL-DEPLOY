@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateTodayWal = exports.updateToday = exports.messageQueue = exports.reservationQueue = exports.nightQueue = exports.afternoonQueue = exports.morningQueue = void 0;
+exports.updateTodayWal = exports.updateToday = exports.messageQueue = exports.nightQueue = exports.afternoonQueue = exports.morningQueue = void 0;
 const models_1 = require("../../models");
 const bull_1 = __importDefault(require("bull"));
 const dayjs_1 = __importDefault(require("dayjs"));
@@ -32,12 +32,6 @@ exports.afternoonQueue = new bull_1.default('afternoon-queue', {
     }
 });
 exports.nightQueue = new bull_1.default('night-queue', {
-    redis: {
-        host: "localhost",
-        port: 6379
-    }
-});
-exports.reservationQueue = new bull_1.default('reservation-queue', {
     redis: {
         host: "localhost",
         port: 6379
@@ -73,7 +67,6 @@ function updateTodayWal() {
             where: { id: { [sequelize_1.Op.in]: existSet } },
             include: [
                 { model: models_1.Time, attributes: ["morning", "afternoon", "night"] },
-                { model: models_1.UserCategory, attributes: ["category_id", "next_item_id"] },
             ],
             attributes: ["id"]
         });
@@ -107,14 +100,13 @@ function getRandCategoryCurrentItem(user) {
     return __awaiter(this, void 0, void 0, function* () {
         const userId = user.getDataValue("id");
         //가진 카테고리 중 하나 선택
-        const randomIdx = Math.floor(Math.random() * (user.getDataValue("userCategories").length - 1));
-        const currentItemId = user
-            .getDataValue("userCategories")[randomIdx]
-            .getDataValue("next_item_id");
+        const userCategories = yield models_1.UserCategory.findAll({
+            where: { user_id: userId }
+        });
+        const randomIdx = Math.floor(Math.random() * (userCategories.length - 1));
+        const currentItemId = userCategories[randomIdx].getDataValue("next_item_id");
         //해당 카테고리의 Table상 id
-        const category_id = user
-            .getDataValue("userCategories")[randomIdx]
-            .getDataValue("category_id");
+        const category_id = userCategories[randomIdx].getDataValue("category_id");
         const sameCategoryItems = yield models_1.Item.findAll({
             where: {
                 category_id

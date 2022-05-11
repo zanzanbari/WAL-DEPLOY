@@ -5,7 +5,7 @@ const getMorning = () => {
       setTime.getFullYear(),
       setTime.getMonth(),
       setTime.getDate(),
-      8,
+      8 - 9,
       0,
       0,
       0
@@ -20,7 +20,7 @@ const getAfternoon = () => {
       setTime.getFullYear(),
       setTime.getMonth(),
       setTime.getDate(),
-      14,
+      14 - 9,
       0,
       0,
       0
@@ -35,7 +35,7 @@ const getNight = () => {
       setTime.getFullYear(),
       setTime.getMonth(),
       setTime.getDate(),
-      20,
+      20 - 9,
       0,
       0,
       0

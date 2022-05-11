@@ -32,11 +32,22 @@ export const nightQueue = new Queue(
   }
 );
 
+export const reservationQueue = new Queue(
+  'reservation-queue', {
+    redis: { 
+      host: "localhost", 
+      port: 6379
+    }
+  }
+);
+
 export const messageQueue = new Queue(
     'message-queue', {
       redis: { 
         host: "localhost", 
         port: 6379
+      }, defaultJobOptions: {
+        removeOnComplete: true //job 완료 시 삭제
       }
     }
   );

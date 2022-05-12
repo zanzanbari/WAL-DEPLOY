@@ -101,9 +101,6 @@ export async function updateTodayWal() {
 }
   
 export async function getRandCategoryCurrentItem(userId: number) {
-
-    // const userId = user.getDataValue("id") as number;
-
     //가진 카테고리 중 하나 선택
     const userCategories = await UserCategory.findAll({
       where: { user_id: userId }

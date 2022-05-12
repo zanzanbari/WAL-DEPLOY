@@ -1,8 +1,8 @@
 // user initial info
 export interface UserSettingDto {
-    readonly nickname?: string,
-    readonly dtype?: ISetCategory,
-    readonly time?: ISetTime,
+    readonly nickname: string,
+    readonly dtype: ISetCategory,
+    readonly time: ISetTime,
 };
 
 export interface ISetTime {
@@ -32,7 +32,6 @@ export interface ISetCategory {
 
 export interface ISetTodayWal {
     user_id: number;
-    category_id: number;
     item_id: number;
     time: Date;
 };

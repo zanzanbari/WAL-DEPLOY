@@ -5,6 +5,10 @@ import { Reservation } from "../../models";
 import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
+import schedule from "node-schedule";
+//import { addReservationQueue } from "../../services/pushAlarm/producer";
+import { messageQueue } from "@/services/pushAlarm";
+import { messageFunc } from "@/services/pushAlarm/messageConsumer";
 
 const dayArr = ["(일)","(월)","(화)","(수)","(목)","(금)","(토)"];
 
@@ -121,9 +125,9 @@ const postReservation = async (
         
         if (existingDate) return ErrorResponse(res, sc.BAD_REQUEST, rm.INVALID_RESERVATION_DATE);
 
-     
+        const userId = req.user?.id;
         const newReservationId = await Reservation.postReservation(
-            req.user?.id as number, 
+            userId as number, 
             date as string, 
             time as string, 
             hide as boolean, 
@@ -132,10 +136,9 @@ const postReservation = async (
 
         const data = { postId: newReservationId };
 
-        /**
-         * -----------------------------알림 보내는 기능 넣어야 한다 ---------------------------
-         * 
-         */
+        ////////////a모르겠따!!!!!!!!!!!!!!!!!!!!!!
+        //addReservationQueue(newReservationId, userId as number, date, time)
+        
         SuccessResponse(res, sc.OK, rm.ADD_RESERVATION_SUCCESS, data);
 
 

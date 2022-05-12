@@ -17,19 +17,12 @@ async function getTokenMessage(time: Date, userId: number) {
           });
           
         const fcmtoken = wal?.getDataValue("user").getDataValue("fcmtoken");
-        const userDefined = wal?.getDataValue("userDefined");
-        let content:string|undefined = "";
-        if (userDefined) {
-            const reservation = await Reservation.findOne({
-                where: {id: wal?.getDataValue("reservation_id")}
-            })
-            content = reservation?.content;
-        } else {
-            const item = await Item.findOne({
-                where: {id: wal?.getDataValue("item_id")}
-            })
-            content = item?.content;
-        }
+
+        const item = await Item.findOne({
+            where: {id: wal?.getDataValue("item_id")}
+        })
+        const content = item?.content;
+       
         
           const data = {
               fcmtoken,
@@ -108,6 +101,49 @@ export const nightFunc = async (job: Job, done: DoneCallback) => {
 
         await messageQueue.process(messageFunc)
       
+        done();
+
+    } catch (err) {
+        logger.appLogger.log({ level: "error", message: err.message });
+    }
+
+}
+////////////////////////////////////////////////////////////////////////
+///모르겠다!!!!!!!!!!!!!!!!!!!!!
+export const reservationFunc = async (job: Job, done: DoneCallback) => {
+    try {
+
+        const reservationId = job.data;
+
+        const reservation = await Reservation.getReservationById(reservationId);
+
+        const userId = reservation?.getDataValue("user_id") as number;
+        const content = reservation?.getDataValue("content") as String;
+        const date = reservation?.getDataValue("sendingDate") as Date;
+
+        const fcmtoken = await User.getFCMToken(userId);
+        const data = {
+            fcmtoken,
+            content
+        }
+
+       //todayWal에 추가하는 부분 만들기!!!!!!!!!!!!이건 시뱅.. 이건.. 그날 자정에 schedule해야 하는..? 아니면 해당 날짜 자정마다 반복하는 reservation queue job add후 삭제 되려나 모르겠음
+
+       await TodayWal.create({
+           user_id: userId,
+           content,
+           time: date,
+           userDefined: true,
+           reservation_id: reservationId
+       })
+       
+       //밑의 미친 cron식은 당연히 안되더라구요..
+        await messageQueue.add(data, { //message를 보내는 작업, 5번 시도
+            attempts: 5,
+            repeat: { cron: `${date.getMinutes()} ${date.getHours()} ${date.getDate()} ${date.getMonth()} ${date.getFullYear()}`}
+        });
+
+        await messageQueue.process(messageFunc)
         done();
 
     } catch (err) {

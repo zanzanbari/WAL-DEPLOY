@@ -1,9 +1,9 @@
-import { morningQueue, afternoonQueue, nightQueue } from './';
-import {morningFunc, afterFunc, nightFunc} from './consumer';
+import { morningQueue, afternoonQueue, nightQueue, reservationQueue } from './';
+import { morningFunc, afterFunc, nightFunc, reservationFunc } from './consumer';
 import { Time } from "../../models";
 import logger from "../../api/middlewares/logger";
 
-async function addTimeQueue(userId: number, flag: number): Promise<void> { //flag - 0: morning, 1: afternoon, 2: night
+async function addTimeQueue(userId: number, flag: number): Promise<void> { //flag - 0: morning, 1: afternoon, 2: night, 3: reservation
     try {
         switch (flag) {
             case 0:
@@ -37,6 +37,25 @@ async function addTimeQueue(userId: number, flag: number): Promise<void> { //fla
     }
 }
 
+/*
+export async function addReservationQueue(reservationId: number, userId: number, date: string, time: string): Promise<void> {
+    try {
+            const year = String(date).split('-')[0];
+            const month = String(date).split('-')[1];
+            const day = String(date).split('-')[2];
+            
+            await reservationQueue.add(reservationId, { //자정에 todayWal에 추가
+                    jobId: reservationId,
+                    repeat: { cron: `0 0 ${day} ${month} ${year}` }
+                });
+        
+            await reservationQueue.process(reservationFunc)
+              
+    } catch (err) {
+        logger.appLogger.log({ level: "error", message: err.message });
+    }
+}
+*/
 export async function addUserTime(userId: number): Promise<void> {
 
     try {

@@ -51,4 +51,8 @@ export default class Item extends Model {
         const item =  await this.findOne({ where: { id } });
         return item;
     }
+
+    static async getAllItemsByCategoryId(category_id: number) {
+        return await this.findAll({ where: { category_id } });
+    }
 }

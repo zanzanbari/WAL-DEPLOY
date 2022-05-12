@@ -6,10 +6,10 @@ import {
     UserSettingDto, 
     ISetCategory,
     ISetTime,
-    ResetTimeDto} from "../../interface/dto/request/userRequest";
+    ResetTimeDto } from "../../interface/dto/request/userRequest";
 import { UserSettingResponse } from "../../interface/dto/response/userResponse";
 import { addUserTime, updateUserTime } from "../pushAlarm/producer";
-import { updateTodayWal } from "../pushAlarm";
+import { getRandCategoryCurrentItem } from "../pushAlarm";
 
 
 @Service()
@@ -55,7 +55,7 @@ class UserService {
                 }
             }
 
-
+            // dtypeIdx = [0, 1, 2] 일때~~
             dtypeIdx.forEach(async categoryId => {
 
                 const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(categoryId) as number;
@@ -73,7 +73,7 @@ class UserService {
             // FIXME randomIdx 뽑는거 다시 생각 ㄲ
             if (request.time?.morning === true) {
                 // 카테고리 아이디를 랜덤으로 뽑자 
-                const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
                 const randCategoryId = dtypeIdx[randIdx];
                 const data = {
                     user_id: userId,
@@ -85,8 +85,7 @@ class UserService {
 
             } 
             if (request.time?.afternoon === true) {
-
-                const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
                 const randCategoryId = dtypeIdx[randIdx];
                 const data = {
                     user_id: userId,
@@ -97,8 +96,7 @@ class UserService {
                 await this.todayWalRepository.setTodayWal(data);
             }
             if (request.time?.night === true) {
-
-                const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
                 const randCategoryId = dtypeIdx[randIdx];
                 const data = {
                     user_id: userId,
@@ -156,7 +154,21 @@ class UserService {
 
             await this.timeRepository.updateTime(userId, afterSetTime);
             await this.todayWalRepository.deleteTodayWal(userId);
-            await updateTodayWal(); // 오버 스펙인거 같은데 어케 생각하는지
+
+            const timeSelection: Date[] = [];
+            if (afterSetTime.morning == true) timeSelection.push(timeHandler.getMorning());
+            if (afterSetTime.afternoon == true) timeSelection.push(timeHandler.getAfternoon());
+            if (afterSetTime.night == true) timeSelection.push(timeHandler.getNight());
+            // FIXME getRandCategoryCurrentItem 에서 중복 발생 이슈
+            timeSelection.forEach(async time => {
+                const currentItemId = await getRandCategoryCurrentItem(userId);
+                const data = {
+                    user_id: userId,
+                    item_id: currentItemId,
+                    time
+                };
+                await this.todayWalRepository.setTodayWal(data);
+            });
 
             return await this.timeRepository.findById(userId) as ISetTime;
             

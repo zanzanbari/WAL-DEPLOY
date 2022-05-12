@@ -89,7 +89,7 @@ export async function updateTodayWal() {
         }
 
         for (const t of selectedTime) {
-            const currentItemId = await getRandCategoryCurrentItem(user);
+            const currentItemId = await getRandCategoryCurrentItem(userId);
 
             await TodayWal.create({
                 user_id: userId,
@@ -100,9 +100,9 @@ export async function updateTodayWal() {
     }
 }
   
-async function getRandCategoryCurrentItem(user: User) {
+export async function getRandCategoryCurrentItem(userId: number) {
 
-    const userId = user.getDataValue("id") as number;
+    // const userId = user.getDataValue("id") as number;
 
     //가진 카테고리 중 하나 선택
     const userCategories = await UserCategory.findAll({
@@ -111,6 +111,7 @@ async function getRandCategoryCurrentItem(user: User) {
     const randomIdx = Math.floor(
       Math.random() * (userCategories.length - 1)
     ); 
+
     const currentItemId = userCategories[randomIdx].getDataValue("next_item_id");
     //해당 카테고리의 Table상 id
     const category_id = userCategories[randomIdx].getDataValue("category_id");

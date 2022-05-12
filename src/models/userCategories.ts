@@ -81,4 +81,13 @@ export default class UserCategory extends Model {
         });
         return categories;
     }
+
+
+    static async getUserCategoryByUserId(user_id: number): Promise<UserCategory[]> {
+        const categories = await this.findAll({ 
+            where: { user_id },
+            attributes: ["category_id", "next_item_id"]
+        });
+        return categories;
+    }
 }

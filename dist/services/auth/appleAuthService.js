@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = __importStar(require("jsonwebtoken"));
-const tokenHandller_1 = require("../../modules/tokenHandller");
+const tokenHandler_1 = require("../../modules/tokenHandler");
 class AppleAuthService {
     constructor(userRepository, logger) {
         this.userRepository = userRepository;
@@ -46,9 +46,9 @@ class AppleAuthService {
                 // apple server 공개 키로 jwt 해독 (해야하는데 실패) -> 나중에 다시 시도
                 const payload = jwt.decode(request.socialtoken);
                 const userData = { email: payload.sub, nickname: null };
-                const refreshtoken = yield (0, tokenHandller_1.issueRefreshToken)();
+                const refreshtoken = yield (0, tokenHandler_1.issueRefreshToken)();
                 const socialUser = yield this.userRepository.findByEmailOrCreateSocialUser("apple", userData, request, refreshtoken);
-                const accesstoken = yield (0, tokenHandller_1.issueAccessToken)(socialUser);
+                const accesstoken = yield (0, tokenHandler_1.issueAccessToken)(socialUser);
                 const user = {
                     nickname: socialUser.nickname,
                     accesstoken,

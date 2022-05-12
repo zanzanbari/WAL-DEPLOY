@@ -30,6 +30,17 @@ let Item = class Item extends sequelize_typescript_1.Model {
             return item === null || item === void 0 ? void 0 : item.getDataValue("id");
         });
     }
+    static getItemById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const item = yield this.findOne({ where: { id } });
+            return item;
+        });
+    }
+    static getAllItemsByCategoryId(category_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.findAll({ where: { category_id } });
+        });
+    }
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,

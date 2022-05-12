@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
 const kakaoApi_1 = __importDefault(require("./client/kakaoApi"));
-const tokenHandller_1 = require("../../modules/tokenHandller");
+const tokenHandler_1 = require("../../modules/tokenHandler");
 let KakaoAuthService = class KakaoAuthService {
     // 주입해주고 싶다 
     constructor(userRepository, logger) {
@@ -34,9 +34,9 @@ let KakaoAuthService = class KakaoAuthService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userData = yield kakaoApi_1.default.auth(request.socialtoken);
-                const refreshtoken = yield (0, tokenHandller_1.issueRefreshToken)();
+                const refreshtoken = yield (0, tokenHandler_1.issueRefreshToken)();
                 const socialUser = yield this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
-                const accesstoken = yield (0, tokenHandller_1.issueAccessToken)(socialUser);
+                const accesstoken = yield (0, tokenHandler_1.issueAccessToken)(socialUser);
                 const user = {
                     nickname: socialUser.nickname,
                     accesstoken,

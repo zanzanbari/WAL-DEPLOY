@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateTodayWal = exports.updateToday = exports.messageQueue = exports.nightQueue = exports.afternoonQueue = exports.morningQueue = void 0;
+exports.getRandCategoryCurrentItem = exports.updateTodayWal = exports.updateToday = exports.messageQueue = exports.nightQueue = exports.afternoonQueue = exports.morningQueue = void 0;
 const models_1 = require("../../models");
 const bull_1 = __importDefault(require("bull"));
 const dayjs_1 = __importDefault(require("dayjs"));
@@ -85,7 +85,7 @@ function updateTodayWal() {
                 selectedTime.push(new Date(`${dateString} 20:00:00`));
             }
             for (const t of selectedTime) {
-                const currentItemId = yield getRandCategoryCurrentItem(user);
+                const currentItemId = yield getRandCategoryCurrentItem(userId);
                 yield models_1.TodayWal.create({
                     user_id: userId,
                     item_id: currentItemId,
@@ -96,9 +96,9 @@ function updateTodayWal() {
     });
 }
 exports.updateTodayWal = updateTodayWal;
-function getRandCategoryCurrentItem(user) {
+function getRandCategoryCurrentItem(userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const userId = user.getDataValue("id");
+        // const userId = user.getDataValue("id") as number;
         //가진 카테고리 중 하나 선택
         const userCategories = yield models_1.UserCategory.findAll({
             where: { user_id: userId }
@@ -131,4 +131,5 @@ function getRandCategoryCurrentItem(user) {
         return currentItemId;
     });
 }
+exports.getRandCategoryCurrentItem = getRandCategoryCurrentItem;
 //# sourceMappingURL=index.js.map

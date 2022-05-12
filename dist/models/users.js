@@ -121,6 +121,15 @@ let User = class User extends sequelize_typescript_1.Model {
             });
         });
     }
+    static getFCMToken(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.findOne({
+                where: { id },
+                attributes: ["fcmtoken"]
+            });
+            return user === null || user === void 0 ? void 0 : user.fcmtoken;
+        });
+    }
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,

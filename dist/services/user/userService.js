@@ -55,6 +55,7 @@ let UserService = class UserService {
                         dtypeIdx.push(i);
                     }
                 }
+                // dtypeIdx = [0, 1, 2] 일때~~
                 dtypeIdx.forEach((categoryId) => __awaiter(this, void 0, void 0, function* () {
                     const firstItemId = yield this.itemRepository.getFirstIdEachOfCategory(categoryId);
                     this.infoToUserCategoryDB = {
@@ -68,7 +69,7 @@ let UserService = class UserService {
                 // FIXME randomIdx 뽑는거 다시 생각 ㄲ
                 if (((_a = request.time) === null || _a === void 0 ? void 0 : _a.morning) === true) {
                     // 카테고리 아이디를 랜덤으로 뽑자 
-                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
                     const randCategoryId = dtypeIdx[randIdx];
                     const data = {
                         user_id: userId,
@@ -79,7 +80,7 @@ let UserService = class UserService {
                     yield this.todayWalRepository.setTodayWal(data);
                 }
                 if (((_b = request.time) === null || _b === void 0 ? void 0 : _b.afternoon) === true) {
-                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
                     const randCategoryId = dtypeIdx[randIdx];
                     const data = {
                         user_id: userId,
@@ -90,7 +91,7 @@ let UserService = class UserService {
                     yield this.todayWalRepository.setTodayWal(data);
                 }
                 if (((_c = request.time) === null || _c === void 0 ? void 0 : _c.night) === true) {
-                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length - 1));
+                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
                     const randCategoryId = dtypeIdx[randIdx];
                     const data = {
                         user_id: userId,
@@ -132,7 +133,23 @@ let UserService = class UserService {
                 this.compareNightSetAndControlQueueByUserId(beforeSetTime.night, afterSetTime.night, userId);
                 yield this.timeRepository.updateTime(userId, afterSetTime);
                 yield this.todayWalRepository.deleteTodayWal(userId);
-                yield (0, pushAlarm_1.updateTodayWal)(); // 오버 스펙인거 같은데 어케 생각하는지
+                const timeSelection = [];
+                if (afterSetTime.morning == true)
+                    timeSelection.push(timeHandler_1.default.getMorning());
+                if (afterSetTime.afternoon == true)
+                    timeSelection.push(timeHandler_1.default.getAfternoon());
+                if (afterSetTime.night == true)
+                    timeSelection.push(timeHandler_1.default.getNight());
+                // FIXME getRandCategoryCurrentItem 에서 중복 발생 이슈
+                timeSelection.forEach((time) => __awaiter(this, void 0, void 0, function* () {
+                    const currentItemId = yield (0, pushAlarm_1.getRandCategoryCurrentItem)(userId);
+                    const data = {
+                        user_id: userId,
+                        item_id: currentItemId,
+                        time
+                    };
+                    yield this.todayWalRepository.setTodayWal(data);
+                }));
                 return yield this.timeRepository.findById(userId);
             }
             catch (error) {

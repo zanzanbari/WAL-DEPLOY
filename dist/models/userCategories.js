@@ -60,6 +60,15 @@ let UserCategory = class UserCategory extends sequelize_typescript_1.Model {
             return categories;
         });
     }
+    static getUserCategoryByUserId(user_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const categories = yield this.findAll({
+                where: { user_id },
+                attributes: ["category_id", "next_item_id"]
+            });
+            return categories;
+        });
+    }
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,

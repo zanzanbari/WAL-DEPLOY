@@ -31,7 +31,6 @@ let TodayWal = class TodayWal extends sequelize_typescript_1.Model {
             yield this.create(Object.assign({}, data));
         });
     }
-
     static getTodayWalsByUserId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const todayWals = yield this.findAll({
@@ -43,9 +42,8 @@ let TodayWal = class TodayWal extends sequelize_typescript_1.Model {
                 ]
             });
             return todayWals;
-          });
+        });
     }
-  
     static deleteTodayWal(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.destroy({ where: { user_id: userId } });

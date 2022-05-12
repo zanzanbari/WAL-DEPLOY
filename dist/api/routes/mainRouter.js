@@ -8,6 +8,6 @@ const auth_1 = __importDefault(require("../middlewares/auth"));
 const mainController_1 = require("../controllers/mainController");
 const router = (0, express_1.Router)();
 router.use(auth_1.default.isAuth);
-router.get('/main', mainController_1.mainController.getTodayWals);
+router.get('/', mainController_1.mainController.getTodayWals);
 exports.default = router;
 //# sourceMappingURL=mainRouter.js.map

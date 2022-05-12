@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../../models");
 const apiResponse_1 = require("../../modules/apiResponse");
-const tokenHandller_1 = require("../../modules/tokenHandller");
+const tokenHandler_1 = require("../../modules/tokenHandler");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const logger_1 = __importDefault(require("../../api/middlewares/logger"));
@@ -26,7 +26,7 @@ const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.TOKEN_EMPTY);
     }
     try {
-        const accessTokenDecoded = yield (0, tokenHandller_1.verifyToken)(accesstoken);
+        const accessTokenDecoded = yield (0, tokenHandler_1.verifyToken)(accesstoken);
         if (accessTokenDecoded === TOKEN_EXPIRED) {
             return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.UNAUTHORIZED, resultMessage_1.default.TOKEN_EXPIRED);
         }

@@ -102,4 +102,4 @@ exports.verifyToken = verifyToken;
 //     } catch (error) {
 //     }
 // }
-//# sourceMappingURL=tokenHandller.js.map
+//# sourceMappingURL=tokenHandler.js.map

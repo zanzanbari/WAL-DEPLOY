@@ -159,7 +159,7 @@ class UserService {
             if (afterSetTime.morning == true) timeSelection.push(timeHandler.getMorning());
             if (afterSetTime.afternoon == true) timeSelection.push(timeHandler.getAfternoon());
             if (afterSetTime.night == true) timeSelection.push(timeHandler.getNight());
-
+            // FIXME getRandCategoryCurrentItem 에서 중복 발생 이슈
             timeSelection.forEach(async time => {
                 const currentItemId = await getRandCategoryCurrentItem(userId);
                 const data = {

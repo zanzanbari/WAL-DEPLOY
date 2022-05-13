@@ -1,6 +1,6 @@
 import { Job, DoneCallback } from "bull";
 import admin from "firebase-admin";
-const serviceAccount = require("../../../firebase-admin.json");
+const serviceAccount = require("../../firebase-admin.json");
 
 import logger from "../../api/middlewares/logger";
 

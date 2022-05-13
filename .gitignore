@@ -6,4 +6,3 @@ log/*
 firebase-admin.json
 *.pem
 *.cer
-

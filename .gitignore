@@ -2,7 +2,6 @@ node_modules
 .env
 log/*
 *.log
-*.d.ts
 .DS_Store
 firebase-admin.json
 *.pem

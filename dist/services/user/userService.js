@@ -41,7 +41,6 @@ let UserService = class UserService {
         };
     }
     initSetInfo(userId, request) {
-        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.timeRepository.setTime(userId, request.time);
@@ -55,8 +54,8 @@ let UserService = class UserService {
                         dtypeIdx.push(i);
                     }
                 }
-                // dtypeIdx = [0, 1, 2] 일때~~
-                dtypeIdx.forEach((categoryId) => __awaiter(this, void 0, void 0, function* () {
+                for (let index = 0; index < dtypeIdx.length; index++) {
+                    const categoryId = dtypeIdx[index];
                     const firstItemId = yield this.itemRepository.getFirstIdEachOfCategory(categoryId);
                     this.infoToUserCategoryDB = {
                         user_id: userId,
@@ -64,40 +63,22 @@ let UserService = class UserService {
                         next_item_id: firstItemId,
                     };
                     yield this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
-                }));
+                }
                 // todayWals에 들어갈 놈   
                 // FIXME randomIdx 뽑는거 다시 생각 ㄲ
-                if (((_a = request.time) === null || _a === void 0 ? void 0 : _a.morning) === true) {
-                    // 카테고리 아이디를 랜덤으로 뽑자 
-                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
-                    const randCategoryId = dtypeIdx[randIdx];
+                const timeSelection = [];
+                if (request.time.morning == true)
+                    timeSelection.push(timeHandler_1.default.getMorning());
+                if (request.time.afternoon == true)
+                    timeSelection.push(timeHandler_1.default.getAfternoon());
+                if (request.time.night == true)
+                    timeSelection.push(timeHandler_1.default.getNight());
+                for (let i = 0; i < timeSelection.length; i++) {
+                    const currentItemId = yield (0, pushAlarm_1.getRandCategoryCurrentItem)(userId);
                     const data = {
                         user_id: userId,
-                        category_id: randCategoryId,
-                        item_id: yield this.itemRepository.getFirstIdEachOfCategory(randCategoryId),
-                        time: timeHandler_1.default.getMorning() // morning이면 8시, afternoon이면 12시, night면 20시.......
-                    };
-                    yield this.todayWalRepository.setTodayWal(data);
-                }
-                if (((_b = request.time) === null || _b === void 0 ? void 0 : _b.afternoon) === true) {
-                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
-                    const randCategoryId = dtypeIdx[randIdx];
-                    const data = {
-                        user_id: userId,
-                        category_id: randCategoryId,
-                        item_id: yield this.itemRepository.getFirstIdEachOfCategory(randCategoryId),
-                        time: timeHandler_1.default.getAfternoon()
-                    };
-                    yield this.todayWalRepository.setTodayWal(data);
-                }
-                if (((_c = request.time) === null || _c === void 0 ? void 0 : _c.night) === true) {
-                    const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
-                    const randCategoryId = dtypeIdx[randIdx];
-                    const data = {
-                        user_id: userId,
-                        category_id: randCategoryId,
-                        item_id: yield this.itemRepository.getFirstIdEachOfCategory(randCategoryId),
-                        time: timeHandler_1.default.getNight()
+                        item_id: currentItemId,
+                        time: timeSelection[i]
                     };
                     yield this.todayWalRepository.setTodayWal(data);
                 }
@@ -140,16 +121,16 @@ let UserService = class UserService {
                     timeSelection.push(timeHandler_1.default.getAfternoon());
                 if (afterSetTime.night == true)
                     timeSelection.push(timeHandler_1.default.getNight());
-                // FIXME getRandCategoryCurrentItem 에서 중복 발생 이슈
-                timeSelection.forEach((time) => __awaiter(this, void 0, void 0, function* () {
+                for (let i = 0; i < timeSelection.length; i++) {
                     const currentItemId = yield (0, pushAlarm_1.getRandCategoryCurrentItem)(userId);
                     const data = {
                         user_id: userId,
                         item_id: currentItemId,
-                        time
+                        time: timeSelection[i]
                     };
                     yield this.todayWalRepository.setTodayWal(data);
-                }));
+                }
+                ;
                 return yield this.timeRepository.findById(userId);
             }
             catch (error) {

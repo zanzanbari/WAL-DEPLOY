@@ -6,7 +6,8 @@ import {
     UserSettingDto, 
     ISetCategory,
     ISetTime,
-    ResetTimeDto } from "../../interface/dto/request/userRequest";
+    ResetTimeDto, 
+    ISetTodayWal} from "../../interface/dto/request/userRequest";
 import { UserSettingResponse } from "../../interface/dto/response/userResponse";
 import { addUserTime, updateUserTime } from "../pushAlarm/producer";
 import { getRandCategoryCurrentItem } from "../pushAlarm";
@@ -55,9 +56,8 @@ class UserService {
                 }
             }
 
-            // dtypeIdx = [0, 1, 2] 일때~~
-            dtypeIdx.forEach(async categoryId => {
-
+            for (let index = 0; index < dtypeIdx.length; index++) {
+                const categoryId = dtypeIdx[index];
                 const firstItemId = await this.itemRepository.getFirstIdEachOfCategory(categoryId) as number;
 
                 this.infoToUserCategoryDB = {
@@ -66,43 +66,21 @@ class UserService {
                     next_item_id: firstItemId,
                 };
                 await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB); 
-                
-            });
+            }
 
             // todayWals에 들어갈 놈   
             // FIXME randomIdx 뽑는거 다시 생각 ㄲ
-            if (request.time?.morning === true) {
-                // 카테고리 아이디를 랜덤으로 뽑자 
-                const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
-                const randCategoryId = dtypeIdx[randIdx];
-                const data = {
-                    user_id: userId,
-                    category_id: randCategoryId, // 이새끼..는 선택한 애중에 랜뽑
-                    item_id: await this.itemRepository.getFirstIdEachOfCategory(randCategoryId) as number, // db에서 가져와야 함 => 이새끼가 문젠데... 랜뽑한 카테고리 아이디로 가져오면 겹칠텐데 ㅅㅂㅅㅂㅅㅂ
-                    time: timeHandler.getMorning() // morning이면 8시, afternoon이면 12시, night면 20시.......
-                };
-                await this.todayWalRepository.setTodayWal(data);
+            const timeSelection: Date[] = [];
+            if (request.time.morning == true) timeSelection.push(timeHandler.getMorning());
+            if (request.time.afternoon == true) timeSelection.push(timeHandler.getAfternoon());
+            if (request.time.night == true) timeSelection.push(timeHandler.getNight());
 
-            } 
-            if (request.time?.afternoon === true) {
-                const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
-                const randCategoryId = dtypeIdx[randIdx];
-                const data = {
+            for (let i = 0; i < timeSelection.length; i++) {
+                const currentItemId = await getRandCategoryCurrentItem(userId);
+                const data: ISetTodayWal = {
                     user_id: userId,
-                    category_id: randCategoryId, 
-                    item_id: await this.itemRepository.getFirstIdEachOfCategory(randCategoryId) as number, 
-                    time: timeHandler.getAfternoon()
-                };
-                await this.todayWalRepository.setTodayWal(data);
-            }
-            if (request.time?.night === true) {
-                const randIdx = Math.floor(Math.random() * (dtypeIdx.length));
-                const randCategoryId = dtypeIdx[randIdx];
-                const data = {
-                    user_id: userId,
-                    category_id: randCategoryId, 
-                    item_id: await this.itemRepository.getFirstIdEachOfCategory(randCategoryId) as number, 
-                    time: timeHandler.getNight()
+                    item_id: currentItemId,
+                    time: timeSelection[i]
                 };
                 await this.todayWalRepository.setTodayWal(data);
             }
@@ -159,16 +137,16 @@ class UserService {
             if (afterSetTime.morning == true) timeSelection.push(timeHandler.getMorning());
             if (afterSetTime.afternoon == true) timeSelection.push(timeHandler.getAfternoon());
             if (afterSetTime.night == true) timeSelection.push(timeHandler.getNight());
-            // FIXME getRandCategoryCurrentItem 에서 중복 발생 이슈
-            timeSelection.forEach(async time => {
+
+            for (let i = 0; i < timeSelection.length; i++) {
                 const currentItemId = await getRandCategoryCurrentItem(userId);
-                const data = {
+                const data: ISetTodayWal = {
                     user_id: userId,
                     item_id: currentItemId,
-                    time
+                    time: timeSelection[i]
                 };
                 await this.todayWalRepository.setTodayWal(data);
-            });
+            };
 
             return await this.timeRepository.findById(userId) as ISetTime;
             

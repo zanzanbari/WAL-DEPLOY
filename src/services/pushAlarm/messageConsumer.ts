@@ -1,6 +1,5 @@
 import { Job, DoneCallback } from "bull";
 import { firebaseApp } from "../../loaders/firebase";
-
 import logger from "../../api/middlewares/logger";
 
 export const messageFunc = async (job: Job, done: DoneCallback) => {

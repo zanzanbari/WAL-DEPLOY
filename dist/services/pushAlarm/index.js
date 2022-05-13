@@ -27,24 +27,33 @@ exports.morningQueue = new bull_1.default('morning-queue', {
 });
 exports.afternoonQueue = new bull_1.default('afternoon-queue', {
     redis: {
-        host: "localhost",
-        port: 6379
+        host: process.env.REDIS_HOST,
+        port: 16916,
+        password: process.env.REDIS_PASSWORD
     }
 });
 exports.nightQueue = new bull_1.default('night-queue', {
     redis: {
-        host: "localhost",
-        port: 6379
+        host: process.env.REDIS_HOST,
+        port: 16916,
+        password: process.env.REDIS_PASSWORD
     }
 });
 exports.messageQueue = new bull_1.default('message-queue', {
     redis: {
-        host: "localhost",
-        port: 6379
+        host: process.env.REDIS_HOST,
+        port: 16916,
+        password: process.env.REDIS_PASSWORD
     }, defaultJobOptions: {
         removeOnComplete: true //job 완료 시 삭제
     }
 });
+/*
+redis: {
+      host: "localhost",
+      port: 6379
+    }
+*/
 function updateToday() {
     node_schedule_1.default.scheduleJob('0 0 0 * * *', () => __awaiter(this, void 0, void 0, function* () {
         yield models_1.TodayWal.destroy({
@@ -98,7 +107,6 @@ function updateTodayWal() {
 exports.updateTodayWal = updateTodayWal;
 function getRandCategoryCurrentItem(userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        // const userId = user.getDataValue("id") as number;
         //가진 카테고리 중 하나 선택
         const userCategories = yield models_1.UserCategory.findAll({
             where: { user_id: userId }

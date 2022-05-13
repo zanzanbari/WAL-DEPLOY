@@ -26,10 +26,10 @@ export const afternoonQueue = new Queue(
 
 export const nightQueue = new Queue(
   'night-queue', {
-    redis: { 
-      host: process.env.REDIS_HOST,
-      port: 16916,
-      password: process.env.REDIS_PASSWORD
+    redis: {
+	host: process.env.REDIS_HOST,
+	port: 16916,
+	password: process.env.REDIS_PASSWORD
     }
   }
 );

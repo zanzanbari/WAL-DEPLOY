@@ -25,7 +25,7 @@ const getMainResponse = async (
     
             } else {
                 const time = wal.getDataValue("time") as Date;
-                
+               console.log(time, time.getUTCHours()); 
                 if (time.getHours() == 8) type = "아침";
                 else if (time.getHours() == 14) type = "점심";
                 else type = "저녁";

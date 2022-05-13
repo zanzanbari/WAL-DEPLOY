@@ -33,6 +33,7 @@ const getMainResponse = (todayWals) => __awaiter(void 0, void 0, void 0, functio
             }
             else {
                 const time = wal.getDataValue("time");
+                console.log(time, time.getUTCHours());
                 if (time.getHours() == 8)
                     type = "아침";
                 else if (time.getHours() == 14)

@@ -13,8 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.messageFunc = void 0;
-const firebase_admin_1 = __importDefault(require("firebase-admin"));
-const serviceAccount = require("../../../firebase-admin.json");
+const firebase_1 = require("../../loaders/firebase");
 const logger_1 = __importDefault(require("../../api/middlewares/logger"));
 const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -26,21 +25,22 @@ const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
             },
             token: fcmtoken,
         };
-        let firebase;
-        if (firebase_admin_1.default.apps.length === 0) {
-            firebase_admin_1.default
-                .initializeApp({
-                credential: firebase_admin_1.default.credential.cert(serviceAccount),
-            })
-                .messaging()
-                .send(message)
-                .then(function (response) {
-                console.log('Successfully sent message: : ', response);
-            })
-                .catch(function (err) {
-                console.log('Error Sending message!!! : ', err);
+        firebase_1.firebaseApp
+            .messaging()
+            .send(message)
+            .then(function (response) {
+            logger_1.default.appLogger.log({
+                level: 'info',
+                message: `Successfully sent message: : ${response} ${content}`
             });
-        }
+        })
+            .catch(function (err) {
+            console.log('Error Sending message!!! : ', err);
+            logger_1.default.appLogger.log({
+                level: 'error',
+                message: err.message
+            });
+        });
         done();
     }
     catch (err) {

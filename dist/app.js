@@ -14,7 +14,6 @@ const pushAlarm_1 = require("./services/pushAlarm");
 const logger_1 = __importDefault(require("./api/middlewares/logger"));
 function startServer() {
     const app = (0, express_1.default)();
-    const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
     // db 연결
     (0, db_1.connectDB)();
     (0, pushAlarm_1.updateToday)(); //자정마다 todayWal 업데이트

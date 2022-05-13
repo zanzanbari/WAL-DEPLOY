@@ -14,6 +14,10 @@ const pushAlarm_1 = require("./services/pushAlarm");
 const logger_1 = __importDefault(require("./api/middlewares/logger"));
 function startServer() {
     const app = (0, express_1.default)();
+    logger_1.default.appLogger.log({
+        level: 'info',
+        message: "잘 돌아간다"
+    });
     // db 연결
     (0, db_1.connectDB)();
     (0, pushAlarm_1.updateToday)(); //자정마다 todayWal 업데이트

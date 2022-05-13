@@ -91,16 +91,13 @@ function updateUserTime(userId, time, flag) {
             }
             else {
                 if (time == "morning") {
-                    const job = yield _1.morningQueue.getJob(userId);
-                    yield (job === null || job === void 0 ? void 0 : job.remove());
+                    yield (_1.morningQueue === null || _1.morningQueue === void 0 ? void 0 : _1.morningQueue.removeRepeatable("__default__", { cron: `* 8 * * *`, jobId: userId }));
                 }
                 else if (time == "afternoon") {
-                    const job = yield _1.afternoonQueue.getJob(userId);
-                    yield (job === null || job === void 0 ? void 0 : job.remove());
+                    yield (_1.afternoonQueue === null || _1.afternoonQueue === void 0 ? void 0 : _1.afternoonQueue.removeRepeatable("__default__", { cron: `* 14 * * *`, jobId: userId }));
                 }
                 else if (time == "night") {
-                    const job = yield _1.nightQueue.getJob(userId);
-                    yield (job === null || job === void 0 ? void 0 : job.remove());
+                    yield (_1.nightQueue === null || _1.nightQueue === void 0 ? void 0 : _1.nightQueue.removeRepeatable("__default__", { cron: `* 20 * * *`, jobId: userId }));
                 }
             }
         }

@@ -77,16 +77,13 @@ export async function updateUserTime(userId: number, time: string, flag: string)
             }
         } else {
             if (time == "morning") {
-                const job = await morningQueue.getJob(userId);
-                await job?.remove();
+                await morningQueue?.removeRepeatable("__default__",{ cron: `* 8 * * *` , jobId: userId});
             } 
             else if (time == "afternoon")  {
-                const job = await afternoonQueue.getJob(userId);
-                await job?.remove();
+                await afternoonQueue?.removeRepeatable("__default__",{ cron: `* 14 * * *` , jobId: userId});
             } 
             else if (time == "night") {
-                const job = await nightQueue.getJob(userId);
-                await job?.remove();
+                await nightQueue?.removeRepeatable("__default__",{ cron: `* 20 * * *` , jobId: userId});
             }
         }
         

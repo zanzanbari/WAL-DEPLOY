@@ -17,8 +17,9 @@ export const morningQueue = new Queue(
 export const afternoonQueue = new Queue(
   'afternoon-queue', {
     redis: { 
-      host: "localhost", 
-      port: 6379
+      host: process.env.REDIS_HOST,
+      port: 16916,
+      password: process.env.REDIS_PASSWORD
     }
   }
 );
@@ -26,8 +27,9 @@ export const afternoonQueue = new Queue(
 export const nightQueue = new Queue(
   'night-queue', {
     redis: { 
-      host: "localhost", 
-      port: 6379
+      host: process.env.REDIS_HOST,
+      port: 16916,
+      password: process.env.REDIS_PASSWORD
     }
   }
 );
@@ -35,14 +37,21 @@ export const nightQueue = new Queue(
 export const messageQueue = new Queue(
     'message-queue', {
       redis: { 
-        host: "localhost", 
-        port: 6379
+        host: process.env.REDIS_HOST,
+        port: 16916,
+        password: process.env.REDIS_PASSWORD
       }, defaultJobOptions: {
         removeOnComplete: true //job 완료 시 삭제
       }
     }
   );
 
+  /*
+  redis: { 
+        host: "localhost", 
+        port: 6379
+      }
+  */
 export function updateToday() {
     schedule.scheduleJob('0 0 0 * * *', async () => {
         await TodayWal.destroy({

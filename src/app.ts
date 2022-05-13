@@ -10,7 +10,10 @@ import logger from './api/middlewares/logger';
 
 function startServer(): void {
     const app = express();
-    
+    logger.appLogger.log({
+        level: 'info',
+        message: "잘 돌아간다"
+    })
     // db 연결
     connectDB();
     updateToday(); //자정마다 todayWal 업데이트

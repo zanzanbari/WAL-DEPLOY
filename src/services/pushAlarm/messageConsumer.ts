@@ -1,6 +1,5 @@
 import { Job, DoneCallback } from "bull";
-import admin from "firebase-admin";
-const serviceAccount = require("../../../firebase-admin.json");
+import { firebaseApp } from "../../loaders/firebase";
 
 import logger from "../../api/middlewares/logger";
 
@@ -15,21 +14,26 @@ export const messageFunc = async (job: Job, done: DoneCallback) => {
             }, 
             token: fcmtoken, 
         }
-        let firebase: admin.app.App;
-        if (admin.apps.length === 0) {
-        admin
-          .initializeApp({
-            credential: admin.credential.cert(serviceAccount),
-          })
-          .messaging() 
-          .send(message) 
-          .then(function (response) { 
-              console.log('Successfully sent message: : ', response)
-          }) 
-          .catch(function (err) { 
-              console.log('Error Sending message!!! : ', err)
-          });
-        }
+        
+
+        firebaseApp 
+            .messaging()
+            .send(message) 
+            .then(function (response) {
+                logger.appLogger.log({
+                level: 'info',
+                message: `Successfully sent message: : ${response} ${content}`
+            }) 
+            }) 
+            .catch(function (err) { 
+                console.log('Error Sending message!!! : ', err) 
+                logger.appLogger.log({
+                level: 'error',
+                message: err.message
+            }) 
+        });
+
+
         done();
 
     } catch (err) {

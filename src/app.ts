@@ -5,13 +5,11 @@ import morgan from 'morgan';
 import cors from 'cors';
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
-import { updateToday, updateTodayWal } from './services/pushAlarm';
+import { updateToday } from './services/pushAlarm';
 import logger from './api/middlewares/logger';
-import {addUserTime} from "./services/pushAlarm/producer"
 
 function startServer(): void {
     const app = express();
-    const morganFormat = process.env.NODE_ENV !== "production" ? "dev" : "combined";
     
     // db 연결
     connectDB();

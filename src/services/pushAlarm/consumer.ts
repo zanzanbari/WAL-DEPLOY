@@ -102,6 +102,7 @@ export const nightFunc = async (job: Job, done: DoneCallback) => {
 
         const data = await getTokenMessage(new Date(`${dateString} 20:00:00`), userId);
 
+
         await messageQueue.add(data, { //message를 보내는 작업, 5번 시도
             attempts: 5
         });

@@ -9,9 +9,7 @@
     "rebuild": "rm -rf ./dist && npm run build",
     "serve": "nodemon",
     "test": "mocha tests/**/*.ts -r ts-node/register",
-    "swagger-gen": "node custom/swagger/swagger.js",
-    "start": "nodemon",
-    "test-start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/app.js",
+    "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/app.js",
     "deploy": "sudo pm2 start dist/app.js"
   },
   "repository": {

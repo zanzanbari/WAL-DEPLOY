@@ -1,3 +1,21 @@
+import dayjs from "dayjs";
+
+const getCurrentTime = () => {
+  const setTime = new Date();
+  const current = new Date(
+    Date.UTC(
+      setTime.getFullYear(),
+      setTime.getMonth(),
+      setTime.getDate(),
+      setTime.getHours() - 9,
+      setTime.getMinutes(),
+      setTime.getSeconds(),
+      setTime.getMilliseconds()
+    ));
+  return current;
+}
+
+
 const getMorning = () => {
   const setTime = new Date();
   const morning = new Date(
@@ -43,10 +61,27 @@ const getNight = () => {
   return night;
 }
 
+const setKoreaTime = (time: Date) => {
+  const kHours = time.getHours() + 9;
+  const setTime = new Date();
+  const KoreaTime = new Date(
+      setTime.getFullYear(),
+      setTime.getMonth(),
+      setTime.getDate(),
+      kHours,
+      0,
+      0,
+      0
+  );
+  return KoreaTime;
+}
+
 const timeHandler = {
+  getCurrentTime,
   getMorning,
   getAfternoon,
-  getNight
+  getNight,
+  setKoreaTime
 };
 
 export default timeHandler;

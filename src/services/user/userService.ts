@@ -129,24 +129,30 @@ class UserService {
             this.compareAfternoonSetAndControlQueueByUserId(beforeSetTime.afternoon, afterSetTime.afternoon, userId);
             this.compareNightSetAndControlQueueByUserId(beforeSetTime.night, afterSetTime.night, userId);
 
-
             await this.timeRepository.updateTime(userId, afterSetTime);
-            await this.todayWalRepository.deleteTodayWal(userId);
 
-            const timeSelection: Date[] = [];
-            if (afterSetTime.morning == true) timeSelection.push(timeHandler.getMorning());
-            if (afterSetTime.afternoon == true) timeSelection.push(timeHandler.getAfternoon());
-            if (afterSetTime.night == true) timeSelection.push(timeHandler.getNight());
+            const isCanceledTime: Date[] = this.extractCanceledTime(beforeSetTime, afterSetTime);
+            const isAddedTime: Date[] = this.extractAddedTime(beforeSetTime, afterSetTime);
 
-            for (let i = 0; i < timeSelection.length; i++) {
-                const currentItemId = await getRandCategoryCurrentItem(userId);
-                const data: ISetTodayWal = {
-                    user_id: userId,
-                    item_id: currentItemId,
-                    time: timeSelection[i]
-                };
-                await this.todayWalRepository.setTodayWal(data);
-            };
+            for (let i = 0; i < isCanceledTime.length; i++) {
+                const currentTime = timeHandler.getCurrentTime();
+                if (isCanceledTime[i] > currentTime) {
+                    await this.todayWalRepository.deleteTodayWal(userId, isCanceledTime[i]);
+                }
+            }
+
+            for (let i = 0; i < isAddedTime.length; i++) {
+                const currentTime = timeHandler.getCurrentTime();
+                if (isAddedTime[i] > currentTime) {
+                    const currentItemId = await getRandCategoryCurrentItem(userId);
+                    const data: ISetTodayWal = {
+                        user_id: userId,
+                        item_id: currentItemId,
+                        time: isAddedTime[i]
+                    };
+                    await this.todayWalRepository.setTodayWal(data);
+                }
+            }
 
             return await this.timeRepository.findById(userId) as ISetTime;
             
@@ -157,6 +163,28 @@ class UserService {
     }
 
 
+
+    private extractAddedTime(beforeSetTime: ISetTime, afterSetTime: ISetTime) {
+        const isAddedTime: Date[] = [];
+        if (beforeSetTime.morning === false && afterSetTime.morning === true)
+            isAddedTime.push(timeHandler.getMorning());
+        if (beforeSetTime.afternoon === false && afterSetTime.afternoon === true)
+            isAddedTime.push(timeHandler.getAfternoon());
+        if (beforeSetTime.night === false && afterSetTime.night === true)
+            isAddedTime.push(timeHandler.getNight());
+        return isAddedTime;
+    }
+
+    private extractCanceledTime(beforeSetTime: ISetTime, afterSetTime: ISetTime) {
+        const isCanceledTime: Date[] = [];
+        if (beforeSetTime.morning === true && afterSetTime.morning === false)
+            isCanceledTime.push(timeHandler.getMorning());
+        if (beforeSetTime.afternoon === true && afterSetTime.afternoon === false)
+            isCanceledTime.push(timeHandler.getAfternoon());
+        if (beforeSetTime.night === true && afterSetTime.night === false)
+            isCanceledTime.push(timeHandler.getNight());
+        return isCanceledTime;
+    }
 
     public async resetUserCategoryInfo(
         userId: number,

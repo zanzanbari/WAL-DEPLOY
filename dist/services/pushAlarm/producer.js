@@ -17,6 +17,7 @@ const _1 = require("./");
 const consumer_1 = require("./consumer");
 const models_1 = require("../../models");
 const logger_1 = __importDefault(require("../../api/middlewares/logger"));
+const timeHandler_1 = __importDefault(require("../../modules/timeHandler"));
 function addTimeQueue(userId, flag) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -79,24 +80,24 @@ function updateUserTime(userId, time, flag) {
         //flag: add, delete
         try {
             if (flag == "add") {
-                if (time == "morning") {
+                if (time == timeHandler_1.default.getMorning()) {
                     yield addTimeQueue(userId, 0);
                 }
-                else if (time == "afternoon") {
+                else if (time == timeHandler_1.default.getAfternoon()) {
                     yield addTimeQueue(userId, 1);
                 }
-                else if (time == "night") {
+                else if (time == timeHandler_1.default.getNight()) {
                     yield addTimeQueue(userId, 2);
                 }
             }
             else {
-                if (time == "morning") {
+                if (time == timeHandler_1.default.getMorning()) {
                     yield (_1.morningQueue === null || _1.morningQueue === void 0 ? void 0 : _1.morningQueue.removeRepeatable("__default__", { cron: `* 8 * * *`, jobId: userId }));
                 }
-                else if (time == "afternoon") {
+                else if (time == timeHandler_1.default.getAfternoon()) {
                     yield (_1.afternoonQueue === null || _1.afternoonQueue === void 0 ? void 0 : _1.afternoonQueue.removeRepeatable("__default__", { cron: `* 14 * * *`, jobId: userId }));
                 }
-                else if (time == "night") {
+                else if (time == timeHandler_1.default.getNight()) {
                     yield (_1.nightQueue === null || _1.nightQueue === void 0 ? void 0 : _1.nightQueue.removeRepeatable("__default__", { cron: `* 20 * * *`, jobId: userId }));
                 }
             }

@@ -13,11 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRandCategoryCurrentItem = exports.updateTodayWal = exports.updateToday = exports.messageQueue = exports.nightQueue = exports.afternoonQueue = exports.morningQueue = void 0;
-const models_1 = require("../../models");
 const bull_1 = __importDefault(require("bull"));
 const dayjs_1 = __importDefault(require("dayjs"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
 const sequelize_1 = require("sequelize");
+const models_1 = require("../../models");
 exports.morningQueue = new bull_1.default('morning-queue', {
     redis: {
         host: process.env.REDIS_HOST,

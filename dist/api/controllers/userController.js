@@ -13,17 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userController = void 0;
+const logger_1 = __importDefault(require("../middlewares/logger"));
+const initService_1 = __importDefault(require("../../services/user/initService"));
+const timeService_1 = __importDefault(require("../../services/user/timeService"));
+const categoryService_1 = __importDefault(require("../../services/user/categoryService"));
 const models_1 = require("../../models");
 const apiResponse_1 = require("../../modules/apiResponse");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
-const userService_1 = __importDefault(require("../../services/user/userService"));
-const logger_1 = __importDefault(require("../middlewares/logger"));
 const setInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, models_1.TodayWal, logger_1.default);
-        const data = yield userServiceInstance.initSetInfo((_a = req.user) === null || _a === void 0 ? void 0 : _a.id, req.body);
+        const initServiceInstance = new initService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, models_1.TodayWal, logger_1.default);
+        const data = yield initServiceInstance.initSetInfo((_a = req.user) === null || _a === void 0 ? void 0 : _a.id, req.body);
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.CREATED, resultMessage_1.default.SET_USER_INFO_SUCCESS, data);
     }
     catch (error) {
@@ -66,9 +68,9 @@ const getTimeInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 const getCategoryInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _d;
     try {
-        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, models_1.TodayWal, logger_1.default);
-        const data = yield userServiceInstance.getCategoryInfo((_d = req.user) === null || _d === void 0 ? void 0 : _d.id);
-        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_USER_INFO_SUCCESS, data);
+        const categoryServiceInstance = new categoryService_1.default(models_1.User, models_1.Item, logger_1.default);
+        const data = categoryServiceInstance.getCategoryInfo((_d = req.user) === null || _d === void 0 ? void 0 : _d.id);
+        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_USER_INFO_SUCCESS, yield data);
     }
     catch (error) {
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
@@ -77,9 +79,9 @@ const getCategoryInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 });
 const resetNicknameInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _e;
+    if (!req.body.nickname)
+        return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.NULL_VALUE);
     try {
-        if (!req.body.nickname)
-            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.NULL_VALUE);
         const user = yield models_1.User.findByIdAndResetNickname((_e = req.user) === null || _e === void 0 ? void 0 : _e.id, req.body.nickname);
         if (!user)
             return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.NO_USER);
@@ -94,8 +96,8 @@ const resetNicknameInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 const resetTimeInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _f;
     try {
-        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, models_1.TodayWal, logger_1.default);
-        const data = yield userServiceInstance.resetTimeInfo((_f = req.user) === null || _f === void 0 ? void 0 : _f.id, req.body.data);
+        const timeServiceInstance = new timeService_1.default(models_1.Time, models_1.TodayWal, logger_1.default);
+        const data = timeServiceInstance.resetTimeInfo((_f = req.user) === null || _f === void 0 ? void 0 : _f.id, req.body.data);
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.UPDATE_USER_INFO_SUCCESS, yield data);
     }
     catch (error) {
@@ -106,8 +108,8 @@ const resetTimeInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 const resetUserCategoryInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _g;
     try {
-        const userServiceInstance = new userService_1.default(models_1.User, models_1.Time, models_1.Item, models_1.UserCategory, models_1.TodayWal, logger_1.default);
-        const data = yield userServiceInstance.resetUserCategoryInfo((_g = req.user) === null || _g === void 0 ? void 0 : _g.id, req.body.data);
+        const categoryServiceInstance = new categoryService_1.default(models_1.User, models_1.Item, logger_1.default);
+        const data = yield categoryServiceInstance.resetUserCategoryInfo((_g = req.user) === null || _g === void 0 ? void 0 : _g.id, req.body.data);
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.UPDATE_USER_INFO_SUCCESS, data);
     }
     catch (error) {

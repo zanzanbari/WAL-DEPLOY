@@ -2,6 +2,7 @@ import { morningQueue, afternoonQueue, nightQueue } from './';
 import {morningFunc, afterFunc, nightFunc} from './consumer';
 import { Time } from "../../models";
 import logger from "../../api/middlewares/logger";
+import timeHandler from '../../modules/timeHandler';
 
 async function addTimeQueue(userId: number, flag: number): Promise<void> { //flag - 0: morning, 1: afternoon, 2: night
     try {
@@ -61,28 +62,28 @@ export async function addUserTime(userId: number): Promise<void> {
     
 }
 //user 세팅 수정 시 특정 조건에 걸리면 이 함수 실행
-export async function updateUserTime(userId: number, time: string, flag: string): Promise<void> {
+export async function updateUserTime(userId: number, time: Date, flag: string): Promise<void> {
 //time: morning, afternoon, night
 //flag: add, delete
     try {
         if (flag == "add") {
-            if (time == "morning") {
+            if (time == timeHandler.getMorning()) {
                 await addTimeQueue(userId, 0);
             } 
-            else if (time == "afternoon")  {
+            else if (time == timeHandler.getAfternoon())  {
                 await addTimeQueue(userId, 1);
             } 
-            else if (time == "night") {
+            else if (time == timeHandler.getNight()) {
                 await addTimeQueue(userId, 2);
             }
         } else {
-            if (time == "morning") {
+            if (time == timeHandler.getMorning()) {
                 await morningQueue?.removeRepeatable("__default__",{ cron: `* 8 * * *` , jobId: userId});
             } 
-            else if (time == "afternoon")  {
+            else if (time == timeHandler.getAfternoon())  {
                 await afternoonQueue?.removeRepeatable("__default__",{ cron: `* 14 * * *` , jobId: userId});
             } 
-            else if (time == "night") {
+            else if (time == timeHandler.getNight()) {
                 await nightQueue?.removeRepeatable("__default__",{ cron: `* 20 * * *` , jobId: userId});
             }
         }

@@ -1,8 +1,8 @@
-import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 import Queue from "bull";
 import dayjs from "dayjs";
 import schedule from 'node-schedule';
 import { Op } from "sequelize";
+import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 
 export const morningQueue = new Queue(
   'morning-queue', {
@@ -118,9 +118,9 @@ export async function getRandCategoryCurrentItem(userId: number) {
       Math.random() * (userCategories.length - 1)
     ); 
 
-    const currentItemId = userCategories[randomIdx].getDataValue("next_item_id");
+    const currentItemId: number = userCategories[randomIdx].getDataValue("next_item_id");
     //해당 카테고리의 Table상 id
-    const category_id = userCategories[randomIdx].getDataValue("category_id");
+    const category_id: number = userCategories[randomIdx].getDataValue("category_id");
   
     const sameCategoryItems = await Item.findAll({
       where: {

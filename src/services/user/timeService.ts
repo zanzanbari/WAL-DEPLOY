@@ -34,10 +34,10 @@ class TimeService {
       const updatedTime = this.timeRepository.findById(userId) as Promise<ISetTime>;
 
       const isCanceledTime: Date[] = this.extractCanceledTime(beforeSetTime, afterSetTime);
-      const cancelResult = this.setCanceledTime(isCanceledTime, userId);
+      const cancelResult: Promise<void> = this.setCanceledTime(isCanceledTime, userId);
         
       const isAddedTime: Date[] = this.extractAddedTime(beforeSetTime, afterSetTime);
-      const addResult = this.setAddedTime(isAddedTime, userId);
+      const addResult: Promise<void> = this.setAddedTime(isAddedTime, userId);
 
       await cancelResult;
       await addResult;

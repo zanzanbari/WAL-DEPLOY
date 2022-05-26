@@ -17,34 +17,20 @@ const bull_1 = __importDefault(require("bull"));
 const dayjs_1 = __importDefault(require("dayjs"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
 const sequelize_1 = require("sequelize");
+const config_1 = __importDefault(require("../../config"));
 const models_1 = require("../../models");
 exports.morningQueue = new bull_1.default('morning-queue', {
-    redis: {
-        host: process.env.REDIS_HOST,
-        port: 16916,
-        password: process.env.REDIS_PASSWORD
-    }
+    redis: config_1.default.redis
 });
 exports.afternoonQueue = new bull_1.default('afternoon-queue', {
-    redis: {
-        host: process.env.REDIS_HOST,
-        port: 16916,
-        password: process.env.REDIS_PASSWORD
-    }
+    redis: config_1.default.redis
 });
 exports.nightQueue = new bull_1.default('night-queue', {
-    redis: {
-        host: process.env.REDIS_HOST,
-        port: 16916,
-        password: process.env.REDIS_PASSWORD
-    }
+    redis: config_1.default.redis
 });
 exports.messageQueue = new bull_1.default('message-queue', {
-    redis: {
-        host: process.env.REDIS_HOST,
-        port: 16916,
-        password: process.env.REDIS_PASSWORD
-    }, defaultJobOptions: {
+    redis: config_1.default.redis,
+    defaultJobOptions: {
         removeOnComplete: true //job 완료 시 삭제
     }
 });

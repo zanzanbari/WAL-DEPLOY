@@ -39,10 +39,11 @@ exports.verifyToken = exports.issueRefreshToken = exports.issueAccessToken = voi
 const jwt = __importStar(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const logger_1 = __importDefault(require("../api/middlewares/logger"));
+const config_1 = __importDefault(require("../config"));
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 dotenv_1.default.config();
-const jwtSecret = process.env.JWT_SECRET;
+const jwtSecret = config_1.default.jwtSecret;
 const issueAccessToken = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const payload = {
         id: user === null || user === void 0 ? void 0 : user.id,
@@ -50,18 +51,12 @@ const issueAccessToken = (user) => __awaiter(void 0, void 0, void 0, function* (
         email: user === null || user === void 0 ? void 0 : user.email,
         social: user === null || user === void 0 ? void 0 : user.social
     };
-    const accesstoken = jwt.sign(payload, jwtSecret, {
-        issuer: process.env.JWT_ISSUER,
-        expiresIn: process.env.JWT_AC_EXPIRES,
-    });
+    const accesstoken = jwt.sign(payload, jwtSecret, config_1.default.jwtAcOption);
     return accesstoken;
 });
 exports.issueAccessToken = issueAccessToken;
 const issueRefreshToken = () => __awaiter(void 0, void 0, void 0, function* () {
-    const refreshtoken = jwt.sign({}, jwtSecret, {
-        issuer: process.env.JWT_ISSUER,
-        expiresIn: process.env.JWT_RF_EXPIRES,
-    });
+    const refreshtoken = jwt.sign({}, jwtSecret, config_1.default.jwtRfOption);
     return refreshtoken;
 });
 exports.issueRefreshToken = issueRefreshToken;

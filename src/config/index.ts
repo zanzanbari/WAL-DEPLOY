@@ -34,7 +34,7 @@ export default {
   /**
    * Your secret sauce
    */
-  jwtSecret: process.env.JWT_SECRET,
+  jwtSecret: process.env.JWT_SECRET as string,
   jwtAlgorithm: process.env.JWT_ALGORITHM,
   jwtAcOption: {
     issuer: process.env.JWT_ISSUER,

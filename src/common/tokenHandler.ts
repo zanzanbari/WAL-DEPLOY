@@ -8,8 +8,6 @@ const TOKEN_INVALID = -2;
 
 dotenv.config();
 
-const jwtSecret = config.jwtSecret as string;
-
 export const issueAccessToken = async (user?: UserInfo): Promise<Token> => {
     const payload = {
         id: user?.id,
@@ -17,7 +15,7 @@ export const issueAccessToken = async (user?: UserInfo): Promise<Token> => {
         email: user?.email,
         social: user?.social
     };
-    const accesstoken = jwt.sign(payload, jwtSecret, config.jwtAcOption);
+    const accesstoken = jwt.sign(payload, config.jwtSecret, config.jwtAcOption);
 
     return accesstoken;
 };
@@ -25,7 +23,7 @@ export const issueAccessToken = async (user?: UserInfo): Promise<Token> => {
 
 
 export const issueRefreshToken = async (): Promise<Token> => {
-    const refreshtoken = jwt.sign({}, jwtSecret, config.jwtRfOption);
+    const refreshtoken = jwt.sign({}, config.jwtSecret, config.jwtRfOption);
 
     return refreshtoken;
 };
@@ -37,7 +35,7 @@ export const verifyToken = async (token?: string) => {
 
     let decoded: any;
     try {            
-        decoded = jwt.verify(token as string, jwtSecret);
+        decoded = jwt.verify(token as string, config.jwtSecret);
     } catch (error) {
         if (error.message === "jwt expired") {
             logger.appLogger.log({ level: "error", message: "토큰이 만료되었습니다"});

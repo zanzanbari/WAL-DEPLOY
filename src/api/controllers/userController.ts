@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import logger from "../middlewares/logger";
+import logger from "../../loaders/logger";
 import InitService from "../../services/user/initService";
 import TimeService from "../../services/user/timeService";
 import CategoryService from "../../services/user/categoryService";

@@ -9,7 +9,7 @@ import KakaoAuthService from "../../services/auth/kakaoAuthService";
 import { TokenDto } from "../../interface/dto/request/authRequest";
 import { AuthResponse } from "../../interface/dto/response/authResponse";
 import ReissueTokenService from "../../services/auth/reissueTokenService";
-import logger from "../middlewares/logger";
+import logger from "../../loaders/logger";
 
 const socialLogin = async (
     req: Request, 

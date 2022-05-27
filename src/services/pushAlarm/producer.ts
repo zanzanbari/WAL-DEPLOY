@@ -1,7 +1,7 @@
 import { morningQueue, afternoonQueue, nightQueue } from './';
 import {morningFunc, afterFunc, nightFunc} from './consumer';
 import { Time } from "../../models";
-import logger from "../../api/middlewares/logger";
+import logger from "../../loaders/logger";
 import timeHandler from '../../modules/timeHandler';
 
 async function addTimeQueue(userId: number, flag: number): Promise<void> { //flag - 0: morning, 1: afternoon, 2: night

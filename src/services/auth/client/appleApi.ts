@@ -1,6 +1,6 @@
 import { IApplePublicKeys } from "../../../interface/dto/response/authResponse";
 import axios from "axios";
-import logger from "../../../api/middlewares/logger";
+import logger from "../../../loaders/logger";
 
 // apple public key 가져오는 함수
 export async function getPublicKey(): Promise<IApplePublicKeys> {

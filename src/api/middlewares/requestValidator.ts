@@ -5,7 +5,7 @@ import rm from "../../constant/resultMessage";
 import { ErrorResponse } from "../../modules/apiResponse";
 import { SocialType, TokenDto } from "../../interface/dto/request/authRequest";
 import { ISetCategory, ISetTime, ResetTimeDto, UserSettingDto } from "../../interface/dto/request/userRequest";
-import logger from "../../api/middlewares/logger";
+import logger from "../../loaders/logger";
 
 // fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
 const loginRequestCheck = async (

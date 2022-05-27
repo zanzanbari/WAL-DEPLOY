@@ -6,7 +6,7 @@ import cors from 'cors';
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
 import { updateToday } from './services/pushAlarm';
-import logger from './api/middlewares/logger';
+import logger from './loaders/logger';
 import config from './config';
 
 function startServer(): void {

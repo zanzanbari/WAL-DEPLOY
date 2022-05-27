@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Token, UserInfo } from "../../../interface/dto/response/authResponse";
-import logger from "../../../api/middlewares/logger";
+import logger from "../../../loaders/logger";
 import { isEmail } from "../../../modules/validator";
 
 

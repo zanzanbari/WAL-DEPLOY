@@ -6,7 +6,7 @@ import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import { TokenDto } from "../../interface/dto/request/authRequest";
 import { UserInfo } from "../../interface/dto/response/authResponse";
-import logger from "../../api/middlewares/logger";
+import logger from "../../loaders/logger";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 

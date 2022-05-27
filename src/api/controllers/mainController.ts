@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import logger from "../middlewares/logger";
+import logger from "../../loaders/logger";
 import { TodayWal, Item, Reservation } from "../../models";
 import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
 import sc from "../../constant/resultCode";

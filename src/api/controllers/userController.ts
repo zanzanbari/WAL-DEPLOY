@@ -25,9 +25,9 @@ const setInfo = async (
   try {
         
     const initServiceInstance = new InitService(User, Time, Item, UserCategory, TodayWal, logger);
-    const data = await initServiceInstance.initSetInfo(req.user?.id as number, req.body as UserSettingDto);
+    const data = initServiceInstance.initSetInfo(req.user?.id as number, req.body as UserSettingDto);
 
-    SuccessResponse(res, sc.CREATED, rm.SET_USER_INFO_SUCCESS,data);
+    SuccessResponse(res, sc.CREATED, rm.SET_USER_INFO_SUCCESS,await data);
 
   } catch (error) {
     ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
@@ -192,9 +192,9 @@ const resetUserCategoryInfo = async (
   try {
     
     const categoryServiceInstance = new CategoryService(User, Item, logger);
-    const data = await categoryServiceInstance.resetUserCategoryInfo(req.user?.id as number, req.body.data as ResetCategoryDto);
+    const data = categoryServiceInstance.resetUserCategoryInfo(req.user?.id as number, req.body.data as ResetCategoryDto);
 
-    SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, data);
+    SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, await data);
 
   } catch (error) {
     ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);

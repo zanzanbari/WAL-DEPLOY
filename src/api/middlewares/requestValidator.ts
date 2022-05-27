@@ -2,7 +2,7 @@ import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
-import { ErrorResponse } from "../../modules/apiResponse";
+import { ErrorResponse } from "../../common/apiResponse";
 import { SocialType, TokenDto } from "../../interface/dto/request/authRequest";
 import { ISetCategory, ISetTime, ResetTimeDto, UserSettingDto } from "../../interface/dto/request/userRequest";
 import logger from "../../loaders/logger";

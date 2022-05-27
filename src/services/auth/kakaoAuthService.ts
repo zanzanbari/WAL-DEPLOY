@@ -3,7 +3,7 @@ import IAuthService from "./authService";
 import kakaoApiUtil from "./client/kakaoApi";
 import { TokenDto } from "../../interface/dto/request/authRequest";
 import { AuthResponse } from "../../interface/dto/response/authResponse";
-import { issueAccessToken, issueRefreshToken } from "../../modules/tokenHandler";
+import { issueAccessToken, issueRefreshToken } from "../../common/tokenHandler";
 
 @Service()
 class KakaoAuthService implements IAuthService {

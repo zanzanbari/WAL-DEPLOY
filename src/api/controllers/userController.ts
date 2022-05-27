@@ -4,7 +4,7 @@ import InitService from "../../services/user/initService";
 import TimeService from "../../services/user/timeService";
 import CategoryService from "../../services/user/categoryService";
 import { Item, Time, TodayWal, User, UserCategory } from "../../models";
-import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
+import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import { UserInfoResponse } from "../../interface/dto/response/userResponse";

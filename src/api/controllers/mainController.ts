@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import logger from "../../loaders/logger";
 import { TodayWal, Item, Reservation } from "../../models";
-import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
+import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 

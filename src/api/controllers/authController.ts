@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../../models";
-import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
+import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import Error from "../../constant/responseError";

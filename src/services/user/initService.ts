@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { getRandCategoryCurrentItem } from "../pushAlarm";
 import { addUserTime } from "../pushAlarm/producer";
-import timeHandler from "../../modules/timeHandler";
+import timeHandler from "../../common/timeHandler";
 import { 
     ISetUserCategory, 
     UserSettingDto, 

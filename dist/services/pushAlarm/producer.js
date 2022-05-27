@@ -16,8 +16,8 @@ exports.updateUserTime = exports.addUserTime = void 0;
 const _1 = require("./");
 const consumer_1 = require("./consumer");
 const models_1 = require("../../models");
-const logger_1 = __importDefault(require("../../api/middlewares/logger"));
-const timeHandler_1 = __importDefault(require("../../modules/timeHandler"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
+const timeHandler_1 = __importDefault(require("../../common/timeHandler"));
 function addTimeQueue(userId, flag) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

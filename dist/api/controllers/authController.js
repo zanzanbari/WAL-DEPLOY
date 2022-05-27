@@ -14,13 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
 const models_1 = require("../../models");
-const apiResponse_1 = require("../../modules/apiResponse");
+const apiResponse_1 = require("../../common/apiResponse");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const appleAuthService_1 = __importDefault(require("../../services/auth/appleAuthService"));
 const kakaoAuthService_1 = __importDefault(require("../../services/auth/kakaoAuthService"));
 const reissueTokenService_1 = __importDefault(require("../../services/auth/reissueTokenService"));
-const logger_1 = __importDefault(require("../middlewares/logger"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { social } = req.params;
     try {

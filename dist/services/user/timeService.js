@@ -24,7 +24,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
 const pushAlarm_1 = require("../pushAlarm");
 const producer_1 = require("../pushAlarm/producer");
-const timeHandler_1 = __importDefault(require("../../modules/timeHandler"));
+const timeHandler_1 = __importDefault(require("../../common/timeHandler"));
 let TimeService = class TimeService {
     constructor(timeRepository, todayWalRepository, logger) {
         this.timeRepository = timeRepository;

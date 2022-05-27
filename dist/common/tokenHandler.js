@@ -38,7 +38,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = exports.issueRefreshToken = exports.issueAccessToken = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const logger_1 = __importDefault(require("../api/middlewares/logger"));
+const logger_1 = __importDefault(require("../loaders/logger"));
 const config_1 = __importDefault(require("../config"));
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;

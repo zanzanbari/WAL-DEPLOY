@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userController = void 0;
-const logger_1 = __importDefault(require("../middlewares/logger"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const initService_1 = __importDefault(require("../../services/user/initService"));
 const timeService_1 = __importDefault(require("../../services/user/timeService"));
 const categoryService_1 = __importDefault(require("../../services/user/categoryService"));
 const models_1 = require("../../models");
-const apiResponse_1 = require("../../modules/apiResponse");
+const apiResponse_1 = require("../../common/apiResponse");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const setInfo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

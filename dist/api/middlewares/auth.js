@@ -13,11 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../../models");
-const apiResponse_1 = require("../../modules/apiResponse");
-const tokenHandler_1 = require("../../modules/tokenHandler");
+const apiResponse_1 = require("../../common/apiResponse");
+const tokenHandler_1 = require("../../common/tokenHandler");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
-const logger_1 = __importDefault(require("../../api/middlewares/logger"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

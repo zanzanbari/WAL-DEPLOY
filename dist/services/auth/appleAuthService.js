@@ -33,7 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = __importStar(require("jsonwebtoken"));
-const tokenHandler_1 = require("../../modules/tokenHandler");
+const tokenHandler_1 = require("../../common/tokenHandler");
 class AppleAuthService {
     constructor(userRepository, logger) {
         this.userRepository = userRepository;

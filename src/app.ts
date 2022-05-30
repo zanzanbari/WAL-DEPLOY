@@ -6,7 +6,8 @@ import cors from 'cors';
 import apiRouter from './api/routes';
 import { connectDB } from './loaders/db';
 import { updateToday } from './services/pushAlarm';
-import logger from './api/middlewares/logger';
+import logger from './loaders/logger';
+import config from './config';
 
 function startServer(): void {
     const app = express();
@@ -41,13 +42,13 @@ function startServer(): void {
         logger.appLogger.log({
             level: 'error',
             message: err.message
-        })
+        });
     });
 
-    app.listen(8080, () => {
+    app.listen(config.port, () => {
         console.log(`
         ################################################
-        🛡️  Server listening on port 8080🛡️
+        🛡️  Server listening on port 🛡️
         ################################################
       `);
     })
@@ -55,7 +56,7 @@ function startServer(): void {
         logger.appLogger.log({
             level: 'error',
             message: err.message
-        })
+        });
         process.exit(1);
     });
 }

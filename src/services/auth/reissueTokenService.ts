@@ -1,6 +1,6 @@
 import Error from "../../constant/responseError";
-import { isTokenExpired } from "../../modules/validator";
-import { issueAccessToken, verifyToken } from "../../modules/tokenHandler";
+import { isTokenExpired } from "../../common/validator";
+import { issueAccessToken, verifyToken } from "../../common/tokenHandler";
 import { TokenDto } from "../../interface/dto/request/authRequest";
 import { AuthResponse } from "../../interface/dto/response/authResponse";
 

@@ -1,50 +1,36 @@
-import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 import Queue from "bull";
 import dayjs from "dayjs";
 import schedule from 'node-schedule';
 import { Op } from "sequelize";
+import config from "../../config";
+import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 
 export const morningQueue = new Queue(
   'morning-queue', {
-    redis: { 
-      host: process.env.REDIS_HOST,
-      port: 16916,
-      password: process.env.REDIS_PASSWORD
-    }
+    redis: config.redis
   }
 );
 
 export const afternoonQueue = new Queue(
   'afternoon-queue', {
-    redis: { 
-      host: process.env.REDIS_HOST,
-      port: 16916,
-      password: process.env.REDIS_PASSWORD
-    }
+    redis: config.redis
   }
 );
 
 export const nightQueue = new Queue(
   'night-queue', {
-    redis: {
-	host: process.env.REDIS_HOST,
-	port: 16916,
-	password: process.env.REDIS_PASSWORD
-    }
+    redis: config.redis
   }
 );
 
 export const messageQueue = new Queue(
-    'message-queue', {
-      redis: { 
-        host: process.env.REDIS_HOST,
-        port: 16916,
-        password: process.env.REDIS_PASSWORD
-      }, defaultJobOptions: {
-        removeOnComplete: true //job 완료 시 삭제
-      }
+  'message-queue', {
+    redis: config.redis,
+    defaultJobOptions: {
+      removeOnComplete: true //job 완료 시 삭제
     }
-  );
+  }
+);
 
   /*
   redis: { 
@@ -53,12 +39,12 @@ export const messageQueue = new Queue(
       }
   */
 export function updateToday() {
-    schedule.scheduleJob('0 0 0 * * *', async () => {
-        await TodayWal.destroy({
-            where: {},
-            truncate: true
-        });
-        await updateTodayWal();
+  schedule.scheduleJob('0 0 0 * * *', async () => {
+    await TodayWal.destroy({
+      where: {},
+      truncate: true
+    });
+    await updateTodayWal();
   });
 }
 
@@ -118,9 +104,9 @@ export async function getRandCategoryCurrentItem(userId: number) {
       Math.random() * (userCategories.length - 1)
     ); 
 
-    const currentItemId = userCategories[randomIdx].getDataValue("next_item_id");
+    const currentItemId: number = userCategories[randomIdx].getDataValue("next_item_id");
     //해당 카테고리의 Table상 id
-    const category_id = userCategories[randomIdx].getDataValue("category_id");
+    const category_id: number = userCategories[randomIdx].getDataValue("category_id");
   
     const sameCategoryItems = await Item.findAll({
       where: {

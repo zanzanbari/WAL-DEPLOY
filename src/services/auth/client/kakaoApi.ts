@@ -1,68 +1,70 @@
 import axios from "axios";
-import { Token, UserInfo } from "../../../interface/dto/response/authResponse";
 import logger from "../../../loaders/logger";
 import { isEmail } from "../../../common/validator";
-
+import { Token, UserInfo } from "../../../interface/dto/response/authResponse";
 
 async function auth(
-    kakaoAccessToken: Token
+  kakaoAccessToken: Token
 ): Promise<UserInfo | undefined> { 
-    try {
 
-        const apiUrl = "https://kapi.kakao.com/v2/user/me";
-        const reqConfig = {
-            headers: {
-                "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
-                "Authorization": `Bearer ${kakaoAccessToken}`
-            }
-        };
+  try {
 
-        const userData = await axios.post(apiUrl, {},reqConfig)
-            .then((resolve) => {
-                const nickname: string = resolve.data.properties["nickname"];
-                const email: string = resolve.data.kakao_account["email"];
-                return { nickname, email };
-            });
+    const apiUrl = "https://kapi.kakao.com/v2/user/me";
+    const reqConfig = {
+      headers: {
+        "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+        "Authorization": `Bearer ${kakaoAccessToken}`
+      }
+    };
 
-        if (!isEmail(userData.email)) {
-            throw new Error("Validation isEmail on email failed");
-        }
+    const userData = await axios.post(apiUrl, {},reqConfig)
+      .then((resolve) => {
+        const nickname: string = resolve.data.properties["nickname"];
+        const email: string = resolve.data.kakao_account["email"];
+        return { nickname, email };
+      });
 
-        return userData;
+      if (!isEmail(userData.email)) {
+        throw new Error("Validation isEmail on email failed");
+      }
 
-    } catch (error) {
-        logger.appLogger.log({ level: 'error', message: error.message }); 
-        throw new Error("AXIOS_ERROR");
-    }
+    return userData;
+
+  } catch (error) {
+    logger.appLogger.log({ level: 'error', message: error.message }); 
+    throw new Error("AXIOS_ERROR");
+  }
+
 };
-
 
 
 async function unlink(
-    kakaoAccessToken?: Token
+  kakaoAccessToken?: Token
 ): Promise<void> {
-    try {
 
-        const apiUrl = "https://kapi.kakao.com/v1/user/unlink";
-        const reqConfig = {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Authorization": `Bearer ${kakaoAccessToken}`
-            }
-        };
+  try {
 
-        const userData = await axios.post(apiUrl, {}, reqConfig);
-        logger.httpLogStream.write({ level: "info", message: userData });
+    const apiUrl = "https://kapi.kakao.com/v1/user/unlink";
+    const reqConfig = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": `Bearer ${kakaoAccessToken}`
+      }
+    };
 
-    } catch (error) {
-        logger.appLogger.log({ level: 'error', message: error.message });
-        throw new Error("AXIOS_ERROR");
-    }
+    const userData = await axios.post(apiUrl, {}, reqConfig);
+    logger.httpLogStream.write({ level: "info", message: userData });
+
+  } catch (error) {
+    logger.appLogger.log({ level: 'error', message: error.message });
+    throw new Error("AXIOS_ERROR");
+  }
+
 };
 
 const kakaoApiUtil = {
-    auth,
-    unlink,
+  auth,
+  unlink,
 };
 
 export default kakaoApiUtil;

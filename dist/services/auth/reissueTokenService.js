@@ -32,11 +32,8 @@ class ReissueTokenService {
                 return user;
             }
             catch (error) {
-                this.logger.appLogger.log({
-                    level: "error",
-                    message: error.message
-                });
-                // throw new Error(error);
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
             }
         });
     }

@@ -39,11 +39,15 @@ class AppleAuthService {
         this.userRepository = userRepository;
         this.logger = logger;
     }
+    /**
+     *  @애플_로그인
+     *  @route POST /auth/apple/login
+     *  @access public
+     */
     login(request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // 결국 해야되는건 -> id_token 받아서 
-                // apple server 공개 키로 jwt 해독 (해야하는데 실패) -> 나중에 다시 시도
+                // FIXME apple server 공개 키로 jwt 해독
                 const payload = jwt.decode(request.socialtoken);
                 const userData = { email: payload.sub, nickname: null };
                 const refreshtoken = yield (0, tokenHandler_1.issueRefreshToken)();
@@ -57,14 +61,27 @@ class AppleAuthService {
                 return user;
             }
             catch (error) {
-                console.error(error);
                 this.logger.appLogger.log({ level: "error", message: error.message });
-                throw new Error(error);
+                throw error;
             }
         });
     }
-    resign(userId, token) {
-        throw new Error("Method not implemented.");
+    /**
+     *  @애플_로그아웃_탈퇴
+     *  @route POST /auth/apple/resign
+     *  @access public
+     */
+    resign(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const resignedUser = this.userRepository.findAndDelete(userId);
+                return yield resignedUser;
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
+            }
+        });
     }
 }
 exports.default = AppleAuthService;

@@ -25,11 +25,16 @@ const typedi_1 = require("typedi");
 const kakaoApi_1 = __importDefault(require("./client/kakaoApi"));
 const tokenHandler_1 = require("../../common/tokenHandler");
 let KakaoAuthService = class KakaoAuthService {
-    // 주입해주고 싶다 
+    // TODO 주입해주고 싶다 
     constructor(userRepository, logger) {
         this.userRepository = userRepository;
         this.logger = logger;
     }
+    /**
+     *  @카카오_로그인
+     *  @route POST /auth/kakao/login
+     *  @access public
+     */
     login(request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -50,6 +55,11 @@ let KakaoAuthService = class KakaoAuthService {
             }
         });
     }
+    /**
+     *  @카카오_로그아웃_탈퇴
+     *  @route POST /auth/kakao/resign
+     *  @access public
+     */
     resign(userId, request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

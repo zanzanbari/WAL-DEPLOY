@@ -17,7 +17,7 @@ const models_1 = require("../../models");
 const _1 = require("./");
 const dayjs_1 = __importDefault(require("dayjs"));
 const messageConsumer_1 = require("./messageConsumer");
-const logger_1 = __importDefault(require("../../api/middlewares/logger"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 function getTokenMessage(time, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

@@ -14,13 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
 const models_1 = require("../../models");
-const apiResponse_1 = require("../../modules/apiResponse");
+const apiResponse_1 = require("../../common/apiResponse");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const appleAuthService_1 = __importDefault(require("../../services/auth/appleAuthService"));
 const kakaoAuthService_1 = __importDefault(require("../../services/auth/kakaoAuthService"));
 const reissueTokenService_1 = __importDefault(require("../../services/auth/reissueTokenService"));
-const logger_1 = __importDefault(require("../middlewares/logger"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { social } = req.params;
     try {
@@ -89,7 +89,7 @@ const reissueToken = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     try {
         const reissueTokenServiceInstance = new reissueTokenService_1.default(models_1.User, logger_1.default);
         const data = yield reissueTokenServiceInstance.reissueToken(req.headers);
-        if (data === 17 /* TOKEN_EXPIRES */) {
+        if (data === 17 /* Error.TOKEN_EXPIRES */) {
             return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.UNAUTHORIZED, resultMessage_1.default.PLEASE_LOGIN_AGAIN);
         }
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.REISSUE_TOKEN, data);

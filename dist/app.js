@@ -11,7 +11,8 @@ const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./api/routes"));
 const db_1 = require("./loaders/db");
 const pushAlarm_1 = require("./services/pushAlarm");
-const logger_1 = __importDefault(require("./api/middlewares/logger"));
+const logger_1 = __importDefault(require("./loaders/logger"));
+const config_1 = __importDefault(require("./config"));
 function startServer() {
     const app = (0, express_1.default)();
     logger_1.default.appLogger.log({
@@ -43,10 +44,10 @@ function startServer() {
             message: err.message
         });
     });
-    app.listen(8080, () => {
+    app.listen(config_1.default.port, () => {
         console.log(`
         ################################################
-        🛡️  Server listening on port 8080🛡️
+        🛡️  Server listening on port 🛡️
         ################################################
       `);
     })

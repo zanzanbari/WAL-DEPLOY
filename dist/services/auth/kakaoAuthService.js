@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
 const kakaoApi_1 = __importDefault(require("./client/kakaoApi"));
-const tokenHandler_1 = require("../../modules/tokenHandler");
+const tokenHandler_1 = require("../../common/tokenHandler");
 let KakaoAuthService = class KakaoAuthService {
     // 주입해주고 싶다 
     constructor(userRepository, logger) {

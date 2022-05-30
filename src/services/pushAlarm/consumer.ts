@@ -3,7 +3,7 @@ import {  messageQueue } from './';
 import { Job, DoneCallback } from "bull";
 import dayjs from "dayjs";
 import { messageFunc } from "./messageConsumer";
-import logger from "../../api/middlewares/logger";
+import logger from "../../loaders/logger";
 
 async function getTokenMessage(time: Date, userId: number) {
 

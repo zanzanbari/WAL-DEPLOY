@@ -1,4 +1,3 @@
-import dbConfig from '../config/dbConfig';
 import { Sequelize } from 'sequelize-typescript';
 import User from './users';
 import Category from './categories';
@@ -7,12 +6,13 @@ import Time from './times';
 import Reservation from './reservations';
 import UserCategory from './userCategories';
 import TodayWal from './todayWals';
+import config from '../config';
 
 const sequelize = new Sequelize({
-    host: dbConfig.development.host,
-    database: dbConfig.development.database,
-    username: dbConfig.development.username,
-    password: dbConfig.development.password,
+    host: config.database.development.host,
+    database: config.database.development.db,
+    username: config.database.development.username,
+    password: config.database.development.password,
     dialect: "postgres",
     logging: false,
     timezone: "+09:00",

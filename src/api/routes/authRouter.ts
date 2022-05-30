@@ -6,20 +6,20 @@ import validateUtil from "../middlewares/requestValidator";
 const router = Router();
 
 router.post(
-    "/:social/login", 
-    validateUtil.loginRequestCheck,
-    authController.socialLogin
+  "/:social/login", 
+  validateUtil.loginRequestCheck,
+  authController.socialLogin
 );
 router.post(
-    "/:social/logout",
-    validateUtil.loginRequestCheck,
-    authUtil.isAuth, 
-    authController.socialResign
+  "/:social/logout",
+  validateUtil.loginRequestCheck,
+  authUtil.isAuth, 
+  authController.socialResign
 );
 router.get(
-    "/logout", 
-    authUtil.isAuth, 
-    authController.logout
+  "/logout", 
+  authUtil.isAuth, 
+  authController.logout
 );
 router.post("/reissue/token", authController.reissueToken);
 

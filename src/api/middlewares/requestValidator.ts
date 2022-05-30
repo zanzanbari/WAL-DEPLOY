@@ -2,10 +2,10 @@ import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
-import { ErrorResponse } from "../../modules/apiResponse";
+import { ErrorResponse } from "../../common/apiResponse";
 import { SocialType, TokenDto } from "../../interface/dto/request/authRequest";
 import { ISetCategory, ISetTime, ResetTimeDto, UserSettingDto } from "../../interface/dto/request/userRequest";
-import logger from "../../api/middlewares/logger";
+import logger from "../../loaders/logger";
 
 // fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
 const loginRequestCheck = async (

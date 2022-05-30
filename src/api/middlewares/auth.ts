@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../../models";
-import { ErrorResponse } from "../../modules/apiResponse";
-import { verifyToken } from "../../modules/tokenHandler";
+import { ErrorResponse } from "../../common/apiResponse";
+import { verifyToken } from "../../common/tokenHandler";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import { TokenDto } from "../../interface/dto/request/authRequest";
 import { UserInfo } from "../../interface/dto/response/authResponse";
-import logger from "../../api/middlewares/logger";
+import logger from "../../loaders/logger";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;
 

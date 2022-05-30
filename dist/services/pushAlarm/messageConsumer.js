@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.messageFunc = void 0;
 const firebase_1 = require("../../loaders/firebase");
-const logger_1 = __importDefault(require("../../api/middlewares/logger"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { fcmtoken, content } = job.data;

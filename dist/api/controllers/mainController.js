@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mainController = void 0;
-const logger_1 = __importDefault(require("../middlewares/logger"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const models_1 = require("../../models");
-const apiResponse_1 = require("../../modules/apiResponse");
+const apiResponse_1 = require("../../common/apiResponse");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const getMainResponse = (todayWals) => __awaiter(void 0, void 0, void 0, function* () {

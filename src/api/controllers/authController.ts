@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../../models";
-import { ErrorResponse, SuccessResponse } from "../../modules/apiResponse";
+import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import Error from "../../constant/responseError";
@@ -9,7 +9,7 @@ import KakaoAuthService from "../../services/auth/kakaoAuthService";
 import { TokenDto } from "../../interface/dto/request/authRequest";
 import { AuthResponse } from "../../interface/dto/response/authResponse";
 import ReissueTokenService from "../../services/auth/reissueTokenService";
-import logger from "../middlewares/logger";
+import logger from "../../loaders/logger";
 
 const socialLogin = async (
     req: Request, 
@@ -86,7 +86,7 @@ const logout = async (
     next: NextFunction
 ) => {
     const userId = req.user?.id;
-    console.log("userId : ", userId);
+
     try {
 
         await User.update({

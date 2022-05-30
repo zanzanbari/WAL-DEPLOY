@@ -15,8 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const joi_1 = __importDefault(require("joi"));
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
-const apiResponse_1 = require("../../modules/apiResponse");
-const logger_1 = __importDefault(require("../../api/middlewares/logger"));
+const apiResponse_1 = require("../../common/apiResponse");
+const logger_1 = __importDefault(require("../../loaders/logger"));
 // fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
 const loginRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const loginParamSchema = joi_1.default.object().keys({

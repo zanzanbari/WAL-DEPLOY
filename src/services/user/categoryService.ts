@@ -1,5 +1,8 @@
 import { Service } from "typedi";
-import { ISetCategory, ISetUserCategory, ResetCategoryDto } from "../../interface/dto/request/userRequest";
+import { 
+  ISetCategory, 
+  ISetUserCategory, 
+  ResetCategoryDto } from "../../interface/dto/request/userRequest";
 
 @Service()
 class CategoryService {
@@ -30,7 +33,7 @@ class CategoryService {
     try {
       
       const dtypeInfo = this.userCategoryRepository.findCategoryByUserId(userId) as Promise<string[]>;
-      this.setCategoryInfo(await dtypeInfo);
+      this.setCategorySelection(await dtypeInfo);
 
       return this.categorySelection;
 
@@ -62,7 +65,7 @@ class CategoryService {
       await this.resetUserCategory(before, after, userId);
 
       const dtypeInfo: Promise<string[]> = this.userCategoryRepository.findCategoryByUserId(userId);
-      this.setCategoryInfo(await dtypeInfo);
+      this.setCategorySelection(await dtypeInfo);
         
       return this.categorySelection;
 
@@ -116,7 +119,7 @@ class CategoryService {
   }
 
 
-  private setCategoryInfo(data: string[]): void {
+  private setCategorySelection(data: string[]): void {
     for (const dtype of data) {
       if (dtype === "joke") this.categorySelection.joke = true;
       if (dtype === "compliment") this.categorySelection.compliment = true;

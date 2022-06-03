@@ -38,7 +38,7 @@ function addTimeQueue(userId, flag) {
                 case 2:
                     yield _1.nightQueue.add(userId, {
                         jobId: userId,
-                        repeat: { cron: `* 20 * * *` }
+                        repeat: { cron: `* 23 * * *` }
                     });
                     yield _1.nightQueue.process(consumer_1.nightFunc);
                     break;

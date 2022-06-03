@@ -10,12 +10,10 @@ import {
     Table, 
     Unique, 
     Default} from "sequelize-typescript"
-import Category from "./categories";
 import User from "./users";
 import Item from "./items";
 import Reservation from "./reservations";
-import rm from "../constant/resultMessage";
-import { ISetTodayWal } from "@/interface/dto/request/userRequest";
+import { ISetTodayWal } from "../interface/dto/request/userRequest";
 
 @Table({ // 테이블 설정
     modelName: "TodayWal",
@@ -82,8 +80,8 @@ export default class TodayWal extends Model {
         return todayWals;
     }
     
-    static async deleteTodayWal(userId: number) {
-        await this.destroy({ where: { user_id: userId } });
+    static async deleteTodayWal(user_id: number, time?: Date) {
+        await this.destroy({ where: { user_id, time } });
     }
 
 }

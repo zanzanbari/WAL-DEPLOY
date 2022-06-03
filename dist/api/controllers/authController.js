@@ -14,13 +14,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
 const models_1 = require("../../models");
-const apiResponse_1 = require("../../modules/apiResponse");
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
+const apiResponse_1 = require("../../common/apiResponse");
 const appleAuthService_1 = __importDefault(require("../../services/auth/appleAuthService"));
 const kakaoAuthService_1 = __importDefault(require("../../services/auth/kakaoAuthService"));
 const reissueTokenService_1 = __importDefault(require("../../services/auth/reissueTokenService"));
-const logger_1 = __importDefault(require("../middlewares/logger"));
+/**
+ *  @소셜_로그인
+ *  @route POST /auth/:social/login
+ *  @params social: kakao | apple
+ *  @access public
+ */
 const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { social } = req.params;
     try {
@@ -48,18 +54,27 @@ const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         return next(error);
     }
 });
+/**
+ *  @소셜_로그아웃_탈퇴
+ *  @route POST /auth/:social/resign
+ *  @params social: kakao | apple
+ *  @access public
+ */
 const socialResign = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { social } = req.params;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
     try {
         let data;
         switch (social) {
             case "kakao":
                 const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, logger_1.default);
-                data = yield kakaoAuthServiceInstance
-                    .resign((_a = req.user) === null || _a === void 0 ? void 0 : _a.id, req.query);
+                data = yield kakaoAuthServiceInstance.resign(userId, req.query);
                 break;
-            // case "apple":
+            case "apple":
+                const appleAuthServiceInstance = new appleAuthService_1.default(models_1.User, logger_1.default);
+                data = yield appleAuthServiceInstance.resign(userId);
+                break;
         }
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_USER, data);
     }
@@ -68,11 +83,16 @@ const socialResign = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         return next(error);
     }
 });
+/**
+ *  @로그아웃
+ *  @route GET /auth/logout
+ *  @access public
+ */
 const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
-    console.log("userId : ", userId);
     try {
+        // FIXME accesstoken 만료시켜야되는거 아님??
         yield models_1.User.update({
             refreshtoken: null,
         }, {
@@ -85,11 +105,16 @@ const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         return next(error);
     }
 });
+/**
+ *  @로그아웃
+ *  @route GET /auth/reissue/token
+ *  @access public
+ */
 const reissueToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reissueTokenServiceInstance = new reissueTokenService_1.default(models_1.User, logger_1.default);
         const data = yield reissueTokenServiceInstance.reissueToken(req.headers);
-        if (data === 17 /* TOKEN_EXPIRES */) {
+        if (data === 17 /* Error.TOKEN_EXPIRES */) {
             return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.UNAUTHORIZED, resultMessage_1.default.PLEASE_LOGIN_AGAIN);
         }
         return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.REISSUE_TOKEN, data);

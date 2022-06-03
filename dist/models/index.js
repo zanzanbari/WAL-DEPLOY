@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TodayWal = exports.Reservation = exports.Time = exports.Item = exports.UserCategory = exports.Category = exports.User = void 0;
-const dbConfig_1 = __importDefault(require("../config/dbConfig"));
 const sequelize_typescript_1 = require("sequelize-typescript");
 const users_1 = __importDefault(require("./users"));
 exports.User = users_1.default;
@@ -20,11 +19,12 @@ const userCategories_1 = __importDefault(require("./userCategories"));
 exports.UserCategory = userCategories_1.default;
 const todayWals_1 = __importDefault(require("./todayWals"));
 exports.TodayWal = todayWals_1.default;
+const config_1 = __importDefault(require("../config"));
 const sequelize = new sequelize_typescript_1.Sequelize({
-    host: dbConfig_1.default.development.host,
-    database: dbConfig_1.default.development.database,
-    username: dbConfig_1.default.development.username,
-    password: dbConfig_1.default.development.password,
+    host: config_1.default.database.development.host,
+    database: config_1.default.database.development.db,
+    username: config_1.default.database.development.username,
+    password: config_1.default.database.development.password,
     dialect: "postgres",
     logging: false,
     timezone: "+09:00",

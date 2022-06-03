@@ -14,12 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPublicKey = void 0;
 const axios_1 = __importDefault(require("axios"));
-const logger_1 = __importDefault(require("../../../api/middlewares/logger"));
+const logger_1 = __importDefault(require("../../../loaders/logger"));
 // apple public key 가져오는 함수
 function getPublicKey() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const keys = yield axios_1.default.get("https://appleid.apple.com/auth/keys")
+            const apiUrl = "https://appleid.apple.com/auth/keys";
+            const keys = yield axios_1.default.get(apiUrl)
                 .then(resolve => { return resolve.data["keys"]; })
                 .catch(err => { return err; });
             return keys;

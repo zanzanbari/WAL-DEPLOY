@@ -7,37 +7,32 @@ import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 
 export const morningQueue = new Queue(
   'morning-queue', {
-    redis: config.redis
+    redis: config.redis.dev
   }
 );
 
 export const afternoonQueue = new Queue(
   'afternoon-queue', {
-    redis: config.redis
+    redis: config.redis.dev
   }
 );
 
 export const nightQueue = new Queue(
   'night-queue', {
-    redis: config.redis
+    redis: config.redis.dev
   }
 );
 
 export const messageQueue = new Queue(
   'message-queue', {
-    redis: config.redis,
+    redis: config.redis.dev,
     defaultJobOptions: {
       removeOnComplete: true //job 완료 시 삭제
     }
   }
 );
 
-  /*
-  redis: { 
-        host: "localhost", 
-        port: 6379
-      }
-  */
+
 export function updateToday() {
   schedule.scheduleJob('0 0 0 * * *', async () => {
     await TodayWal.destroy({

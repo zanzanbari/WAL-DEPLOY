@@ -52,6 +52,12 @@ export default class Item extends Model {
         return item;
     }
 
+    static async getContentById(id: number): Promise<string> {
+        const item =  await this.findOne({ where: { id } });
+        const content: string = item?.getDataValue("content");
+        return content;
+    }
+
     static async getAllItemsByCategoryId(category_id: number) {
         return await this.findAll({ where: { category_id } });
     }

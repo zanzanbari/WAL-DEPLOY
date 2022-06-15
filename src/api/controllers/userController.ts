@@ -47,8 +47,6 @@ const getNicknameInfo = async (
   res: Response,
   next: NextFunction
 ) => {
-    
-  if (!req.body.nickname) return ErrorResponse(res, sc.BAD_REQUEST, rm.WRONG_BODY_OR_NULL);
 
   try {
 
@@ -165,7 +163,7 @@ const getCategoryInfo = async (
 
   try {
 
-    const categoryServiceInstance = new CategoryService(User, Item, logger);
+    const categoryServiceInstance = new CategoryService(UserCategory, Item, logger);
     const data = categoryServiceInstance.getCategoryInfo(req.user?.id as number);
 
     SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, await data);

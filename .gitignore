@@ -4,5 +4,6 @@ log/*
 *.log
 .DS_Store
 firebase-admin.json
+tests
 *.pem
 *.cer

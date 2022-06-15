@@ -54,6 +54,7 @@ class MainService {
           type: "default",
           content: "default",
           canOpen: false,
+          categoryId: -1
         };
         const time: Date = todayWal.getDataValue("time");
         mainResponse.canOpen = timeHandler.getCurrentTime().getTime() >= time.getTime() ? true : false;
@@ -69,8 +70,9 @@ class MainService {
         } else { // 직접 예약한 왈소리가 아니라면
           
           const itemId: number = todayWal.getDataValue("item_id");
-          const content: Promise<string> = this.itemRepository.getContentById(itemId);
-          mainResponse.content = await content;
+          const { content, categoryId } = await this.itemRepository.getContentById(itemId);
+          mainResponse.content = content;
+          mainResponse.categoryId = categoryId;
 
           if (time.getTime() === timeHandler.getMorning().getTime()) mainResponse.type = "아침";
           if (time.getTime() === timeHandler.getAfternoon().getTime()) mainResponse.type = "점심";

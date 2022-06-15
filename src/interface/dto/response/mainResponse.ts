@@ -1,5 +1,6 @@
 export interface IMainResponse {
   type: string,
   content: string,
-  canOpen: boolean
+  canOpen: boolean,
+  categoryId: number
 };

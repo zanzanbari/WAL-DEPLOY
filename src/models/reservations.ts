@@ -125,15 +125,13 @@ export default class Reservation extends Model {
         return reservation.id;
     }
 
-    static async getReservationById(id: number): Promise<Reservation|null> {
 
-        const reservation = await this.findOne({ 
-            where: { 
-                id
-            }
-        });
+    static async getContentById(id: number): Promise<string> {
 
-        return reservation;
+        const reservation = await this.findOne({ where: { id} });
+        const content: string = reservation?.getDataValue("content");
+
+        return content;
         
     }
 

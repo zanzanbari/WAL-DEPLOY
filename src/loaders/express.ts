@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import apiRouter from '../api/routes';
 import logger from "./logger";
+import serverAdapter from "./bullBoard";
 
 export default async ({ app }: { app: express.Application }) => {
 
@@ -16,6 +17,7 @@ export default async ({ app }: { app: express.Application }) => {
   app.use(cookieParser());
 
   // 라우팅
+  app.use("/bull-board", serverAdapter.getRouter());
   app.use("/api/v1", apiRouter);
 
   app.use("*", (req, res) => {

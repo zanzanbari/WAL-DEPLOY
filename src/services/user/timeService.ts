@@ -1,6 +1,5 @@
 import { Service } from "typedi";
 import { getRandCategoryCurrentItem } from "../pushAlarm";
-import { updateUserTime } from "../pushAlarm/producer";
 import timeHandler from "../../common/timeHandler";
 import { ISetTime, ISetTodayWal, ResetTimeDto } from "../../interface/dto/request/userRequest";
 
@@ -10,6 +9,7 @@ class TimeService {
   constructor(
     private readonly timeRepository: any,
     private readonly todayWalRepository: any,
+    private readonly timeQueueEvent: any,
     private readonly logger: any
   ) {
   }
@@ -34,13 +34,10 @@ class TimeService {
       const updatedTime = this.timeRepository.findById(userId) as Promise<ISetTime>;
 
       const isCanceledTime: Date[] = this.extractCanceledTime(beforeSetTime, afterSetTime);
-      const cancelResult: Promise<void> = this.setCanceledTime(isCanceledTime, userId);
+      this.setCanceledTime(isCanceledTime, userId);
         
       const isAddedTime: Date[] = this.extractAddedTime(beforeSetTime, afterSetTime);
-      const addResult: Promise<void> = this.setAddedTime(isAddedTime, userId);
-
-      await cancelResult;
-      await addResult;
+      this.setAddedTime(isAddedTime, userId);
 
       return await updatedTime;
         
@@ -62,10 +59,11 @@ class TimeService {
     userId: number
   ): Promise<void> {
 
+    let addFlag = "add";
     let currentTime: Date = timeHandler.getCurrentTime();
     for (const time of isAddedTime) {
       if (time > currentTime) {
-        updateUserTime(userId, time, "add");
+        this.timeQueueEvent.emit("updateUserTime", userId, time, addFlag );
         const currentItemId = await getRandCategoryCurrentItem(userId);
         const data: ISetTodayWal = {
           user_id: userId,
@@ -84,10 +82,11 @@ class TimeService {
     userId: number
   ): Promise<void> {
 
+    let cancelFlag = "cancel";
     let currentTime: Date = timeHandler.getCurrentTime();
     for (const time of isCanceledTime) {
       if (time > currentTime) {
-        updateUserTime(userId, time, "cancel");
+        this.timeQueueEvent.emit("updateUserTime", userId, time, cancelFlag );
         await this.todayWalRepository.deleteTodayWal(userId, time);
       }
     }

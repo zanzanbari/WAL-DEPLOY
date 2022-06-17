@@ -12,26 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("reflect-metadata");
-const express_1 = __importDefault(require("express"));
-const config_1 = __importDefault(require("./config"));
-const logger_1 = __importDefault(require("./loaders/logger"));
-function startServer() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const app = (0, express_1.default)();
-        yield require("./loaders").default({ expressApp: app });
-        app.listen(config_1.default.port, () => {
-            console.log(`
-      ################################################
-            🛡️  Server listening on port 🛡️
-      ################################################
-    `);
-        })
-            .on("error", (err) => {
-            logger_1.default.appLogger.error(err.message);
-            process.exit(1);
-        });
-    });
-}
-startServer();
-//# sourceMappingURL=app.js.map
+const logger_1 = __importDefault(require("./logger"));
+const express_1 = __importDefault(require("./express"));
+const dbSequelize_1 = __importDefault(require("./dbSequelize"));
+const pushAlarm_1 = require("../services/pushAlarm");
+exports.default = ({ expressApp }) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, pushAlarm_1.updateToday)(); //자정마다 todayWal 업데이트
+    yield (0, dbSequelize_1.default)();
+    logger_1.default.appLogger.info("🚀 DB Loaded And Connected");
+    yield (0, express_1.default)({ app: expressApp });
+    logger_1.default.appLogger.info("✅ Express Loaded");
+});
+//# sourceMappingURL=index.js.map

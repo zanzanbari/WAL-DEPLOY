@@ -74,14 +74,11 @@ let Reservation = class Reservation extends sequelize_typescript_1.Model {
             return reservation.id;
         });
     }
-    static getReservationById(id) {
+    static getContentById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const reservation = yield this.findOne({
-                where: {
-                    id
-                }
-            });
-            return reservation;
+            const reservation = yield this.findOne({ where: { id } });
+            const content = reservation === null || reservation === void 0 ? void 0 : reservation.getDataValue("content");
+            return content;
         });
     }
     static getReservationsFromTomorrow(id) {

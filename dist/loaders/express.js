@@ -18,6 +18,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const routes_1 = __importDefault(require("../api/routes"));
 const logger_1 = __importDefault(require("./logger"));
+const bullBoard_1 = __importDefault(require("./bullBoard"));
 exports.default = ({ app }) => __awaiter(void 0, void 0, void 0, function* () {
     app.use((0, cors_1.default)());
     app.use((0, morgan_1.default)('HTTP/:http-version :method :url :status', {
@@ -27,6 +28,7 @@ exports.default = ({ app }) => __awaiter(void 0, void 0, void 0, function* () {
     app.use(express_1.default.urlencoded({ extended: true }));
     app.use((0, cookie_parser_1.default)());
     // 라우팅
+    app.use("/bull-board", bullBoard_1.default.getRouter());
     app.use("/api/v1", routes_1.default);
     app.use("*", (req, res) => {
         res.status(404).json({

@@ -23,6 +23,8 @@
   },
   "homepage": "https://github.com/zanzanbari/WAL-DEPLOY#readme",
   "dependencies": {
+    "@bull-board/api": "^4.0.0",
+    "@bull-board/express": "^4.0.0",
     "axios": "^0.26.1",
     "bull": "^4.8.2",
     "celebrate": "^15.0.1",

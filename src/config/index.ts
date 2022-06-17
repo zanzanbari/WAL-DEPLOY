@@ -11,7 +11,7 @@ if (envFound.error) {
 
 export default {
   /**
-   * Your favorite port
+   * My favorite port
    */
   port: parseInt(process.env.PORT as string, 10),
 
@@ -43,13 +43,6 @@ export default {
   jwtRfOption: {
     issuer: process.env.JWT_ISSUER,
     expiresIn: process.env.JWT_RF_EXPIRES
-  },
-
-  /**
-   * Used by winston logger
-   */
-  logs: {
-    level: process.env.LOG_LEVEL || 'silly',
   },
 
   /**

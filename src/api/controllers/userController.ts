@@ -6,6 +6,7 @@ import InitService from "../../services/user/initService";
 import TimeService from "../../services/user/timeService";
 import CategoryService from "../../services/user/categoryService";
 import { Item, Time, TodayWal, User, UserCategory } from "../../models";
+import queueEvent from "../../common/event";
 import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
 import { UserInfoResponse } from "../../interface/dto/response/userResponse";
 import { ResetCategoryDto, ISetTime, UserSettingDto, ResetTimeDto } from "../../interface/dto/request/userRequest";
@@ -24,7 +25,7 @@ const setInfo = async (
 
   try {
         
-    const initServiceInstance = new InitService(User, Time, Item, UserCategory, TodayWal, logger);
+    const initServiceInstance = new InitService(User, Time, Item, UserCategory, TodayWal, queueEvent, logger);
     const data = initServiceInstance.initSetInfo(req.user?.id as number, req.body as UserSettingDto);
 
     SuccessResponse(res, sc.CREATED, rm.SET_USER_INFO_SUCCESS,await data);
@@ -137,7 +138,7 @@ const resetTimeInfo = async (
 
   try {
 
-    const timeServiceInstance = new TimeService(Time, TodayWal, logger);
+    const timeServiceInstance = new TimeService(Time, TodayWal, queueEvent, logger);
     const data = timeServiceInstance.resetTimeInfo(req.user?.id as number, req.body.data as ResetTimeDto)
         
     SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, await data);
@@ -189,7 +190,7 @@ const resetUserCategoryInfo = async (
 
   try {
     
-    const categoryServiceInstance = new CategoryService(User, Item, logger);
+    const categoryServiceInstance = new CategoryService(UserCategory, Item, logger);
     const data = categoryServiceInstance.resetUserCategoryInfo(req.user?.id as number, req.body.data as ResetCategoryDto);
 
     SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, await data);

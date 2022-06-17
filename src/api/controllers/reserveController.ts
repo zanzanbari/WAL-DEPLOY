@@ -46,7 +46,7 @@ const pushEachItems = (
             const rawDate = item.getDataValue("sendingDate") as Date;
             const historyMessage = getHistoryDateMessage(rawDate);
             
-            const sendingDate = historyMessage?.monthDate + " " + historyMessage?.day + historyMessage?.time + (!completed? " • 전송 예정" : " • 전송 완료");
+            const sendingDate = historyMessage?.monthDate + " " + historyMessage?.day + historyMessage?.time + (!completed ? " • 전송 예정" : " • 전송 완료");
 
             DataArr.push({
                 postId: item.id,
@@ -82,7 +82,7 @@ const getReservation = async (
         const completeDataItems = await Reservation.getCompletedItems(req.user?.id as number);
 
         if (sendingDataItems.length < 1 && completeDataItems.length < 1) {
-            SuccessResponse(res, sc.OK, rm.NO_RESERVATION, data);
+            return SuccessResponse(res, sc.OK, rm.NO_RESERVATION, data);
         }
 
         pushEachItems(sendingDataItems, sendingData, false);
@@ -121,7 +121,7 @@ const postReservation = async (
         
         if (existingDate) return ErrorResponse(res, sc.BAD_REQUEST, rm.INVALID_RESERVATION_DATE);
 
-     
+
         const newReservationId = await Reservation.postReservation(
             req.user?.id as number, 
             date as string, 
@@ -154,13 +154,13 @@ const getReservedDate = async (
 ) => {
 
     try {
-        const date = [] as string[];
+        const date: string[] = [];
         const data = { date }
 
         const reservedDateItems = await Reservation.getReservationsFromTomorrow(req.user?.id as number);
 
         if (reservedDateItems.length < 1) {
-            SuccessResponse(res, sc.OK, rm.NO_RESERVATION_DATE, data);
+            return SuccessResponse(res, sc.OK, rm.NO_RESERVATION_DATE, data);
         }
 
         for (const item of reservedDateItems) {

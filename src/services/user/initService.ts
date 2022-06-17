@@ -1,6 +1,5 @@
 import { Service } from "typedi";
 import { getRandCategoryCurrentItem } from "../pushAlarm";
-import { addUserTime } from "../pushAlarm/producer";
 import timeHandler from "../../common/timeHandler";
 import { 
     ISetUserCategory, 
@@ -22,6 +21,7 @@ class InitService {
     private readonly itemRepository: any,
     private readonly userCategoryRepository: any,
     private readonly todayWalRepository: any,
+    private readonly timeQueueEvent: any,
     private readonly logger: any
   ) {
   }
@@ -41,7 +41,7 @@ class InitService {
       // 초기 알람 시간 설정
       await this.timeRepository.setTime(userId, request.time);
       // 설정한 알람 시간 큐에 추가
-      addUserTime(userId);
+      this.timeQueueEvent.emit("addUserTime", userId);
       // 초기 닉네임 설정
       await this.userRepository.setNickname(userId, request.nickname); 
       // 알람 받을 유형 설정

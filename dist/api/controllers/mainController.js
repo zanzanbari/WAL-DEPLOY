@@ -12,66 +12,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mainController = void 0;
 const logger_1 = __importDefault(require("../../loaders/logger"));
-const models_1 = require("../../models");
-const apiResponse_1 = require("../../common/apiResponse");
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
-const getMainResponse = (todayWals) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const todayWal = [];
-        for (const wal of todayWals) {
-            let type, content, canOpen;
-            if (wal.getDataValue("userDefined")) { //직접 추가한 예약이라면
-                type = "스페셜";
-                const reservationId = wal.getDataValue("reservation_id");
-                const reservation = yield models_1.Reservation.getReservationById(reservationId);
-                content = reservation === null || reservation === void 0 ? void 0 : reservation.content;
-                const time = wal.getDataValue("time");
-                canOpen = new Date() >= time ? true : false;
-            }
-            else {
-                const time = wal.getDataValue("time");
-                console.log(time, time.getUTCHours());
-                if (time.getHours() == 8)
-                    type = "아침";
-                else if (time.getHours() == 14)
-                    type = "점심";
-                else
-                    type = "저녁";
-                const itemId = wal.getDataValue("item_id");
-                const item = yield models_1.Item.getItemById(itemId);
-                content = item === null || item === void 0 ? void 0 : item.content;
-                canOpen = new Date() >= time ? true : false;
-            }
-            todayWal.push({
-                type,
-                content,
-                canOpen
-            });
-        }
-        return todayWal;
-    }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
-    }
-});
+const mainService_1 = __importDefault(require("../../services/main/mainService"));
+const models_1 = require("../../models");
+const apiResponse_1 = require("../../common/apiResponse");
+/**
+ *  @메인화면
+ *  @route GET /main
+ *  @access public
+ */
 const getTodayWals = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
-        const todayWals = yield models_1.TodayWal.getTodayWalsByUserId(userId);
-        const todayWal = yield getMainResponse(todayWals);
-        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_TODAY_WAL_SUCCESS, { todayWal });
+        const mainServiceInstance = new mainService_1.default(models_1.TodayWal, models_1.Reservation, models_1.Item, logger_1.default);
+        const data = mainServiceInstance.getMain((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
+        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_TODAY_WAL_SUCCESS, yield data);
     }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
+    catch (error) {
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
-        return next(err);
+        return next(error);
     }
 });
-exports.mainController = {
+const mainController = {
     getTodayWals
 };
+exports.default = mainController;
 //# sourceMappingURL=mainController.js.map

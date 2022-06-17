@@ -18,28 +18,23 @@ const dayjs_1 = __importDefault(require("dayjs"));
 const node_schedule_1 = __importDefault(require("node-schedule"));
 const sequelize_1 = require("sequelize");
 const config_1 = __importDefault(require("../../config"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const models_1 = require("../../models");
 exports.morningQueue = new bull_1.default('morning-queue', {
-    redis: config_1.default.redis
+    redis: config_1.default.redis.production
 });
 exports.afternoonQueue = new bull_1.default('afternoon-queue', {
-    redis: config_1.default.redis
+    redis: config_1.default.redis.production
 });
 exports.nightQueue = new bull_1.default('night-queue', {
-    redis: config_1.default.redis
+    redis: config_1.default.redis.production
 });
 exports.messageQueue = new bull_1.default('message-queue', {
-    redis: config_1.default.redis,
+    redis: config_1.default.redis.production,
     defaultJobOptions: {
         removeOnComplete: true //job 완료 시 삭제
     }
 });
-/*
-redis: {
-      host: "localhost",
-      port: 6379
-    }
-*/
 function updateToday() {
     node_schedule_1.default.scheduleJob('0 0 0 * * *', () => __awaiter(this, void 0, void 0, function* () {
         yield models_1.TodayWal.destroy({
@@ -47,6 +42,7 @@ function updateToday() {
             truncate: true
         });
         yield updateTodayWal();
+        logger_1.default.appLogger.log({ level: "info", message: "오늘의 왈 업데이트" });
     }));
 }
 exports.updateToday = updateToday;

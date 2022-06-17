@@ -4,92 +4,101 @@ import { Time } from "../../models";
 import logger from "../../loaders/logger";
 import timeHandler from '../../common/timeHandler';
 
-async function addTimeQueue(userId: number, flag: number): Promise<void> { //flag - 0: morning, 1: afternoon, 2: night
-    try {
-        switch (flag) {
-            case 0:
-                await morningQueue.add(userId, {
-                        jobId: userId,
-                        repeat: { cron: `* 8 * * *` }
-                    });
-                
-                await morningQueue.process(morningFunc)
-                break;
-            case 1:
-                await afternoonQueue.add(userId, {
-                        jobId: userId,
-                        repeat: { cron: `* 14 * * *` }
-                    });
-                
-                await afternoonQueue.process(afterFunc)
-                break;
-            case 2:
-                await nightQueue.add(userId, { 
-                        jobId: userId,
-			repeat: { cron: `* 20 * * *` }
-                    });
-            
-                await nightQueue.process(nightFunc)
-                break;
-            }
+ /**
+ *  @시간정보_큐에_추가
+ *  @desc
+ *  @flag_0 : morning
+ *  @flag_1 : afternoon
+ *  @flag_2 : night
+ */
 
-    } catch (err) {
-        logger.appLogger.log({ level: "error", message: err.message });
+async function addTimeQueue(userId: number, flag: number): Promise<void> {
+
+  try {
+    switch (flag) {
+
+      case 0:
+        await morningQueue.add("morning",userId, {
+          jobId: userId,
+          repeat: { cron: `* 8 * * *` }
+        });
+        morningQueue.process("morning",morningFunc);
+        break;
+
+      case 1:
+        await afternoonQueue.add("afternoon",userId, {
+          jobId: userId,
+          repeat: { cron: `* 14 * * *` }
+        });  
+        afternoonQueue.process("afternoon",afterFunc)
+        break;
+
+      case 2:
+        await nightQueue.add("night",userId, { 
+          jobId: userId,
+          repeat: { cron: `30 20 * * *` }
+        });
+        nightQueue.process("night",nightFunc)
+        break;
+
     }
+
+  } catch (error) {
+    logger.appLogger.log({ level: "error", message: error.message });
+    throw error;
+  }
 }
 
 export async function addUserTime(userId: number): Promise<void> {
 
-    try {
-        //user id를 data로 전달
-        const times = await Time.findOne({
-            where: { user_id : userId }
-        }) as Time
+  try {
+    //user id를 data로 전달
+    const times = await Time.findOne({
+      where: { user_id : userId }
+    }) as Time;
 
-        if (times.morning) {
-            addTimeQueue(userId, 0);
-        } 
-        if (times.afternoon) {
-            addTimeQueue(userId, 1);
-        } 
-        if (times.night) {
-            addTimeQueue(userId, 2);
-        }
+    if (times.morning) addTimeQueue(userId, 0);
+    if (times.afternoon) addTimeQueue(userId, 1);
+    if (times.night) addTimeQueue(userId, 2);
 
-    }  catch (err) {
-        logger.appLogger.log({ level: "error", message: err.message });
-    }
+  } catch (error) {
+    logger.appLogger.log({ level: "error", message: error.message });
+    throw error;
+  }
     
 }
 //user 세팅 수정 시 특정 조건에 걸리면 이 함수 실행
-export async function updateUserTime(userId: number, time: Date, flag: string): Promise<void> {
+export async function updateUserTime(
+    userId: number, 
+    time: Date, 
+    flag: string
+): Promise<void> {
 //time: morning, afternoon, night
 //flag: add, delete
-    try {
-        if (flag == "add") {
-            if (time == timeHandler.getMorning()) {
-                await addTimeQueue(userId, 0);
-            } 
-            else if (time == timeHandler.getAfternoon())  {
-                await addTimeQueue(userId, 1);
-            } 
-            else if (time == timeHandler.getNight()) {
-                await addTimeQueue(userId, 2);
-            }
-        } else {
-            if (time == timeHandler.getMorning()) {
-                await morningQueue?.removeRepeatable("__default__",{ cron: `* 8 * * *` , jobId: userId});
-            } 
-            else if (time == timeHandler.getAfternoon())  {
-                await afternoonQueue?.removeRepeatable("__default__",{ cron: `* 14 * * *` , jobId: userId});
-            } 
-            else if (time == timeHandler.getNight()) {
-                await nightQueue?.removeRepeatable("__default__",{ cron: `* 20 * * *` , jobId: userId});
-            }
-        }
-        
-    }  catch (err) {
-        logger.appLogger.log({ level: "error", message: err.message });
+  try {
+    if (flag == "add") {
+
+      if (time == timeHandler.getMorning()) addTimeQueue(userId, 0);
+      if (time == timeHandler.getAfternoon()) addTimeQueue(userId, 1);
+      if (time == timeHandler.getNight()) addTimeQueue(userId, 2);
+
+    } else if (flag == "cancel") {
+
+      if (time == timeHandler.getMorning()) {
+        await morningQueue?.removeRepeatable("morning",{ cron: `* 8 * * *` , jobId: userId});
+      } 
+      else if (time == timeHandler.getAfternoon()) {  
+        await afternoonQueue?.removeRepeatable("afternoon",{ cron: `* 14 * * *` , jobId: userId});
+      } 
+      else if (time == timeHandler.getNight()) {
+        await nightQueue?.removeRepeatable("night",{ cron: `* 20 * * *` , jobId: userId});
+      }
+
     }
+        
+  } catch (error) {
+    logger.appLogger.log({ level: "error", message: error.message });
+    throw error;
+  }
     
 }

@@ -3,29 +3,30 @@ import dayjs from "dayjs";
 import schedule from 'node-schedule';
 import { Op } from "sequelize";
 import config from "../../config";
+import logger from "../../loaders/logger";
 import { Item, Time, User, UserCategory, TodayWal } from "../../models";
 
 export const morningQueue = new Queue(
   'morning-queue', {
-    redis: config.redis.dev
+    redis: config.redis.production
   }
 );
 
 export const afternoonQueue = new Queue(
   'afternoon-queue', {
-    redis: config.redis.dev
+    redis: config.redis.production
   }
 );
 
 export const nightQueue = new Queue(
   'night-queue', {
-    redis: config.redis.dev
+    redis: config.redis.production
   }
 );
 
 export const messageQueue = new Queue(
   'message-queue', {
-    redis: config.redis.dev,
+    redis: config.redis.production,
     defaultJobOptions: {
       removeOnComplete: true //job 완료 시 삭제
     }
@@ -40,6 +41,7 @@ export function updateToday() {
       truncate: true
     });
     await updateTodayWal();
+    logger.appLogger.log({ level: "info", message: "오늘의 왈 업데이트" });
   });
 }
 

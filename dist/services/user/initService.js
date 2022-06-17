@@ -23,15 +23,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
 const pushAlarm_1 = require("../pushAlarm");
-const producer_1 = require("../pushAlarm/producer");
 const timeHandler_1 = __importDefault(require("../../common/timeHandler"));
 let InitService = class InitService {
-    constructor(userRepository, timeRepository, itemRepository, userCategoryRepository, todayWalRepository, logger) {
+    constructor(userRepository, timeRepository, itemRepository, userCategoryRepository, todayWalRepository, timeQueueEvent, logger) {
         this.userRepository = userRepository;
         this.timeRepository = timeRepository;
         this.itemRepository = itemRepository;
         this.userCategoryRepository = userCategoryRepository;
         this.todayWalRepository = todayWalRepository;
+        this.timeQueueEvent = timeQueueEvent;
         this.logger = logger;
     }
     /**
@@ -45,7 +45,7 @@ let InitService = class InitService {
                 // 초기 알람 시간 설정
                 yield this.timeRepository.setTime(userId, request.time);
                 // 설정한 알람 시간 큐에 추가
-                (0, producer_1.addUserTime)(userId);
+                this.timeQueueEvent.emit("addUserTime", userId);
                 // 초기 닉네임 설정
                 yield this.userRepository.setNickname(userId, request.nickname);
                 // 알람 받을 유형 설정
@@ -129,7 +129,7 @@ let InitService = class InitService {
 };
 InitService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object])
 ], InitService);
 exports.default = InitService;
 //# sourceMappingURL=initService.js.map

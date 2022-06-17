@@ -23,12 +23,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
 const pushAlarm_1 = require("../pushAlarm");
-const producer_1 = require("../pushAlarm/producer");
 const timeHandler_1 = __importDefault(require("../../common/timeHandler"));
 let TimeService = class TimeService {
-    constructor(timeRepository, todayWalRepository, logger) {
+    constructor(timeRepository, todayWalRepository, timeQueueEvent, logger) {
         this.timeRepository = timeRepository;
         this.todayWalRepository = todayWalRepository;
+        this.timeQueueEvent = timeQueueEvent;
         this.logger = logger;
     }
     /**
@@ -44,11 +44,9 @@ let TimeService = class TimeService {
                 yield this.timeRepository.updateTime(userId, afterSetTime);
                 const updatedTime = this.timeRepository.findById(userId);
                 const isCanceledTime = this.extractCanceledTime(beforeSetTime, afterSetTime);
-                const cancelResult = this.setCanceledTime(isCanceledTime, userId);
+                this.setCanceledTime(isCanceledTime, userId);
                 const isAddedTime = this.extractAddedTime(beforeSetTime, afterSetTime);
-                const addResult = this.setAddedTime(isAddedTime, userId);
-                yield cancelResult;
-                yield addResult;
+                this.setAddedTime(isAddedTime, userId);
                 return yield updatedTime;
             }
             catch (error) {
@@ -64,10 +62,11 @@ let TimeService = class TimeService {
      */
     setAddedTime(isAddedTime, userId) {
         return __awaiter(this, void 0, void 0, function* () {
+            let addFlag = "add";
             let currentTime = timeHandler_1.default.getCurrentTime();
             for (const time of isAddedTime) {
                 if (time > currentTime) {
-                    (0, producer_1.updateUserTime)(userId, time, "add");
+                    this.timeQueueEvent.emit("updateUserTime", userId, time, addFlag);
                     const currentItemId = yield (0, pushAlarm_1.getRandCategoryCurrentItem)(userId);
                     const data = {
                         user_id: userId,
@@ -81,10 +80,11 @@ let TimeService = class TimeService {
     }
     setCanceledTime(isCanceledTime, userId) {
         return __awaiter(this, void 0, void 0, function* () {
+            let cancelFlag = "cancel";
             let currentTime = timeHandler_1.default.getCurrentTime();
             for (const time of isCanceledTime) {
                 if (time > currentTime) {
-                    (0, producer_1.updateUserTime)(userId, time, "cancel");
+                    this.timeQueueEvent.emit("updateUserTime", userId, time, cancelFlag);
                     yield this.todayWalRepository.deleteTodayWal(userId, time);
                 }
             }
@@ -113,7 +113,7 @@ let TimeService = class TimeService {
 };
 TimeService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], TimeService);
 exports.default = TimeService;
 //# sourceMappingURL=timeService.js.map

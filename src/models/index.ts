@@ -14,7 +14,7 @@ const sequelize = new Sequelize({
     username: config.database.development.username,
     password: config.database.development.password,
     dialect: "postgres",
-    logging: false,
+    logging: true,
     timezone: "+09:00",
     dialectOptions: {
         charset: 'utf8mb4',

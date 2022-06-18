@@ -20,7 +20,7 @@ async function addTimeQueue(userId: number, flag: number): Promise<void> {
       case 0:
         await morningQueue.add("morning",userId, {
           jobId: userId,
-          repeat: { cron: `* 8 * * *` }
+          repeat: { cron: `0 0 8 * * *` }
         });
         morningQueue.process("morning",morningFunc);
         break;
@@ -28,7 +28,7 @@ async function addTimeQueue(userId: number, flag: number): Promise<void> {
       case 1:
         await afternoonQueue.add("afternoon",userId, {
           jobId: userId,
-          repeat: { cron: `* 14 * * *` }
+          repeat: { cron: `0 0 14 * * *` }
         });  
         afternoonQueue.process("afternoon",afterFunc)
         break;
@@ -36,7 +36,7 @@ async function addTimeQueue(userId: number, flag: number): Promise<void> {
       case 2:
         await nightQueue.add("night",userId, { 
           jobId: userId,
-          repeat: { cron: `* 20 * * *` }
+          repeat: { cron: `0 0 20 * * *` }
         });
         nightQueue.process("night",nightFunc)
         break;

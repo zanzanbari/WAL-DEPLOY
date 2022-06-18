@@ -11,9 +11,8 @@ import {
     Unique, 
     Default} from "sequelize-typescript"
 import User from "./users";
-import rm from "../constant/resultMessage";
 import sequelize from "../models";
-import { Op } from "sequelize";
+import { ISetReserveDto } from "../dto/request/reserveRequest";
 
 @Table({
     modelName: "Reservation",
@@ -107,19 +106,15 @@ export default class Reservation extends Model {
     }
 
 
-    static async postReservation(
-        id: number, 
-        date: string, 
-        time: string, 
-        hide: boolean, 
-        content: string
-        ): Promise<number> {
+    static async setReservation(
+        user_id: number, 
+        request: ISetReserveDto
+    ): Promise<number> {
 
         const reservation = await this.create({
-            user_id: id,
-            sendingDate: new Date(`${date} ${time}`),
-            hide,
-            content
+            user_id,
+            sendingDate: new Date(`${request.date} ${request.time}`),
+            ...request
         });
 
         return reservation.id;
@@ -143,18 +138,22 @@ export default class Reservation extends Model {
                 $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '>', new Date())
             },
             attributes: ["sendingDate"]
-        })
+        });
 
         return reservations;
     }
  
     
-    static async getReservationByPostId(postId: number, id: number, completed: boolean): Promise<Reservation|null> {
+    static async getReservationByPostId(
+        user_id: number,
+        post_id: number, 
+        completed: boolean
+    ): Promise<Reservation|null> {
 
         const reservation = await this.findOne({ 
             where: { 
-                id: postId,
-                user_id: id,
+                id: post_id,
+                user_id,
                 completed
             }
         });

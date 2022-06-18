@@ -6,8 +6,8 @@ import {
     UserSettingDto, 
     ISetCategory,
     ISetTodayWal, 
-    ISetTime } from "../../interface/dto/request/userRequest";
-import { UserSettingResponse } from "../../interface/dto/response/userResponse";
+    ISetTime } from "../../dto/request/userRequest";
+import { UserSettingResponse } from "../../dto/response/userResponse";
 
 
 @Service()

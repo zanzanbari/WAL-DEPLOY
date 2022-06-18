@@ -1,8 +1,8 @@
 import Error from "../../constant/responseError";
 import { isTokenExpired } from "../../common/validator";
 import { issueAccessToken, verifyToken } from "../../common/tokenHandler";
-import { TokenDto } from "../../interface/dto/request/authRequest";
-import { AuthResponse } from "../../interface/dto/response/authResponse";
+import { TokenDto } from "../../dto/request/authRequest";
+import { AuthResponse } from "../../dto/response/authResponse";
 
 class ReissueTokenService {
   constructor(

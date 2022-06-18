@@ -1,7 +1,7 @@
 import * as jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import logger from "../loaders/logger";
-import { Token, UserInfo } from "../interface/dto/response/authResponse";
+import { Token, UserInfo } from "../dto/response/authResponse";
 import config from "../config";
 const TOKEN_EXPIRED = -3;
 const TOKEN_INVALID = -2;

@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import { 
   ISetCategory, 
   ISetUserCategory, 
-  ResetCategoryDto } from "../../interface/dto/request/userRequest";
+  ResetCategoryDto } from "../../dto/request/userRequest";
 
 @Service()
 class CategoryService {

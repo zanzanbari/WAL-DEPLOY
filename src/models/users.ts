@@ -12,10 +12,10 @@ import {
     Unique } from "sequelize-typescript"
 import Time from "./times";
 import Reservation from "./reservations";
-import rm from "../constant/resultMessage";
-import { Token, UserInfo } from "../interface/dto/response/authResponse";
-import { TokenDto } from "../interface/dto/request/authRequest";
 import UserCategory from "./userCategories";
+import rm from "../constant/resultMessage";
+import { TokenDto } from "../dto/request/authRequest";
+import { Token, UserInfo } from "../dto/response/authResponse";
 
 @Table({
     modelName: "User",

@@ -8,8 +8,8 @@ import CategoryService from "../../services/user/categoryService";
 import { Item, Time, TodayWal, User, UserCategory } from "../../models";
 import queueEvent from "../../common/event";
 import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
-import { UserInfoResponse } from "../../interface/dto/response/userResponse";
-import { ResetCategoryDto, ISetTime, UserSettingDto, ResetTimeDto } from "../../interface/dto/request/userRequest";
+import { UserInfoResponse } from "../../dto/response/userResponse";
+import { ResetCategoryDto, ISetTime, UserSettingDto, ResetTimeDto } from "../../dto/request/userRequest";
 
   /**
    *  @유저_초기_설정

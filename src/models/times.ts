@@ -1,4 +1,3 @@
-import { ISetTime } from "@/interface/dto/request/userRequest";
 import { 
     AllowNull, 
     AutoIncrement, 
@@ -11,8 +10,9 @@ import {
     ForeignKey, 
     Table, 
     Unique } from "sequelize-typescript"
-import User from "./users";
-import rm from "../constant/resultMessage";
+    import User from "./users";
+    import rm from "../constant/resultMessage";
+    import { ISetTime } from "../dto/request/userRequest";
 
 @Table({
     modelName: "Time",

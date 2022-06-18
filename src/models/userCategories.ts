@@ -1,4 +1,3 @@
-import { ISetUserCategory } from "@/interface/dto/request/userRequest";
 import { 
     AutoIncrement, 
     BelongsTo, 
@@ -10,9 +9,10 @@ import {
     PrimaryKey, 
     Table, 
     Unique } from "sequelize-typescript"
-import Category from "./categories";
-import User from "./users";
-import rm from "../constant/resultMessage";
+    import Category from "./categories";
+    import User from "./users";
+    import rm from "../constant/resultMessage";
+    import { ISetUserCategory } from "../dto/request/userRequest";
 
 @Table({ // 테이블 설정
     modelName: "UserCategory",

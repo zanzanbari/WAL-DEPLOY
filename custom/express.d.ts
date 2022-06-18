@@ -1,5 +1,5 @@
-import { UserInfo } from '../src/interface/dto/response/authResponse';
 import { Axios } from 'axios';
+import { UserInfo } from '../src/dto/response/authResponse';
 
 declare global {
 	namespace Express {

@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { TodayWal } from "../../models";
 import timeHandler from "../../common/timeHandler";
-import { IMainResponse } from "../../interface/dto/response/mainResponse";
+import { IMainResponse } from "../../dto/response/mainResponse";
 
 @Service()
 class MainService {

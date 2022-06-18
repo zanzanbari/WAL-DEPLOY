@@ -1,8 +1,7 @@
 import { Service } from "typedi";
 import { getRandCategoryCurrentItem } from "../pushAlarm";
 import timeHandler from "../../common/timeHandler";
-import { ISetTime, ISetTodayWal, ResetTimeDto } from "../../interface/dto/request/userRequest";
-
+import { ISetTime, ISetTodayWal, ResetTimeDto } from "../../dto/request/userRequest";
 @Service()
 class TimeService {
 

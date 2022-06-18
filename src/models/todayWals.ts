@@ -13,7 +13,7 @@ import {
 import User from "./users";
 import Item from "./items";
 import Reservation from "./reservations";
-import { ISetTodayWal } from "../interface/dto/request/userRequest";
+import { ISetTodayWal } from "../dto/request/userRequest";
 
 @Table({ // 테이블 설정
     modelName: "TodayWal",

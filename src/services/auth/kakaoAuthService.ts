@@ -1,8 +1,8 @@
 import { Service } from "typedi";
 import IAuthService from "./authService";
 import kakaoApiUtil from "./client/kakaoApi";
-import { TokenDto } from "../../interface/dto/request/authRequest";
-import { AuthResponse } from "../../interface/dto/response/authResponse";
+import { TokenDto } from "../../dto/request/authRequest";
+import { AuthResponse } from "../../dto/response/authResponse";
 import { issueAccessToken, issueRefreshToken } from "../../common/tokenHandler";
 
 @Service()

@@ -75,12 +75,12 @@ function updateTodayWal() {
             if (times.getDataValue("night")) { //20
                 selectedTime.push(new Date(`${dateString} 20:00:00`));
             }
-            for (const t of selectedTime) {
+            for (const time of selectedTime) {
                 const currentItemId = yield getRandCategoryCurrentItem(userId);
                 yield models_1.TodayWal.create({
                     user_id: userId,
                     item_id: currentItemId,
-                    time: t
+                    time
                 });
             }
         }

@@ -45,6 +45,7 @@ const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
     }
     catch (error) {
         logger_1.default.appLogger.log({ level: "erroror", message: error.message });
+        throw error;
     }
 });
 exports.messageFunc = messageFunc;

@@ -32,22 +32,25 @@ function addTimeQueue(userId, flag) {
                 case 0:
                     yield _1.morningQueue.add("morning", userId, {
                         jobId: userId,
-                        repeat: { cron: `* 8 * * *` }
+                        repeat: { cron: `0 0 8 * * *` }
                     });
+                    logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} :: morningQueue 등록 성공` });
                     _1.morningQueue.process("morning", consumer_1.morningFunc);
                     break;
                 case 1:
                     yield _1.afternoonQueue.add("afternoon", userId, {
                         jobId: userId,
-                        repeat: { cron: `* 14 * * *` }
+                        repeat: { cron: `0 0 14 * * *` }
                     });
+                    logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} :: afternoonQueue 등록 성공` });
                     _1.afternoonQueue.process("afternoon", consumer_1.afterFunc);
                     break;
                 case 2:
                     yield _1.nightQueue.add("night", userId, {
                         jobId: userId,
-                        repeat: { cron: `* 20 * * *` }
+                        repeat: { cron: `0 0 18 * * *` }
                     });
+                    logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} :: nightQueue 등록 성공` });
                     _1.nightQueue.process("night", consumer_1.nightFunc);
                     break;
             }

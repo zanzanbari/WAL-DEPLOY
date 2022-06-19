@@ -96,7 +96,6 @@ export const nightFunc = async (job: Job, done: DoneCallback) => {
 
   try {
 
-    console.log("나 실행한다")
     const userId = job.data;
     const dateString = dayjs(new Date()).format("YYYY-MM-DD");
     const data = await getTokenMessage(new Date(`${dateString} 20:00:00`), userId);

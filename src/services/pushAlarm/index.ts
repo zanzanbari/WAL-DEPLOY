@@ -47,49 +47,51 @@ export function updateToday() {
 
 export async function updateTodayWal() {
 
-    const settingExists = await Time.findAll({
-      attributes: ["user_id"]
-    }); //초기 설정을 한 유저만
+  const settingExists = await Time.findAll({
+    attributes: ["user_id"]
+  }); //초기 설정을 한 유저만
 
-    const existSet = settingExists.map((user)=>{
-      return user.user_id
-    })
+  const existSet = settingExists.map((user)=>{
+    return user.user_id
+   })
     
-    const users = await User.findAll({
+  const users = await User.findAll({  
     where: { id: { [Op.in]: existSet } },
     include: [
         { model: Time, attributes: ["morning", "afternoon", "night"] },
     ], //{ model: UserCategory, attributes: ["category_id", "next_item_id"] } 가져오면 update후의 usercategory가 반복문 안에서 반영 안됨-> 똑같은 카테고리 선택 시 같은 NEXT_ITEM_ID 가져와버림
     attributes: ["id"]
-    }) as User[];
+  }) as User[];
 
-    for (const user of users) {
-        const userId = user.getDataValue("id") as number;
+  for (const user of users) {
+    const userId = user.getDataValue("id") as number;
 
-        const selectedTime: Date[] = []
+    const selectedTime: Date[] = []
 
-        const times = user.getDataValue("time");
-        const dateString = dayjs(new Date()).format("YYYY-MM-DD")
-        if (times.getDataValue("morning")) { //8
-            selectedTime.push(new Date(`${dateString} 08:00:00`))
-        }
-        if (times.getDataValue("afternoon")) { //2시
-            selectedTime.push(new Date(`${dateString} 14:00:00`))
-        }
-        if (times.getDataValue("night")) { //20
-            selectedTime.push(new Date(`${dateString} 20:00:00`))
-        }
-
-        for (const t of selectedTime) {
-            const currentItemId = await getRandCategoryCurrentItem(userId);
-
-            await TodayWal.create({
-                user_id: userId,
-                item_id: currentItemId,
-                time: t
-            })
-        }
+    const times = user.getDataValue("time");
+    const dateString = dayjs(new Date()).format("YYYY-MM-DD")
+    if (times.getDataValue("morning")) { //8
+      selectedTime.push(new Date(`${dateString} 08:00:00`))
     }
+    if (times.getDataValue("afternoon")) { //2시
+      selectedTime.push(new Date(`${dateString} 14:00:00`))
+    }
+    if (times.getDataValue("night")) { //20
+      selectedTime.push(new Date(`${dateString} 20:00:00`))
+    }
+
+    for (const time of selectedTime) {
+      const currentItemId = await getRandCategoryCurrentItem(userId);
+
+      await TodayWal.create({
+        user_id: userId,
+        item_id: currentItemId,
+        time
+      });
+    }
+
+  }
+
 }
   
 export async function getRandCategoryCurrentItem(userId: number) {

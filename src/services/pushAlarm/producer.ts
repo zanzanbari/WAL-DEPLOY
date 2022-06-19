@@ -20,25 +20,28 @@ async function addTimeQueue(userId: number, flag: number): Promise<void> {
       case 0:
         await morningQueue.add("morning",userId, {
           jobId: userId,
-          repeat: { cron: `* 8 * * *` }
+          repeat: { cron: `0 0 8 * * *` }
         });
+        logger.appLogger.log({level: "info", message: `유저 ${userId} :: morningQueue 등록 성공`});
         morningQueue.process("morning",morningFunc);
         break;
 
       case 1:
         await afternoonQueue.add("afternoon",userId, {
           jobId: userId,
-          repeat: { cron: `* 14 * * *` }
-        });  
-        afternoonQueue.process("afternoon",afterFunc)
+          repeat: { cron: `0 0 14 * * *` }
+        });
+        logger.appLogger.log({level: "info", message: `유저 ${userId} :: afternoonQueue 등록 성공`});
+        afternoonQueue.process("afternoon",afterFunc);
         break;
 
       case 2:
         await nightQueue.add("night",userId, { 
           jobId: userId,
-          repeat: { cron: `* 20 * * *` }
+          repeat: { cron: `0 0 18 * * *` }
         });
-        nightQueue.process("night",nightFunc)
+        logger.appLogger.log({level: "info", message: `유저 ${userId} :: nightQueue 등록 성공`});
+        nightQueue.process("night",nightFunc);
         break;
 
     }

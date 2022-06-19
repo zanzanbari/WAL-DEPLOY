@@ -22,17 +22,17 @@ export const messageFunc = async (job: Job, done: DoneCallback) => {
       .then(response => {
         logger.appLogger.log({
           level: 'info',
-          message: `📣 Successfully sent message: : ${response} ${content}`
+          message: `📣 Successfully sent message: : ${response} ${content} ${job.id}`
         });
       })
-      .catch(error => { 
-        console.log('error Sending message!!! : ', error) 
-          logger.appLogger.log({
-            level: 'error',
-            message: error.message
-          }) ;
+      .catch(error => {
+        logger.appLogger.log({
+          level: 'error',
+          message: `❌ SENDING MESSAGE ERROR :: ${error.message}`
+        });
       });
-      done();
+
+    done();
 
   } catch (error) {
     logger.appLogger.log({ level: "erroror", message: error.message });

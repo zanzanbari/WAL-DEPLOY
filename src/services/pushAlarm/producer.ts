@@ -38,7 +38,7 @@ async function addTimeQueue(userId: number, flag: number): Promise<void> {
       case 2:
         await nightQueue.add("night",userId, { 
           jobId: userId,
-          repeat: { cron: `0 0 20 * * *` }
+          repeat: { cron: `0 0 18 * * *` }
         });
         logger.appLogger.log({level: "info", message: `유저 ${userId} :: nightQueue 등록 성공`});
         nightQueue.process("night",nightFunc);

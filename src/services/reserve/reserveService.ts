@@ -3,11 +3,15 @@ import { Reservation } from "../../models";
 import { IReserveData } from "../../dto/response/reserveResponse";
 import { ISetReserveDto } from "../../dto/request/reserveRequest";
 import customError from "../../constant/responseError";
+import timeHandler from "../../common/timeHandler";
+import { ISetTodayWal } from "../../dto/request/userRequest";
 
 class ReserveService {
 
   constructor(
     private readonly reserveRepository: any,
+    private readonly todayWalRepository: any,
+    private readonly timeQueueEvent: any,
     private readonly logger: any
   ) {
   }
@@ -64,12 +68,19 @@ class ReserveService {
       if (existingDate) return customError.ALREADY_RESERVED_DATE;
 
       const newReservationId = await this.reserveRepository.setReservation(userId, request) as number;
+      if (request.date == timeHandler.getCurrentDate()) { // 예약한게 오늘 날짜면
 
-      /**
-       * ----------
-       * 알람 큐 추가
-       * ----------
-       */
+        const data: ISetTodayWal = {
+          user_id: userId,
+          reservation_id: newReservationId,
+          time: new Date(`${request.date} ${request.time}`),
+          userDefined: true
+        };
+        await this.todayWalRepository.setTodayWal(data);
+
+      }
+      // 예약 큐에 추가
+      await this.timeQueueEvent.emit("addReservationQueue", userId, request.date, request.time);
 
       return { postId: newReservationId };
    
@@ -92,10 +103,6 @@ class ReserveService {
 
       const reservedDateItems = await this.reserveRepository.getReservationsFromTomorrow(userId);
       if (reservedDateItems.length < 1) return "NO_RESERVATION_DATE";
-
-      console.log("=============");
-      console.log(reservedDateItems);
-      console.log("=============");
 
       const date: string[] = [];
       for (const item of reservedDateItems) {
@@ -121,17 +128,17 @@ class ReserveService {
   public async removeReservation(userId: number, postId: number) {
 
     try {
-
+      // 대기중인 예약 왈소리 가져오기
       const waitingReservation = await this.reserveRepository.getReservationByPostId(userId, postId, false);
       if (!waitingReservation) return customError.NO_OR_COMPLETED_RESERVATION;
 
-      /**
-       * --------------------------------
-       * schedule에서 해당 reservation 삭제
-       * --------------------------------
-       */
+      // 예약 큐에서 제거
+      await this.timeQueueEvent.emit("cancelReservationQueue", userId, waitingReservation.sendingDate);
 
-      await waitingReservation?.destroy();
+      // 오늘의 왈소리에서 제거, 예약에서도 제거
+      const isReserved = await this.todayWalRepository.getTodayReservation(userId, postId);
+      if (isReserved) await isReserved?.destroy();
+      await this.reserveRepository.deleteReservation(waitingReservation.id);
 
       return { postId };
 

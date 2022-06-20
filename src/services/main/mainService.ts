@@ -15,7 +15,7 @@ class MainService {
   }
 
   /**
-   *  @메인화면
+   *  @desc 메인화면
    *  @route GET /main
    *  @access public
    */
@@ -84,7 +84,7 @@ class MainService {
       return result;
 
     } catch (error) {
-      this.logger.appLogger.log({ level: "error", message: error.message });
+      this.logger.appLogger.log({ level: "error", message: `getMainResult :: ${error.message}` });
       throw error;
     }
 

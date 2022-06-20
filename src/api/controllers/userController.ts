@@ -6,7 +6,7 @@ import InitService from "../../services/user/initService";
 import TimeService from "../../services/user/timeService";
 import CategoryService from "../../services/user/categoryService";
 import { Item, Time, TodayWal, User, UserCategory } from "../../models";
-import queueEvent from "../../common/event";
+import queueEvent from "../../services/pushAlarm/event";
 import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
 import { UserInfoResponse } from "../../dto/response/userResponse";
 import { ResetCategoryDto, ISetTime, UserSettingDto, ResetTimeDto } from "../../dto/request/userRequest";
@@ -25,7 +25,7 @@ const setInfo = async (
 
   try {
         
-    const initServiceInstance = new InitService(User, Time, Item, UserCategory, TodayWal, queueEvent, logger);
+    const initServiceInstance = new InitService(Item, UserCategory, User, Time, TodayWal, queueEvent, logger);
     const data = initServiceInstance.initSetInfo(req.user?.id as number, req.body as UserSettingDto);
 
     SuccessResponse(res, sc.CREATED, rm.SET_USER_INFO_SUCCESS,await data);
@@ -138,7 +138,7 @@ const resetTimeInfo = async (
 
   try {
 
-    const timeServiceInstance = new TimeService(Time, TodayWal, queueEvent, logger);
+    const timeServiceInstance = new TimeService(UserCategory, Item, Time, TodayWal, queueEvent, logger);
     const data = timeServiceInstance.resetTimeInfo(req.user?.id as number, req.body.data as ResetTimeDto)
         
     SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, await data);

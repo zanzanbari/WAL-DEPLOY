@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import { Reservation, TodayWal } from "../../models";
 import logger from "../../loaders/logger";
-import { Reservation } from "../../models";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import customError from "../../constant/responseError";
+import queueEvent from "../../services/pushAlarm/event";
 import ReserveService from "../../services/reserve/reserveService";
 import { ISetReserveDto } from "../../dto/request/reserveRequest";
 import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
@@ -23,7 +24,7 @@ const getReservation = async (
 
   try {
     
-    const reserveServiceInstance = new ReserveService(Reservation, logger);
+    const reserveServiceInstance = new ReserveService(Reservation, TodayWal, queueEvent, logger);
     const data = await reserveServiceInstance.getReservation(req.user?.id as number);
 
     if (data == "NO_RESERVATION") {
@@ -54,7 +55,7 @@ const postReservation = async (
 
   try {
 
-    const reserveServiceInstance = new ReserveService(Reservation, logger);
+    const reserveServiceInstance = new ReserveService(Reservation, TodayWal, queueEvent, logger);
     const data = await reserveServiceInstance.postReservation(req.user?.id as number, req.body as ISetReserveDto);
 
     if (data == customError.ALREADY_RESERVED_DATE) {
@@ -86,7 +87,7 @@ const getReservedDate = async (
 
   try {
 
-    const reserveServiceInstance = new ReserveService(Reservation, logger);
+    const reserveServiceInstance = new ReserveService(Reservation, TodayWal, queueEvent, logger);
     const data = await reserveServiceInstance.getReservationOnCalender(req.user?.id as number);
 
     if (data == "NO_RESERVATION_DATE") {
@@ -122,7 +123,7 @@ const deleteReservation = async (
 
   try {
 
-    const reserveServiceInstance = new ReserveService(Reservation, logger);
+    const reserveServiceInstance = new ReserveService(Reservation, TodayWal, queueEvent, logger);
     const data = await reserveServiceInstance.removeReservation(req.user?.id as number, parseInt(postId));
 
     if (data == customError.NO_OR_COMPLETED_RESERVATION) {
@@ -158,9 +159,8 @@ const deleteCompletedReservation = async (
 
   try {
 
-    const reserveServiceInstance = new ReserveService(Reservation, logger);
+    const reserveServiceInstance = new ReserveService(Reservation, TodayWal, queueEvent, logger);
     const data = await reserveServiceInstance.removeReservationHistory(req.user?.id as number, parseInt(postId));
-
 
     if (data == customError.NO_OR_UNCOMPLETED_RESERVATION) {
       return ErrorResponse(res, sc.NOT_FOUND, rm.NO_OR_UNCOMPLETED_RESERVATION);

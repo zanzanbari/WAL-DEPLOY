@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import "dayjs/locale/ko";
 
 const getCurrentTime = () => {
   const setTime = new Date();
@@ -13,6 +14,10 @@ const getCurrentTime = () => {
       setTime.getMilliseconds()
     ));
   return current;
+}
+
+const getCurrentDate = () => {
+  return dayjs().locale("ko").format("YYYY-MM-DD");
 }
 
 
@@ -76,12 +81,27 @@ const setKoreaTime = (time: Date) => {
   return KoreaTime;
 }
 
+const toUtcTime = (date: Date) => {
+  const utcTime = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours() + 9,
+    date.getMinutes(),
+    0,
+    0
+  );
+  return utcTime;
+}
+
 const timeHandler = {
   getCurrentTime,
+  getCurrentDate,
   getMorning,
   getAfternoon,
   getNight,
-  setKoreaTime
+  setKoreaTime,
+  toUtcTime
 };
 
 export default timeHandler;

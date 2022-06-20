@@ -8,9 +8,12 @@ const router = Router();
 router.use(authUtil.isAuth);
 
 router
-    .route('/')
-    .get(reserveController.getReservation)
-    .post(validateUtil.reserveRequestCheck, reserveController.postReservation);
+  .route('/')
+  .get(reserveController.getReservation)
+  .post(
+    validateUtil.reserveRequestCheck, 
+    reserveController.postReservation
+  );
 
 router.get('/datepicker', reserveController.getReservedDate);
 

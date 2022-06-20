@@ -1,7 +1,7 @@
-import { Reservation } from "../../models";
 import { Job, DoneCallback } from "bull";
-import { firebaseApp } from "../../loaders/firebase";
 import logger from "../../loaders/logger";
+import { Reservation } from "../../models";
+import { firebaseApp } from "../../loaders/firebase";
 
 export const messageProcess = async (job: Job, done: DoneCallback) => {
 

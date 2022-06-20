@@ -1,9 +1,9 @@
-import { afternoonQueue, morningQueue, nightQueue, reserveQueue } from ".";
 import EventEmitter from "events";
+import { afternoonQueue, morningQueue, nightQueue, reserveQueue } from ".";
+import { afterProcess, morningProcess, nightProcess, reserveProcess } from "./consumer";
 import Producer from "./producer";
 import logger from "../../loaders/logger";
 import { ISetTime } from "../../dto/request/userRequest";
-import { afterProcess, morningProcess, nightProcess, reserveProcess } from "./consumer";
 
 const queueEvent = new EventEmitter();
 const processEvent = new EventEmitter();

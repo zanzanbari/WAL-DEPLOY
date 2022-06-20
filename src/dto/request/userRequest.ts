@@ -32,6 +32,8 @@ export interface ISetCategory {
 
 export interface ISetTodayWal {
     user_id: number;
-    item_id: number;
+    item_id?: number;
+    reservation_id?: number;
     time: Date;
+    userDefined?: boolean
 };

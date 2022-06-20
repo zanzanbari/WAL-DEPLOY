@@ -17,7 +17,7 @@ class ReserveService {
   }
 
   /**
-  *  @예약한_왈소리_히스토리
+  *  @desc 예약한_왈소리_히스토리
   *  @route GET /reserve
   *  @access public
   */
@@ -52,7 +52,7 @@ class ReserveService {
   }
 
   /**
-   *  @왈소리_만들기
+   *  @desc 왈소리_만들기
    *  @route POST /reserve
    *  @access public
    */
@@ -92,7 +92,7 @@ class ReserveService {
   }
 
   /**
-   *  @예약한_왈소리_날짜_확인
+   *  @desc 예약한_왈소리_날짜_확인
    *  @route GET /reserve/datepicker
    *  @access public
    */
@@ -120,7 +120,7 @@ class ReserveService {
   }
 
   /**
-   *  @왈소리_예약_취소
+   *  @desc 왈소리_예약_취소
    *  @route DELETE /reserve/:postId
    *  @access public
    */
@@ -150,7 +150,7 @@ class ReserveService {
   }
 
   /**
-   *  @전송된_왈소리_히스토리_삭제
+   *  @desc 전송된_왈소리_히스토리_삭제
    *  @route DELETE /reserve/completed/:postId
    *  @access public
    */

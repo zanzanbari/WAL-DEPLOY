@@ -31,7 +31,7 @@ class InitService extends UserService {
   }
 
   /**
-   *  @유저_초기_설정
+   *  @desc 유저_초기_설정
    *  @route POST /user/set-info
    *  @access public
    */

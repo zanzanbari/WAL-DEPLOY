@@ -23,7 +23,7 @@ class CategoryService {
   }
 
   /**
-   *  @유저_왈소리유형_정보_조회
+   *  @desc 유저_왈소리유형_정보_조회
    *  @route GET /user/info/category
    *  @access public
    */
@@ -44,7 +44,7 @@ class CategoryService {
   }
 
   /**
-   *  @유저_왈소리유형_정보_수정
+   *  @desc 유저_왈소리유형_정보_수정
    *  @route POST /user/info/category
    *  @access public
    */

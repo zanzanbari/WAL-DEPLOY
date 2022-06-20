@@ -1,11 +1,11 @@
 import logger from "./logger";
 import expressLoader from "./express";
 import dbSequelizeLoader from "./dbSequelize";
-import { updateToday } from "../services/pushAlarm";
+import globalInstance from "./initWal";
 
 export default async ({ expressApp }) => {
 
-  updateToday(); //자정마다 todayWal 업데이트
+  globalInstance.updateAtNoonEveryDay();
 
   await dbSequelizeLoader();
   logger.appLogger.info("🚀 DB Loaded And Connected");

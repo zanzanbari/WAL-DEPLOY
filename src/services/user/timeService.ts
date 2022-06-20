@@ -1,20 +1,27 @@
 import { Service } from "typedi";
-import { getRandCategoryCurrentItem } from "../pushAlarm";
+import UserService from "./userService";
 import timeHandler from "../../common/timeHandler";
 import { ISetTime, ISetTodayWal, ResetTimeDto } from "../../dto/request/userRequest";
+
 @Service()
-class TimeService {
+class TimeService extends UserService {
 
   constructor(
+    protected readonly userCategoryRepository: any,
+    protected readonly itemRepository: any,
     private readonly timeRepository: any,
     private readonly todayWalRepository: any,
     private readonly timeQueueEvent: any,
     private readonly logger: any
   ) {
+    super(
+      userCategoryRepository,
+      itemRepository
+    )
   }
 
   /**
-   *  @유저_알람시간_수정
+   *  @desc 유저_알람시간_수정
    *  @route POST /user/info/time
    *  @access public
    */
@@ -58,19 +65,31 @@ class TimeService {
     userId: number
   ): Promise<void> {
 
-    let addFlag = "add";
     let currentTime: Date = timeHandler.getCurrentTime();
-    for (const time of isAddedTime) {
-      if (time > currentTime) {
-        this.timeQueueEvent.emit("updateUserTime", userId, time, addFlag );
-        const currentItemId = await getRandCategoryCurrentItem(userId);
-        const data: ISetTodayWal = {
-          user_id: userId,
-          item_id: currentItemId,
-          time
-        };
-        await this.todayWalRepository.setTodayWal(data);
+
+    try {
+
+      for (const time of isAddedTime) {
+
+        if (time > currentTime) {
+
+          this.timeQueueEvent.emit("updateAddTimeQueue", userId, time);
+
+          const currentItemId = await this.getRandCategoryCurrentItem(userId);
+          const data: ISetTodayWal = {
+            user_id: userId,
+            item_id: currentItemId,
+            time
+          };
+          await this.todayWalRepository.setTodayWal(data);
+
+        }
+
       }
+
+    } catch (error) {
+      this.logger.appLogger.log({ level: "error", message: `setAddedTime :: ${error.message}` });
+      throw error;
     }
 
   }
@@ -81,13 +100,22 @@ class TimeService {
     userId: number
   ): Promise<void> {
 
-    let cancelFlag = "cancel";
     let currentTime: Date = timeHandler.getCurrentTime();
-    for (const time of isCanceledTime) {
-      if (time > currentTime) {
-        this.timeQueueEvent.emit("updateUserTime", userId, time, cancelFlag );
-        await this.todayWalRepository.deleteTodayWal(userId, time);
+
+    try {
+
+      for (const time of isCanceledTime) {
+
+        this.timeQueueEvent.emit("updateCancelTimeQueue", userId, time);
+
+        if (time > currentTime) {
+          await this.todayWalRepository.deleteTodayWal(userId, time);
+        }
       }
+
+    } catch (error) {
+      this.logger.appLogger.log({ level: "error", message: `setCanceledTime :: ${error.message}` });
+      throw error;
     }
 
   }

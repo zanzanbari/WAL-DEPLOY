@@ -7,8 +7,8 @@ import Error from "../../constant/responseError";
 import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
 import AppleAuthService from "../../services/auth/appleAuthService";
 import KakaoAuthService from "../../services/auth/kakaoAuthService";
-import { TokenDto } from "../../interface/dto/request/authRequest";
-import { AuthResponse } from "../../interface/dto/response/authResponse";
+import { TokenDto } from "../../dto/request/authRequest";
+import { AuthResponse } from "../../dto/response/authResponse";
 import ReissueTokenService from "../../services/auth/reissueTokenService";
 
 /**

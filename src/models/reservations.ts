@@ -1,165 +1,157 @@
 import { 
-    AllowNull, 
-    AutoIncrement, 
-    Column, 
-    DataType,
-    BelongsTo,
-    Model, 
-    PrimaryKey, 
-    ForeignKey,
-    Table, 
-    Unique, 
-    Default} from "sequelize-typescript"
+  AllowNull, 
+  AutoIncrement, 
+  Column, 
+  DataType,
+  BelongsTo,
+  Model, 
+  PrimaryKey, 
+  ForeignKey,
+  Table, 
+  Unique, 
+  Default } from "sequelize-typescript"
 import User from "./users";
-import rm from "../constant/resultMessage";
 import sequelize from "../models";
-import { Op } from "sequelize";
+import { ISetReserveDto } from "../dto/request/reserveRequest";
 
 @Table({
-    modelName: "Reservation",
-    tableName: "reservations",
-    freezeTableName: true,
-    underscored: false,
-    paranoid: false,
-    timestamps: false,
-    charset: "utf8", // 한국어 설정
-    collate: "utf8_general_ci", // 한국어 설정
+  modelName: "Reservation",
+  tableName: "reservations",
+  freezeTableName: true,
+  underscored: false,
+  paranoid: false,
+  timestamps: false,
+  charset: "utf8", // 한국어 설정
+  collate: "utf8_general_ci", // 한국어 설정
 })
 
 export default class Reservation extends Model {
-    @PrimaryKey
-    @AutoIncrement
-    @Unique
-    @Column(DataType.INTEGER)
-    public readonly id!: number;
+  @PrimaryKey
+  @AutoIncrement
+  @Unique
+  @Column(DataType.INTEGER)
+  public readonly id!: number;
 
 
-    @ForeignKey(() => User)
-    @Column(DataType.INTEGER)
-    public user_id!: number;
+  @ForeignKey(() => User)
+  @Column(DataType.INTEGER)
+  public user_id!: number;
 
 
-    @AllowNull(false)
-    @Column(DataType.TEXT)
-    public content!: string;
+  @AllowNull(false)
+  @Column(DataType.TEXT)
+  public content!: string;
 
 
-    @AllowNull(false)
-    @Default(Date.now())
-    @Column(DataType.DATE)
-    public reservedAt!: Date;
+  @AllowNull(false)
+  @Default(Date.now())
+  @Column(DataType.DATE)
+  public reservedAt!: Date;
 
     
-    @AllowNull(false)
-    @Default(false)
-    @Column(DataType.BOOLEAN)
-    public hide!: Boolean;
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  public hide!: Boolean;
 
 
-    @AllowNull(false)
-    @Default(false)
-    @Column(DataType.BOOLEAN)
-    public completed!: Boolean;
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  public completed!: Boolean;
 
 
-    @AllowNull(false)
-    @Column(DataType.DATE)
-    public sendingDate!: Date;
+  @AllowNull(false)
+  @Column(DataType.DATE)
+  public sendingDate!: Date;
 
 
-    @BelongsTo(() => User)
-    user!: User
+  @BelongsTo(() => User)
+  user!: User
 
-    static async getSendingItems(id: number): Promise<Reservation[]> {
-        const reservations = await this.findAll({
-            where: {
-                user_id: id,
-                completed: false
-            },
-            order: [
-                ["reservedAt", "DESC"],
-                ["sendingDate", "DESC"]
-            ] //보낸 날짜 desc정렬
-        })
-        return reservations;
-    }
+  static async getSendingItems(id: number): Promise<Reservation[]> {
+    const reservations = await this.findAll({
+      where: {
+        user_id: id,
+        completed: false
+      },
+      order: [
+        ["reservedAt", "DESC"],
+        ["sendingDate", "DESC"]
+      ] //보낸 날짜 desc정렬
+    });
+    return reservations;
+  };
 
-    static async getCompletedItems(id: number): Promise<Reservation[]> {
-        const reservations = await this.findAll({
-            where: {
-                user_id: id,
-                completed: true
-            },
-            order: [["sendingDate", "DESC"]] //받은 날짜 desc정렬
-        })
-        return reservations;
-    }
+  static async getCompletedItems(id: number): Promise<Reservation[]> {
+    const reservations = await this.findAll({
+      where: {
+        user_id: id,
+        completed: true
+      },
+      order: [["sendingDate", "DESC"]] //받은 날짜 desc정렬
+    });
+    return reservations;
+  };
 
-    static async getReservationByDate(id: number, date: string): Promise<Reservation|null> {
-        const reservation = await this.findOne({
-            where: {
-                user_id: id,
-                $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '=', new Date(date))
-            
-        }});
-  
-        return reservation;
-    }
+  static async getReservationByDate(id: number, date: string): Promise<Reservation|null> {
+    const reservation = await this.findOne({
+      where: {
+        user_id: id,
+        $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '=', new Date(date))    
+      }});
+    return reservation;
+  };
 
 
-    static async postReservation(
-        id: number, 
-        date: string, 
-        time: string, 
-        hide: boolean, 
-        content: string
-        ): Promise<number> {
-
-        const reservation = await this.create({
-            user_id: id,
-            sendingDate: new Date(`${date} ${time}`),
-            hide,
-            content
-        });
-
-        return reservation.id;
-    }
+  static async setReservation(
+    user_id: number, 
+    request: ISetReserveDto
+  ): Promise<number> {
+    const reservation = await this.create({
+      user_id,
+      sendingDate: new Date(`${request.date} ${request.time}`),
+      ...request
+    });
+    return reservation.id;
+  };
 
 
-    static async getContentById(id: number): Promise<string> {
+  static async getContentById(id: number): Promise<string> {
+    const reservation = await this.findOne({ where: { id} });
+    const content: string = reservation?.getDataValue("content");
+    return content;
+  };
 
-        const reservation = await this.findOne({ where: { id} });
-        const content: string = reservation?.getDataValue("content");
-
-        return content;
-        
-    }
-
-    static async getReservationsFromTomorrow(id: number): Promise<Reservation[]> {
-
-        const reservations = await this.findAll({
-            where: {
-                user_id: id,
-                $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '>', new Date())
-            },
-            attributes: ["sendingDate"]
-        })
-
-        return reservations;
-    }
+  static async getReservationsFromTomorrow(id: number): Promise<Reservation[]> {
+    const reservations = await this.findAll({
+      where: {
+        user_id: id,
+        $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '>', new Date())
+      },
+      attributes: ["sendingDate"]
+    });
+    return reservations;
+  };
  
     
-    static async getReservationByPostId(postId: number, id: number, completed: boolean): Promise<Reservation|null> {
+  static async getReservationByPostId(
+    user_id: number,
+    post_id: number, 
+    completed: boolean
+  ): Promise<Reservation | null> {
+    const reservation = await this.findOne({ 
+      where: { 
+        id: post_id,
+        user_id,
+        completed
+      }
+    });
+    return reservation;      
+  };
 
-        const reservation = await this.findOne({ 
-            where: { 
-                id: postId,
-                user_id: id,
-                completed
-            }
-        });
+  static async deleteReservation(id: number) {
+    await this.destroy({ where: { id } });
+  };
 
-        return reservation;
-        
-    }
 }

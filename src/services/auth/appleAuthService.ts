@@ -1,7 +1,7 @@
 import * as jwt from "jsonwebtoken";
 import IAuthService from "./authService";
-import { TokenDto } from "../../interface/dto/request/authRequest";
-import { AuthResponse, IAppleUserInfo } from "../../interface/dto/response/authResponse";
+import { TokenDto } from "../../dto/request/authRequest";
+import { AuthResponse, IAppleUserInfo } from "../../dto/response/authResponse";
 import { issueAccessToken, issueRefreshToken } from "../../common/tokenHandler";
 
 class AppleAuthService implements IAuthService {

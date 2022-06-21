@@ -1,11 +1,12 @@
 import Joi from "joi";
 import { NextFunction, Request, Response } from "express";
+import logger from "../../loaders/logger";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import { ErrorResponse } from "../../common/apiResponse";
-import { SocialType, TokenDto } from "../../interface/dto/request/authRequest";
-import { ISetCategory, ISetTime, ResetTimeDto, UserSettingDto } from "../../interface/dto/request/userRequest";
-import logger from "../../loaders/logger";
+import { SocialType, TokenDto } from "../../dto/request/authRequest";
+import { ISetReserveDto } from "../../dto/request/reserveRequest";
+import { ISetCategory, ResetTimeDto, UserSettingDto } from "../../dto/request/userRequest";
 
 // fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
 const loginRequestCheck = async (
@@ -177,12 +178,47 @@ const categoryRequestCheck = async(
 }
 
 
+const reserveRequestCheck = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+
+  const reserveSchema = Joi.object().keys({
+    content: Joi.string().required(),
+    date: Joi.string().required(),
+    time: Joi.string().required(),
+    hide: Joi.boolean().required()
+  });
+
+  try {
+
+    const bodyError = await reserveSchema
+      .validateAsync(req.body as ISetReserveDto)
+      .catch(err => { return err });
+
+    if (bodyError.details) {
+      return ErrorResponse(res, sc.BAD_REQUEST, rm.WRONG_BODY_OR_NULL);
+    }
+
+    next();
+
+  } catch(error) {
+    console.error(`[VALIDATE ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
+    logger.appLogger.log({ level: "error", message: error.message}); 
+    ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR); 
+  }
+
+}
+
+
 
 const validateUtil = {
   loginRequestCheck,
   initRequestCheck,
   timeRequestCheck,
-  categoryRequestCheck
+  categoryRequestCheck,
+  reserveRequestCheck
 }
 
 export default validateUtil;

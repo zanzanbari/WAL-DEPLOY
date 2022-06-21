@@ -1,8 +1,9 @@
 import { Job, DoneCallback } from "bull";
-import { firebaseApp } from "../../loaders/firebase";
 import logger from "../../loaders/logger";
+import { Reservation } from "../../models";
+import { firebaseApp } from "../../loaders/firebase";
 
-export const messageFunc = async (job: Job, done: DoneCallback) => {
+export const messageProcess = async (job: Job, done: DoneCallback) => {
 
   try {
     const { fcmtoken, content } = job.data;
@@ -14,19 +15,23 @@ export const messageFunc = async (job: Job, done: DoneCallback) => {
       }, 
       token: fcmtoken, 
     };
-        
+
 
     firebaseApp 
       .messaging()
       .send(message) 
-      .then(response => {
+      .then(async response => {
         logger.appLogger.log({
           level: 'info',
           message: `📣 Successfully sent message: : ${response} ${content}`
         });
+        await Reservation.update({
+          completed: true
+        }, {
+          where: { content }
+        });
       })
       .catch(error => { 
-        console.log('error Sending message!!! : ', error) 
           logger.appLogger.log({
             level: 'error',
             message: error.message
@@ -35,7 +40,7 @@ export const messageFunc = async (job: Job, done: DoneCallback) => {
       done();
 
   } catch (error) {
-    logger.appLogger.log({ level: "erroror", message: error.message });
+    logger.appLogger.log({ level: "error", message: error.message });
   }
 
 }

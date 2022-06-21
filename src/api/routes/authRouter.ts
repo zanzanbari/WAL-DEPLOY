@@ -10,17 +10,20 @@ router.post(
   validateUtil.loginRequestCheck,
   authController.socialLogin
 );
+
 router.post(
   "/:social/logout",
   validateUtil.loginRequestCheck,
   authUtil.isAuth, 
   authController.socialResign
 );
+
 router.get(
   "/logout", 
   authUtil.isAuth, 
   authController.logout
 );
+
 router.post("/reissue/token", authController.reissueToken);
 
 export default router;

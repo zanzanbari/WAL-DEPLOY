@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import { 
   ISetCategory, 
   ISetUserCategory, 
-  ResetCategoryDto } from "../../interface/dto/request/userRequest";
+  ResetCategoryDto } from "../../dto/request/userRequest";
 
 @Service()
 class CategoryService {
@@ -23,7 +23,7 @@ class CategoryService {
   }
 
   /**
-   *  @유저_왈소리유형_정보_조회
+   *  @desc 유저_왈소리유형_정보_조회
    *  @route GET /user/info/category
    *  @access public
    */
@@ -44,7 +44,7 @@ class CategoryService {
   }
 
   /**
-   *  @유저_왈소리유형_정보_수정
+   *  @desc 유저_왈소리유형_정보_수정
    *  @route POST /user/info/category
    *  @access public
    */
@@ -88,25 +88,32 @@ class CategoryService {
     userId: number
   ): Promise<void> {
 
-    for (let categoryId = 0; categoryId < 4; categoryId++) {
+    try {
 
-      if (before[categoryId] === true && after[categoryId] === false) { // 삭제
-
-        await this.userCategoryRepository.deleteUserCategory(userId, categoryId);
-
-      } else if (before[categoryId] === false && after[categoryId] === true) { // 생성
-
-        const firstItemId: Promise<number> = this.itemRepository.getFirstIdEachOfCategory(categoryId);
-        this.infoToUserCategoryDB = {
-          user_id: userId,
-          category_id: categoryId,
-          next_item_id: await firstItemId,
-        };
-        await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
-
+      for (let categoryId = 0; categoryId < 4; categoryId++) {
+  
+        if (before[categoryId] === true && after[categoryId] === false) { // 삭제
+  
+          await this.userCategoryRepository.deleteUserCategory(userId, categoryId);
+  
+        } else if (before[categoryId] === false && after[categoryId] === true) { // 생성
+  
+          const firstItemId: Promise<number> = this.itemRepository.getFirstIdEachOfCategory(categoryId);
+          this.infoToUserCategoryDB = {
+            user_id: userId,
+            category_id: categoryId,
+            next_item_id: await firstItemId,
+          };
+          await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
+  
+        }
+  
       }
-
+      
+    } catch (error) {
+      this.logger.appLogger.log({ level: "error", message: `resetUserCategory :: ${error.message}` });
     }
+
   }
 
 

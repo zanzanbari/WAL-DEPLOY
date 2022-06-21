@@ -64,7 +64,7 @@ const ResultMessage = {
   READ_RESERVED_DATE_SUCCESS: "예약날짜 조회 성공",
   NO_RESERVATION_DATE: "예약날짜 없음",
   ADD_RESERVATION_SUCCESS: "왈소리 맹글기 성공",
-  INVALID_RESERVATION_DATE: "이미 예약된 날짜",
+  ALREADY_RESERVED_DATE: "이미 예약된 날짜",
   READ_RESERVATIONS_SUCCESS: "왈소리 히스토리 조회 성공",
   NO_RESERVATION: "왈소리 히스토리가 없음",
   DELETE_RESERVATION_SUCCESS: "왈소리 예약 취소 성공",

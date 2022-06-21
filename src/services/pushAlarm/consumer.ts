@@ -1,105 +1,257 @@
-import { Item, User, TodayWal, Reservation } from "../../models";
-import {  messageQueue } from './';
 import { Job, DoneCallback } from "bull";
-import dayjs from "dayjs";
-import { messageFunc } from "./messageConsumer";
+import { messageQueue } from ".";
+import { messageProcess } from "./messageConsumer";
 import logger from "../../loaders/logger";
+import timeHandler from "../../common/timeHandler";
+import { Item, Reservation, TodayWal } from "../../models";
 
-async function getTokenMessage(time: Date, userId: number) {
+/**
+ *  @desc 아침 큐 process
+ *  @access public
+ */
+
+export const morningProcess = async (job: Job, done: DoneCallback) => {
 
   try {
-        
-    const wal = await TodayWal.findOne({
-      where: { time: time, user_id: userId },
-      include: [
-        { model: User, attributes: ["fcmtoken"] }
-      ]
-    });
-      
-    const fcmtoken = wal?.getDataValue("user").getDataValue("fcmtoken");
-    const userDefined = wal?.getDataValue("userDefined");
-    let content:string|undefined = "";
-    if (userDefined) {
-      const reservation = await Reservation.findOne({
-        where: {id: wal?.getDataValue("reservation_id")}
-      });
-      content = reservation?.content;
-    } else {
-      const item = await Item.findOne({
-        where: {id: wal?.getDataValue("item_id")}
-      });
-      content = item?.content;
+
+    const userId = job.data;
+    const data = await getFcmAndContent(userId, timeHandler.getMorning());
+    // data : { fcm, content }
+    await messageQueue.add("morning-message",data, { attempts: 5 }); //message를 보내는 작업, 5번 시도
+    messageQueue.process("morning-message",messageProcess);
+    done();
+
+  } catch (err) {
+    logger.appLogger.log({ level: "error", message: err.message });
+  }
+
+}
+
+/**
+ *  @desc 점심 큐 process
+ *  @access public
+ */
+
+export const afterProcess = async (job: Job, done: DoneCallback) => {
+
+  try {
+
+    const userId = job.data;
+    const data = await getFcmAndContent(userId, timeHandler.getAfternoon());
+
+    await messageQueue.add("afternoon-message",data, { attempts: 5 });
+    messageQueue.process("afternoon-message",messageProcess)
+    done();
+    
+  } catch (err) {
+    logger.appLogger.log({ level: "error", message: err.message });
+  }
+    
+}
+
+/**
+ *  @desc 저녁 큐 process
+ *  @access public
+ */
+
+export const nightProcess = async (job: Job, done: DoneCallback) => {
+
+  try {
+
+    const userId = job.data;
+    const data = await getFcmAndContent(userId, timeHandler.getNight());
+    console.log(data);
+
+    await messageQueue.add("night-message",data, { attempts: 5 });
+    messageQueue.process("night-message",messageProcess);
+    done();
+
+  } catch (error) {
+    logger.appLogger.log({ level: "error", message: `nightProcess::${error.message}` });
+  }
+
+}
+
+/**
+ *  @desc 예약 큐 process
+ *  @access public
+ */
+
+export const reserveProcess = async (job: Job, done: DoneCallback) => {
+
+  try {
+
+    const userId = job.data;
+    const data = await getFcmAndContent(userId);
+
+    await messageQueue.add("reserve-message",data, { attempts: 5 });
+    messageQueue.process("reserve-message",messageProcess);
+    done();
+
+  } catch (err) {
+    logger.appLogger.log({ level: "error", message: err.message });
+  }
+
+}
+
+/**
+ *  @desc 유저의 fcmtoken 과 보내줄 content 가져오기
+ *  @time 정해진 시간대 "아침, 점심, 저녁" | 예약일 경우 없음
+ *  @access public
+ */
+
+async function getFcmAndContent(userId: number, time?: Date) {
+
+  try {
+
+    if (time) { 
+
+      const { fcmtoken, itemId } = await TodayWal.getFcmByUserId(userId, time) as { fcmtoken: string, itemId: number };
+      const { content } = await Item.getContentById(itemId) as { content: string };
+      return { fcmtoken, content };
+
+    } else { // reservation
+
+      const { fcmtoken, reservationId } = await TodayWal.getFcmByUserId(userId)as { fcmtoken: string, reservationId: number };
+      const content = await Reservation.getContentById(reservationId) as string;
+      return { fcmtoken, content };
+
     }
 
-    const data = {
-      fcmtoken,
-      content
-    };
-      
-    return data;
-
-  } catch (err) {
-    logger.appLogger.log({ level: "error", message: err.message });
-  }
-    
-}
-
-
-
-export const morningFunc = async (job: Job, done: DoneCallback) => {
-
-  try {
-
-    const userId = job.data;
-    const dateString = dayjs(new Date()).format("YYYY-MM-DD");
-    const data = await getTokenMessage(new Date(`${dateString} 08:00:00`), userId);
-    // data : { fcm, content }
-    await messageQueue.add(data, { attempts: 5 }); //message를 보내는 작업, 5번 시도
-    messageQueue.process(messageFunc);
-    done();
-
-  } catch (err) {
-    logger.appLogger.log({ level: "error", message: err.message });
+  } catch (error) {
+    logger.appLogger.log({ level: "error", message: `getFcmAndContent :: ${error.message}` });
+    throw error;
   }
 
 }
 
 
 
-export const afterFunc = async (job: Job, done: DoneCallback) => {
+/**
+ * ######################################
+ * * ERROR
+ * * private method                         
+ * * getFcmAndContent is not a function
+ * * & logger 주입 인식 오류
+ * ######################################
+ */
+// class Consumer {
 
-  try {
+//   constructor(
+//     private readonly todayWalRepository: any,
+//     private readonly reserveRepository: any,
+//     private readonly itemRepository: any,
+//     private readonly messageQueue: any,
+//     private readonly logger: any
+//   ) {
+//   }
 
-    const userId = job.data;
-    const dateString = dayjs(new Date()).format("YYYY-MM-DD");
-    const data = await getTokenMessage(new Date(`${dateString} 14:00:00`), userId);
+//   public async processMorning(job: Job, done: DoneCallback) {
 
-    await messageQueue.add(data, { attempts: 5 });
-    messageQueue.process(messageFunc)
-    done();
-    
-  } catch (err) {
-    logger.appLogger.log({ level: "error", message: err.message });
-  }
-    
-}
+//     try {
 
-export const nightFunc = async (job: Job, done: DoneCallback) => {
+//       const userId = job.data;
+//       const data = await this.getFcmAndContent(userId, timeHandler.getMorning());
 
-  try {
+//       await this.messageQueue.add(data, { attempts: 5 });
+//       this.messageQueue.process(messageFunc);
+//       done();
 
-    console.log("나 실행한다")
-    const userId = job.data;
-    const dateString = dayjs(new Date()).format("YYYY-MM-DD");
-    const data = await getTokenMessage(new Date(`${dateString} 20:00:00`), userId);
-    console.log("data::",data);
+//     } catch (error) {
+//       this.logger.appLogger.log({ level: "error", message: error.message });
+//       throw error;
+//     }
 
-    await messageQueue.add(data, { attempts: 5 });
-    messageQueue.process(messageFunc);
-    done();
+//   }
 
-  } catch (err) {
-    logger.appLogger.log({ level: "error", message: err.message });
-  }
 
-}
+//   public async processAfternoon(job: Job, done: DoneCallback) {
+
+//     try {
+
+//       const userId = job.data;
+//       const data = await this.getFcmAndContent(userId, timeHandler.getAfternoon());
+
+//       await this.messageQueue.add(data, { attempts: 5 });
+//       this.messageQueue.process(messageFunc);
+//       done();
+
+//     } catch (error) {
+//       this.logger.appLogger.log({ level: "error", message: error.message });
+//       throw error;
+//     }
+
+//   }
+
+
+//   public async processNight(job: Job, done: DoneCallback) {
+
+//     try {
+
+//       const userId = job.data;
+//       const data = await this.getFcmAndContent(userId, timeHandler.getNight()) as { fcmtoken: string, content: string;};
+
+//       await this.messageQueue.add(data, { attempts: 5 });
+//       this.messageQueue.process(messageFunc);
+//       done();
+
+//     } catch (error) {
+//       // this.logger.appLogger.log({ level: "error", message: error.message });
+//       console.log(error.message);
+//       throw error;
+//     }
+
+//   }
+
+
+//   public async processReserve(job: Job, done: DoneCallback) {
+
+//     try {
+
+//       const userId = job.data;
+//       const data = await this.getFcmAndContent(userId);
+
+//       await this.messageQueue.add(data, { attempts: 5 });
+//       this.messageQueue.process(messageFunc);
+//       done();
+
+//     } catch (error) {
+//       this.logger.appLogger.log({ level: "error", message: error.message });
+//       throw error;
+//     }
+
+//   }
+
+
+
+//   private async getFcmAndContent(userId: number, time?: Date) {
+
+//     try {
+
+//       if (time) { 
+
+//         const { fcmtoken, itemId } = await this.todayWalRepository.getFcmByUserId(userId, time) as { fcmtoken: string, itemId: number };
+//         console.log(fcmtoken);
+//         console.log(itemId);
+//         const { content } = await this.itemRepository.getContentById(itemId) as { content: string };
+//         console.log(content);
+//         return { fcmtoken, content };
+
+//       } else { // reservation
+
+//         const { fcmtoken, reservationId } = await this.todayWalRepository.getFcmByUserId(userId)as { fcmtoken: string, reservationId: number };
+//         const content = await this.reserveRepository.getContentById(reservationId) as string;
+//         return { fcmtoken, content };
+
+//       }
+
+//     } catch (error) {
+//       this.logger.appLogger.log({ level: "error", message: `getFcmAndContent :: ${error.message}` });
+//       throw error;
+//     }
+
+//   }
+
+// }
+
+// export default Consumer;

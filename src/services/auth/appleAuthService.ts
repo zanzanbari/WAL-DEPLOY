@@ -12,7 +12,7 @@ class AppleAuthService implements IAuthService {
   }
     
   /**
-   *  @애플_로그인
+   *  @desc 애플_로그인
    *  @route POST /auth/apple/login
    *  @access public
    */
@@ -43,7 +43,7 @@ class AppleAuthService implements IAuthService {
   }
 
   /**
-   *  @애플_로그아웃_탈퇴
+   *  @desc 애플_로그아웃_탈퇴
    *  @route POST /auth/apple/resign
    *  @access public
    */

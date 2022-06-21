@@ -65,18 +65,21 @@ class Producer {
           cron: "0 0 8 * * *", 
           jobId: userId 
         });
+        this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: morningQueue 삭제 성공`});
       }
       if (time.getTime() == timeHandler.getAfternoon().getTime()) {
         await this.afternoonQueue.removeRepeatable("afternoon", { 
           cron: "0 0 14 * * *", 
           jobId: userId 
         });
+        this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: afternoonQueue 삭제 성공`});
       }
       if (time.getTime() == timeHandler.getNight().getTime()) {
         await this.nightQueue.removeRepeatable("night", { 
           cron: "0 0 20 * * *", 
           jobId: userId 
         });
+        this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: nightQueue 삭제 성공`});
       }
 
     } catch(error) {
@@ -113,6 +116,7 @@ class Producer {
         repeat: { cron: `0 ${min} ${hour} ${day} ${month} *` },
         removeOnComplete: true
       });
+      this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: reserveQueue 등록 성공`});
       this.processEvent.emit("reserveProcess");
 
     } catch(error) {
@@ -146,6 +150,7 @@ class Producer {
         cron: `0 ${min} ${hour} ${day} ${month} *`, 
         jobId: userId 
       });
+      this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: reserveQueue 삭제 성공`});
 
     } catch (error) {
       this.logger.appLogger.log({ level: "error", message: error.message });
@@ -169,6 +174,7 @@ class Producer {
             jobId: userId,
             repeat: { cron: "0 0 8 * * *" }
           });
+          this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: morningQueue 등록 성공`});
           this.processEvent.emit("morningProcess");
           break;
   
@@ -177,6 +183,7 @@ class Producer {
             jobId: userId,
             repeat: { cron: "0 0 14 * * *" }
           });
+          this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: afternoonQueue 등록 성공`});
           this.processEvent.emit("afternoonProcess");
           break;
   
@@ -185,6 +192,7 @@ class Producer {
             jobId: userId,
             repeat: { cron: "0 0 20 * * *" }
           });
+          this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: nightQueue 등록 성공`});
           this.processEvent.emit("nightProcess");
           break;
   

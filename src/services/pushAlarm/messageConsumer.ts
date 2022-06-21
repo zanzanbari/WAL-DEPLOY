@@ -5,8 +5,10 @@ import { firebaseApp } from "../../loaders/firebase";
 
 export const messageProcess = async (job: Job, done: DoneCallback) => {
 
+  logger.appLogger.log({ level: "info", message: "message queue process START"});
+
   try {
-    const { fcmtoken, content } = job.data;
+    const { fcmtoken, content, isReserved } = job.data;
 
     const message = { 
       notification: { 
@@ -21,21 +23,26 @@ export const messageProcess = async (job: Job, done: DoneCallback) => {
       .messaging()
       .send(message) 
       .then(async response => {
+
         logger.appLogger.log({
           level: 'info',
-          message: `📣 Successfully sent message: : ${response} ${content}`
+          message: `📣 Successfully sent message: : ${response} ${content} ${job.id}`
         });
-        await Reservation.update({
-          completed: true
-        }, {
-          where: { content }
-        });
+        if (isReserved) {
+          await Reservation.update({
+            completed: true
+          }, {
+            where: { content }
+          });
+          logger.appLogger.log({ level: "info", message: "예약 왈소리 전송완료"});
+        }
+        
       })
       .catch(error => { 
-          logger.appLogger.log({
-            level: 'error',
-            message: error.message
-          }) ;
+        logger.appLogger.log({
+          level: 'error',
+          message: `❌ SENDING MESSAGE ERROR :: ${error.message}`
+        });
       });
       done();
 

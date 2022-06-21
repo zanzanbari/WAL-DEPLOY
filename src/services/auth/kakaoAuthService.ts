@@ -15,7 +15,7 @@ class KakaoAuthService implements IAuthService {
   }
 
   /**
-   *  @카카오_로그인
+   *  @desc 카카오_로그인
    *  @route POST /auth/kakao/login
    *  @access public
    */
@@ -43,7 +43,7 @@ class KakaoAuthService implements IAuthService {
   }
 
   /**
-   *  @카카오_로그아웃_탈퇴
+   *  @desc 카카오_로그아웃_탈퇴
    *  @route POST /auth/kakao/resign
    *  @access public
    */

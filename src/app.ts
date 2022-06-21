@@ -9,11 +9,13 @@ async function startServer(): Promise<void> {
   await require("./loaders").default({ expressApp: app })
  
   app.listen(config.port, () => {
-    console.log(`
-      ################################################
-            🛡️  Server listening on port 🛡️
-      ################################################
-    `);
+    logger.appLogger.log({
+      level: "info",
+      message: `
+        ################################################
+                🛡️  Server listening on port 🛡️
+        ################################################
+    `});
   })
   .on("error", (err) => {
     logger.appLogger.error(err.message);

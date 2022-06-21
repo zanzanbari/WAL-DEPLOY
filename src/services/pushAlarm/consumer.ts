@@ -12,17 +12,20 @@ import { Item, Reservation, TodayWal } from "../../models";
 
 export const morningProcess = async (job: Job, done: DoneCallback) => {
 
+  logger.appLogger.log({ level: "info", message: "morning queue process START" });
+
   try {
 
     const userId = job.data;
     const data = await getFcmAndContent(userId, timeHandler.getMorning());
     // data : { fcm, content }
     await messageQueue.add("morning-message",data, { attempts: 5 }); //message를 보내는 작업, 5번 시도
+    logger.appLogger.log({ level: "info", message: "morning messageQueue 등록 성공" });
     messageQueue.process("morning-message",messageProcess);
     done();
 
-  } catch (err) {
-    logger.appLogger.log({ level: "error", message: err.message });
+  } catch (error) {
+    logger.appLogger.log({ level: "error", message: error.message });
   }
 
 }
@@ -34,17 +37,20 @@ export const morningProcess = async (job: Job, done: DoneCallback) => {
 
 export const afterProcess = async (job: Job, done: DoneCallback) => {
 
+  logger.appLogger.log({ level: "info", message: "afternoon queue process START" });
+
   try {
 
     const userId = job.data;
     const data = await getFcmAndContent(userId, timeHandler.getAfternoon());
 
     await messageQueue.add("afternoon-message",data, { attempts: 5 });
+    logger.appLogger.log({ level: "info", message: "afternoon messageQueue 등록 성공" });
     messageQueue.process("afternoon-message",messageProcess)
     done();
     
-  } catch (err) {
-    logger.appLogger.log({ level: "error", message: err.message });
+  } catch (error) {
+    logger.appLogger.log({ level: "error", message: error.message });
   }
     
 }
@@ -56,6 +62,8 @@ export const afterProcess = async (job: Job, done: DoneCallback) => {
 
 export const nightProcess = async (job: Job, done: DoneCallback) => {
 
+  logger.appLogger.log({ level: "info", message: "night queue process START" });
+
   try {
 
     const userId = job.data;
@@ -63,6 +71,7 @@ export const nightProcess = async (job: Job, done: DoneCallback) => {
     console.log(data);
 
     await messageQueue.add("night-message",data, { attempts: 5 });
+    logger.appLogger.log({ level: "info", message: "night messageQueue 등록 성공" });
     messageQueue.process("night-message",messageProcess);
     done();
 
@@ -79,17 +88,20 @@ export const nightProcess = async (job: Job, done: DoneCallback) => {
 
 export const reserveProcess = async (job: Job, done: DoneCallback) => {
 
+  logger.appLogger.log({ level: "info", message: "reserve queue process START" });
+
   try {
 
     const userId = job.data;
     const data = await getFcmAndContent(userId);
 
     await messageQueue.add("reserve-message",data, { attempts: 5 });
+    logger.appLogger.log({ level: "info", message: "reserve messageQueue 등록 성공" });
     messageQueue.process("reserve-message",messageProcess);
     done();
 
-  } catch (err) {
-    logger.appLogger.log({ level: "error", message: err.message });
+  } catch (error) {
+    logger.appLogger.log({ level: "error", message: error.message });
   }
 
 }
@@ -100,7 +112,11 @@ export const reserveProcess = async (job: Job, done: DoneCallback) => {
  *  @access public
  */
 
-async function getFcmAndContent(userId: number, time?: Date) {
+async function getFcmAndContent(userId: number, time?: Date): Promise<{
+  fcmtoken: string;
+  content: string;
+  isReserved: boolean;
+}> {
 
   try {
 
@@ -108,13 +124,13 @@ async function getFcmAndContent(userId: number, time?: Date) {
 
       const { fcmtoken, itemId } = await TodayWal.getFcmByUserId(userId, time) as { fcmtoken: string, itemId: number };
       const { content } = await Item.getContentById(itemId) as { content: string };
-      return { fcmtoken, content };
+      return { fcmtoken, content, isReserved: false };
 
     } else { // reservation
 
       const { fcmtoken, reservationId } = await TodayWal.getFcmByUserId(userId)as { fcmtoken: string, reservationId: number };
       const content = await Reservation.getContentById(reservationId) as string;
-      return { fcmtoken, content };
+      return { fcmtoken, content, isReserved: true };
 
     }
 

@@ -12,12 +12,8 @@ async function startServer(): Promise<void> {
     logger.appLogger.log({
       level: "info",
       message: `
-        ################################################
-<<<<<<< HEAD
-              🛡️  Server listening on port 🛡️
-=======
+        ################################################\
                 🛡️  Server listening on port 🛡️
->>>>>>> develop
         ################################################
     `});
   })

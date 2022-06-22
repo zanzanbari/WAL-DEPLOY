@@ -1,6 +1,5 @@
 import axios from "axios";
 import logger from "../../../loaders/logger";
-import { isEmail } from "../../../common/validator";
 import { Token, UserInfo } from "../../../dto/response/authResponse";
 
 async function auth(
@@ -23,10 +22,6 @@ async function auth(
         const email: string = resolve.data.kakao_account["email"];
         return { nickname, email };
       });
-
-      if (!isEmail(userData.email)) {
-        throw new Error("Validation isEmail on email failed");
-      }
 
     return userData;
 

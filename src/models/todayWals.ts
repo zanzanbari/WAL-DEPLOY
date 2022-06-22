@@ -14,6 +14,7 @@ import User from "./users";
 import Item from "./items";
 import Reservation from "./reservations";
 import { ISetTodayWal } from "../dto/request/userRequest";
+import Category from "./categories";
 
 @Table({ // 테이블 설정
   modelName: "TodayWal",
@@ -26,24 +27,29 @@ import { ISetTodayWal } from "../dto/request/userRequest";
   collate: "utf8_general_ci", 
 })
 
-export default class TodayWal extends Model { 
+export default class TodayWal extends Model {
+
   @PrimaryKey
   @AutoIncrement
   @Unique
   @Column
-  id!: number;
+  public readonly id!: number;
 
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
-  user_id!: number;
+  public userId!: number;
+
+  @ForeignKey(() => Category)
+  @Column(DataType.INTEGER)
+  public categoryId!: number
 
   @ForeignKey(() => Item)
   @Column(DataType.INTEGER)
-  item_id!: number;
+  public itemId!: number;
 
   @ForeignKey(() => Reservation)
   @Column(DataType.INTEGER)
-  reservation_id!: number;
+  public reservationId!: number;
 
   @AllowNull(false)
   @Default(false)
@@ -60,6 +66,9 @@ export default class TodayWal extends Model {
   @BelongsTo(() => Item)
   item!: Item;
 
+  @BelongsTo(() => Category)
+  category!: Category;
+
   @BelongsTo(() => Reservation)
   reservation!: Reservation;
 
@@ -70,7 +79,7 @@ export default class TodayWal extends Model {
   static async getTodayWalsByUserId(id: number): Promise<TodayWal[]> {
     const todayWals = await this.findAll({
       where: {
-        user_id: id,
+        userId: id,
       },
       order: [
         ["time", "ASC"]
@@ -79,18 +88,18 @@ export default class TodayWal extends Model {
     return todayWals;
   };
 
-  static async getTodayReservation(user_id: number, reservation_id: number) {
+  static async getTodayReservation(userId: number, reservationId: number) {
     return await this.findOne({
       where: { 
-        user_id, 
-        reservation_id,
+        userId, 
+        reservationId,
         userDefined: true
       }
     });
   };
     
-  static async deleteTodayWal(user_id: number, time?: Date) {
-    await this.destroy({ where: { user_id, time } });
+  static async deleteTodayWal(userId: number, time?: Date, categoryId?: number) {
+    await this.destroy({ where: { userId, time, categoryId } });
   };
 
   static async deleteAll() {
@@ -101,7 +110,7 @@ export default class TodayWal extends Model {
   };
 
 
-  static async getFcmByUserId(user_id: number, time?: Date): Promise<{
+  static async getFcmByUserId(userId: number, time?: Date): Promise<{
     fcmtoken: string;
     itemId: number;
   } | {
@@ -112,7 +121,7 @@ export default class TodayWal extends Model {
     if (time) {
 
       const wal = await this.findOne({
-        where: { user_id, time },
+        where: { userId, time },
         include: [
           { model: User, attributes: ["fcmtoken"] }
         ]
@@ -120,14 +129,14 @@ export default class TodayWal extends Model {
 
       return {
         fcmtoken: wal?.getDataValue("user").getDataValue("fcmtoken") as string,
-        itemId: wal?.getDataValue("item_id") as number
+        itemId: wal?.getDataValue("itemId") as number
       };
 
     } else {
 
       const wal = await this.findOne({
         where: {
-          user_id,
+          userId,
           userDefined: true
         },
         include: [
@@ -137,7 +146,7 @@ export default class TodayWal extends Model {
 
       return { 
         fcmtoken: wal?.getDataValue("user").getDataValue("fcmtoken") as string,
-        reservationId: wal?.getDataValue("reservation_id") as number
+        reservationId: wal?.getDataValue("reservationId") as number
       };
       
     }

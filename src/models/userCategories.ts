@@ -26,23 +26,24 @@ import { ISetUserCategory } from "../dto/request/userRequest";
 })
 
 export default class UserCategory extends Model { 
+
   @PrimaryKey
   @AutoIncrement
   @Unique
   @Column
-  id!: number;
+  public readonly id!: number;
 
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
-  user_id!: number;
+  public userId!: number;
 
   @ForeignKey(() => Category)
   @Column(DataType.INTEGER)
-  category_id!: number;
+  public categoryId!: number;
 
   @AllowNull(false)
   @Column(DataType.INTEGER)
-  next_item_id!: number;
+  public nextItemId!: number;
 
   @BelongsTo(() => Category)
   comment!: Category;
@@ -56,20 +57,28 @@ export default class UserCategory extends Model {
   };
 
 
-  static async deleteUserCategory(user_id: number, category_id: number) {
+  static async deleteUserCategory(userId: number, categoryId: number) {
     await this.destroy({
       where: {
-        user_id,
-        category_id
+        userId,
+        categoryId
       }
     });
   };
 
 
-  static async findCategoryByUserId(user_id: number): Promise<string[]> {
+  static async findNextItemId(userId: number, categoryId: number) {
+    return await this.findOne({
+      where: { userId, categoryId },
+      attributes: ["nextItemId"]
+    });
+  };
+
+
+  static async findCategoryByUserId(userId: number): Promise<string[]> {
     const isCategories =  await this.findAll({
-      where: { user_id },
-      attributes: ["category_id"],
+      where: { userId },
+      attributes: ["categoryId"],
       include: [{ model: Category, attributes: ["dtype"] }]
     });
     if (!isCategories) throw new Error(rm.DB_ERROR);
@@ -90,27 +99,27 @@ export default class UserCategory extends Model {
   };
 
 
-  static async getUserCategoryByUserId(user_id: number): Promise<UserCategory[]> {
+  static async getUserCategoryByUserId(userId: number): Promise<UserCategory[]> {
     const categories = await this.findAll({ 
-      where: { user_id },
-      attributes: ["category_id", "next_item_id"]
+      where: { userId },
+      attributes: ["categoryId", "nextItemId"]
     });
     return categories;
   };
 
 
   static async updateNext(
-    user_id: number, 
-    category_id: number, 
-    next_item_id: number
+    userId: number, 
+    categoryId: number, 
+    nextItemId: number
   ): Promise<void> {
 
     await this.update({
-      next_item_id
+      nextItemId
     }, {
       where: {
-        user_id,
-        category_id
+        userId,
+        categoryId
       }
     });
 

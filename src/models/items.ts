@@ -33,7 +33,7 @@ export default class Item extends Model {
 
   @ForeignKey(() => Category)
   @Column(DataType.INTEGER)
-  public category_id!: number;
+  public categoryId!: number;
 
 
   @AllowNull(false)
@@ -43,8 +43,8 @@ export default class Item extends Model {
   @BelongsTo(() => Category)
   category!: Category
 
-  static async getFirstIdEachOfCategory(category_id: number): Promise<number> {
-    const item =  await this.findOne({ where: { category_id } });
+  static async getFirstIdEachOfCategory(categoryId: number): Promise<number> {
+    const item =  await this.findOne({ where: { categoryId } });
     return item?.getDataValue("id");
   };
 
@@ -59,11 +59,11 @@ export default class Item extends Model {
   }> {
       const item =  await this.findOne({ where: { id } });
       const content: string = item?.getDataValue("content");
-      const categoryId: number = item?.getDataValue("category_id");
+      const categoryId: number = item?.getDataValue("categoryId");
       return { content, categoryId };
   };
 
-  static async getAllItemsByCategoryId(category_id: number) {
-    return await this.findAll({ where: { category_id } });
+  static async getAllItemsByCategoryId(categoryId: number) {
+    return await this.findAll({ where: { categoryId } });
   };
 }

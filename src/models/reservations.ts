@@ -26,6 +26,7 @@ import { ISetReserveDto } from "../dto/request/reserveRequest";
 })
 
 export default class Reservation extends Model {
+
   @PrimaryKey
   @AutoIncrement
   @Unique
@@ -35,7 +36,7 @@ export default class Reservation extends Model {
 
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
-  public user_id!: number;
+  public userId!: number;
 
 
   @AllowNull(false)
@@ -69,10 +70,10 @@ export default class Reservation extends Model {
   @BelongsTo(() => User)
   user!: User
 
-  static async getSendingItems(id: number): Promise<Reservation[]> {
+  static async getSendingItems(userId: number): Promise<Reservation[]> {
     const reservations = await this.findAll({
       where: {
-        user_id: id,
+        userId,
         completed: false
       },
       order: [
@@ -83,10 +84,10 @@ export default class Reservation extends Model {
     return reservations;
   };
 
-  static async getCompletedItems(id: number): Promise<Reservation[]> {
+  static async getCompletedItems(userId: number): Promise<Reservation[]> {
     const reservations = await this.findAll({
       where: {
-        user_id: id,
+        userId,
         completed: true
       },
       order: [["sendingDate", "DESC"]] //받은 날짜 desc정렬
@@ -94,10 +95,10 @@ export default class Reservation extends Model {
     return reservations;
   };
 
-  static async getReservationByDate(id: number, date: string): Promise<Reservation|null> {
+  static async getReservationByDate(userId: number, date: string): Promise<Reservation|null> {
     const reservation = await this.findOne({
       where: {
-        user_id: id,
+        userId,
         $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '=', new Date(date))    
       }});
     return reservation;
@@ -105,11 +106,11 @@ export default class Reservation extends Model {
 
 
   static async setReservation(
-    user_id: number, 
+    userId: number, 
     request: ISetReserveDto
   ): Promise<number> {
     const reservation = await this.create({
-      user_id,
+      userId,
       sendingDate: new Date(`${request.date} ${request.time}`),
       ...request
     });
@@ -118,15 +119,15 @@ export default class Reservation extends Model {
 
 
   static async getContentById(id: number): Promise<string> {
-    const reservation = await this.findOne({ where: { id} });
+    const reservation = await this.findOne({ where: { id } });
     const content: string = reservation?.getDataValue("content");
     return content;
   };
 
-  static async getReservationsFromTomorrow(id: number): Promise<Reservation[]> {
+  static async getReservationsFromTomorrow(userId: number): Promise<Reservation[]> {
     const reservations = await this.findAll({
       where: {
-        user_id: id,
+        userId,
         $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '>', new Date())
       },
       attributes: ["sendingDate"]
@@ -136,14 +137,14 @@ export default class Reservation extends Model {
  
     
   static async getReservationByPostId(
-    user_id: number,
-    post_id: number, 
+    userId: number,
+    postId: number, 
     completed: boolean
   ): Promise<Reservation | null> {
     const reservation = await this.findOne({ 
       where: { 
-        id: post_id,
-        user_id,
+        id: postId,
+        userId,
         completed
       }
     });

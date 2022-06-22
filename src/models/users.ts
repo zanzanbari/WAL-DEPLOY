@@ -16,6 +16,7 @@ import rm from "../constant/resultMessage";
 import { TokenDto } from "../dto/request/authRequest";
 import { Token, UserInfo } from "../dto/response/authResponse";
 import { Op } from "sequelize";
+import TodayWal from "./todayWals";
 
 @Table({
   modelName: "User",
@@ -29,6 +30,7 @@ import { Op } from "sequelize";
 })
 
 export default class User extends Model {
+
   @PrimaryKey
   @AutoIncrement
   @Unique
@@ -52,11 +54,6 @@ export default class User extends Model {
 
 
   @AllowNull(true)
-  @Column(DataType.STRING(100))
-  public password?: string;
-
-
-  @AllowNull(true)
   @Unique
   @Column(DataType.TEXT)
   public refreshtoken?: string;   
@@ -75,6 +72,9 @@ export default class User extends Model {
 
   @HasMany(() => Reservation)
   reservations!: Reservation[];
+
+  @HasMany(() => TodayWal)
+  todayWals!: TodayWal[];
 
 
   /*
@@ -123,7 +123,6 @@ export default class User extends Model {
       social,
       email: userInfo.email,
       nickname: userInfo.nickname,
-      password: null,
       fcmtoken: request.fcmtoken,
       refreshtoken
     });
@@ -143,8 +142,7 @@ export default class User extends Model {
         social,
         email: userInfo.email,
         nickname: userInfo.nickname,
-        password: null,
-        // fcmtoken: request.fcmtoken,
+        fcmtoken: request.fcmtoken,
         refreshtoken
       }
     });

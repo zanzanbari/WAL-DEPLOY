@@ -26,6 +26,7 @@ import { ISetTime } from "../dto/request/userRequest";
 })
 
 export default class Time extends Model {
+
   @PrimaryKey
   @AutoIncrement
   @Unique
@@ -35,7 +36,7 @@ export default class Time extends Model {
 
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)
-  public user_id!: number;
+  public userId!: number;
 
 
   @Default(false)
@@ -59,24 +60,24 @@ export default class Time extends Model {
   @BelongsTo(() => User)
   user!: User
 
-  public static async setTime(id: number, timeInfo: ISetTime): Promise<void> {
+  public static async setTime(userId: number, timeInfo: ISetTime): Promise<void> {
     await this.create({
-      user_id: id,
+      userId,
       ...timeInfo
     });
   };
 
-  public static async updateTime(user_id: number, timeInfo: ISetTime): Promise<void> {
+  public static async updateTime(userId: number, timeInfo: ISetTime): Promise<void> {
     await this.update({
       ...timeInfo
     }, {
-      where: { user_id }
+      where: { userId }
     });
   };
 
-  public static async findById(user_id: number): Promise<Time> {
+  public static async findById(userId: number): Promise<Time> {
     const times = await this.findOne({ 
-      where: { user_id },
+      where: { userId },
       attributes: ["morning", "afternoon", "night"]
     });
     if (!times) throw new Error(rm.NULL_VALUE);
@@ -84,8 +85,8 @@ export default class Time extends Model {
   };
 
   public static async getAllUserIds(): Promise<number[]> {
-    const isInit = await this.findAll({ attributes: ["user_id"] });
-    const isInitUserIds = isInit.map(user => { return user.user_id });
+    const isInit = await this.findAll({ attributes: ["userId"] });
+    const isInitUserIds = isInit.map(user => { return user.userId });
     return isInitUserIds;
   };
   

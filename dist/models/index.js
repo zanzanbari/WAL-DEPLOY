@@ -26,7 +26,7 @@ const sequelize = new sequelize_typescript_1.Sequelize({
     username: config_1.default.database.development.username,
     password: config_1.default.database.development.password,
     dialect: "postgres",
-    logging: true,
+    logging: false,
     timezone: "+09:00",
     dialectOptions: {
         charset: 'utf8mb4',

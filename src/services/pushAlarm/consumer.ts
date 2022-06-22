@@ -19,9 +19,9 @@ export const morningProcess = async (job: Job, done: DoneCallback) => {
     const userId = job.data;
     const data = await getFcmAndContent(userId, timeHandler.getMorning());
     // data : { fcm, content }
-    await messageQueue.add("morning-message",data, { attempts: 5 }); //message를 보내는 작업, 5번 시도
+    await messageQueue.add(`morning-message ${userId}`,data, { attempts: 5 }); //message를 보내는 작업, 5번 시도
     logger.appLogger.log({ level: "info", message: "morning messageQueue 등록 성공" });
-    messageQueue.process("morning-message",messageProcess);
+    messageQueue.process(`morning-message ${userId}`,messageProcess);
     done();
 
   } catch (error) {
@@ -44,9 +44,9 @@ export const afterProcess = async (job: Job, done: DoneCallback) => {
     const userId = job.data;
     const data = await getFcmAndContent(userId, timeHandler.getAfternoon());
 
-    await messageQueue.add("afternoon-message",data, { attempts: 5 });
+    await messageQueue.add(`afternoon-message ${userId}`,data, { attempts: 5 });
     logger.appLogger.log({ level: "info", message: "afternoon messageQueue 등록 성공" });
-    messageQueue.process("afternoon-message",messageProcess)
+    messageQueue.process(`afternoon-message ${userId}`,messageProcess)
     done();
     
   } catch (error) {
@@ -68,11 +68,10 @@ export const nightProcess = async (job: Job, done: DoneCallback) => {
 
     const userId = job.data;
     const data = await getFcmAndContent(userId, timeHandler.getNight());
-    console.log(data);
 
-    await messageQueue.add("night-message",data, { attempts: 5 });
+    await messageQueue.add(`night-message ${userId}`,data, { attempts: 5 });
     logger.appLogger.log({ level: "info", message: "night messageQueue 등록 성공" });
-    messageQueue.process("night-message",messageProcess);
+    messageQueue.process(`night-message ${userId}`,messageProcess);
     done();
 
   } catch (error) {
@@ -95,9 +94,9 @@ export const reserveProcess = async (job: Job, done: DoneCallback) => {
     const userId = job.data;
     const data = await getFcmAndContent(userId);
 
-    await messageQueue.add("reserve-message",data, { attempts: 5 });
+    await messageQueue.add(`reserve-message ${userId}`,data, { attempts: 5 });
     logger.appLogger.log({ level: "info", message: "reserve messageQueue 등록 성공" });
-    messageQueue.process("reserve-message",messageProcess);
+    messageQueue.process(`reserve-message ${userId}`,messageProcess);
     done();
 
   } catch (error) {

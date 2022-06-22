@@ -64,20 +64,20 @@ queueEvent.on("cancelReservationQueue", (
  */
 
 
-processEvent.on("morningProcess", () => {
-  morningQueue.process("morning", morningProcess); 
+processEvent.on("morningProcess", (userId: number) => {
+  morningQueue.process(`morning ${userId}`, morningProcess); 
 });
 
-processEvent.on("afternoonProcess", () => {
-  afternoonQueue.process("afternoon", afterProcess); 
+processEvent.on("afternoonProcess", (userId: number) => {
+  afternoonQueue.process(`afternoon ${userId}`, afterProcess); 
 });
 
-processEvent.on("nightProcess", () => {
-  nightQueue.process("night", nightProcess); 
+processEvent.on("nightProcess", (userId: number) => {
+  nightQueue.process(`night ${userId}`, nightProcess); 
 });
 
-processEvent.on("reserveProcess", () => {
-  reserveQueue.process("reserve", reserveProcess); 
+processEvent.on("reserveProcess", (userId: number) => {
+  reserveQueue.process(`reserve ${userId}`, reserveProcess); 
 });
 
 

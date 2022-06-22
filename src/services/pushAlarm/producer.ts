@@ -22,9 +22,9 @@ class Producer {
 
     try {
 
-      if (time.morning) this.addQueueAndEmitConsumer("morning", userId);
-      if (time.afternoon) this.addQueueAndEmitConsumer("afternoon", userId);
-      if (time.night) this.addQueueAndEmitConsumer("night", userId);
+      if (time.morning) this.addQueueAndEmitConsumer(`morning ${userId}`, userId);
+      if (time.afternoon) this.addQueueAndEmitConsumer(`afternoon ${userId}`, userId);
+      if (time.night) this.addQueueAndEmitConsumer(`night ${userId}`, userId);
 
     } catch(error) {
       this.logger.appLogger.log({ level: "error", message: error.message });
@@ -41,9 +41,9 @@ class Producer {
 
     try {
 
-      if (time.getTime() == timeHandler.getMorning().getTime()) this.addQueueAndEmitConsumer("morning", userId);
-      if (time.getTime() == timeHandler.getAfternoon().getTime()) this.addQueueAndEmitConsumer("afternoon", userId);
-      if (time.getTime() == timeHandler.getNight().getTime()) this.addQueueAndEmitConsumer("night", userId);
+      if (time.getTime() == timeHandler.getMorning().getTime()) this.addQueueAndEmitConsumer(`morning ${userId}`, userId);
+      if (time.getTime() == timeHandler.getAfternoon().getTime()) this.addQueueAndEmitConsumer(`afternoon ${userId}`, userId);
+      if (time.getTime() == timeHandler.getNight().getTime()) this.addQueueAndEmitConsumer(`night ${userId}`, userId);
 
     } catch(error) {
       this.logger.appLogger.log({ level: "error", message: error.message });
@@ -61,21 +61,21 @@ class Producer {
     try {
 
       if (time.getTime() == timeHandler.getMorning().getTime()) {
-        await this.morningQueue.removeRepeatable("morning", { 
+        await this.morningQueue.removeRepeatable(`morning ${userId}`, { 
           cron: "0 0 8 * * *", 
           jobId: userId 
         });
         this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: morningQueue 삭제 성공`});
       }
       if (time.getTime() == timeHandler.getAfternoon().getTime()) {
-        await this.afternoonQueue.removeRepeatable("afternoon", { 
+        await this.afternoonQueue.removeRepeatable(`afternoon ${userId}`, { 
           cron: "0 0 14 * * *", 
           jobId: userId 
         });
         this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: afternoonQueue 삭제 성공`});
       }
       if (time.getTime() == timeHandler.getNight().getTime()) {
-        await this.nightQueue.removeRepeatable("night", { 
+        await this.nightQueue.removeRepeatable(`night ${userId}`, { 
           cron: "0 0 20 * * *", 
           jobId: userId 
         });
@@ -111,13 +111,13 @@ class Producer {
 
     try {
 
-      await this.reserveQueue.add("reserve", userId, {
+      await this.reserveQueue.add(`reserve ${userId}`, userId, {
         jobId: userId,
         repeat: { cron: `0 ${min} ${hour} ${day} ${month} *` },
         removeOnComplete: true
       });
       this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: reserveQueue 등록 성공`});
-      this.processEvent.emit("reserveProcess");
+      this.processEvent.emit("reserveProcess", userId);
 
     } catch(error) {
       this.logger.appLogger.log({ level: "error", message: error.message });
@@ -146,7 +146,7 @@ class Producer {
 
     try {
 
-      await this.reserveQueue.removeRepeatable("reserve", { 
+      await this.reserveQueue.removeRepeatable(`reserve ${userId}`, { 
         cron: `0 ${min} ${hour} ${day} ${month} *`, 
         jobId: userId 
       });
@@ -169,31 +169,31 @@ class Producer {
   
       switch (time) {
   
-        case "morning":
-          await this.morningQueue.add("morning", userId, {
+        case `morning ${userId}`:
+          await this.morningQueue.add(`morning ${userId}`, userId, {
             jobId: userId,
             repeat: { cron: "0 0 8 * * *" }
           });
           this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: morningQueue 등록 성공`});
-          this.processEvent.emit("morningProcess");
+          this.processEvent.emit("morningProcess", userId);
           break;
   
-        case "afternoon":
-          await this.afternoonQueue.add("afternoon", userId, {
+        case `afternoon ${userId}`:
+          await this.afternoonQueue.add(`afternoon ${userId}`, userId, {
             jobId: userId,
             repeat: { cron: "0 0 14 * * *" }
           });
           this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: afternoonQueue 등록 성공`});
-          this.processEvent.emit("afternoonProcess");
+          this.processEvent.emit("afternoonProcess", userId);
           break;
   
-        case "night":
-          await this.nightQueue.add("night", userId, {
+        case `night ${userId}`:
+          await this.nightQueue.add(`night ${userId}`, userId, {
             jobId: userId,
             repeat: { cron: "0 0 20 * * *" }
           });
           this.logger.appLogger.log({level: "info", message: `유저 ${userId} :: nightQueue 등록 성공`});
-          this.processEvent.emit("nightProcess");
+          this.processEvent.emit("nightProcess", userId);
           break;
   
       }

@@ -72,7 +72,6 @@ class ReserveService {
 
         const data: ISetTodayWal = {
           userId,
-          categoryId: -1,
           reservationId: newReservationId,
           time: new Date(`${request.date} ${request.time}`),
           userDefined: true

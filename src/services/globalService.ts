@@ -92,7 +92,6 @@ class GlobalService extends UserService {
 
               const data: ISetTodayWal = {
                 userId,
-                categoryId: -1,
                 reservationId: reserve.id,
                 time: reserve.sendingDate,
                 userDefined: true

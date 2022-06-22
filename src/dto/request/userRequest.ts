@@ -32,7 +32,7 @@ export interface ISetCategory {
 
 export interface ISetTodayWal {
     userId: number;
-    categoryId: number,
+    categoryId?: number,
     itemId?: number;
     reservationId?: number;
     time: Date;

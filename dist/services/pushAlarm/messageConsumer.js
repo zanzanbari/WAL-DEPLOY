@@ -31,14 +31,13 @@ const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
             .then(response => {
             logger_1.default.appLogger.log({
                 level: 'info',
-                message: `📣 Successfully sent message: : ${response} ${content}`
+                message: `📣 Successfully sent message: : ${response} ${content} ${job.id}`
             });
         })
             .catch(error => {
-            console.log('error Sending message!!! : ', error);
             logger_1.default.appLogger.log({
                 level: 'error',
-                message: error.message
+                message: `❌ SENDING MESSAGE ERROR :: ${error.message}`
             });
         });
         done();

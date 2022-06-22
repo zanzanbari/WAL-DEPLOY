@@ -89,7 +89,6 @@ exports.afterFunc = afterFunc;
 const nightFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     logger_1.default.appLogger.log({ level: "info", message: `nightFunc process START` });
     try {
-        console.log("나 실행한다");
         const userId = job.data;
         const dateString = (0, dayjs_1.default)(new Date()).format("YYYY-MM-DD");
         const data = yield getTokenMessage(new Date(`${dateString} 20:00:00`), userId);

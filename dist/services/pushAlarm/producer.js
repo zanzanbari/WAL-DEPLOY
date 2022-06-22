@@ -48,7 +48,7 @@ function addTimeQueue(userId, flag) {
                 case 2:
                     yield _1.nightQueue.add("night", userId, {
                         jobId: userId,
-                        repeat: { cron: `0 0 18 * * *` }
+                        repeat: { cron: `0 0 20 * * *` }
                     });
                     logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} :: nightQueue 등록 성공` });
                     _1.nightQueue.process("night", consumer_1.nightFunc);

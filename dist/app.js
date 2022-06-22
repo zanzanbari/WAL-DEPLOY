@@ -21,11 +21,14 @@ function startServer() {
         const app = (0, express_1.default)();
         yield require("./loaders").default({ expressApp: app });
         app.listen(config_1.default.port, () => {
-            logger_1.default.appLogger.info(`
-      ################################################
-            🛡️  Server listening on port 🛡️
-      ################################################
-    `);
+            logger_1.default.appLogger.log({
+                level: "info",
+                message: `
+        ################################################
+              🛡️  Server listening on port 🛡️
+        ################################################
+    `
+            });
         })
             .on("error", (err) => {
             logger_1.default.appLogger.error(err.message);

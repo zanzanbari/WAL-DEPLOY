@@ -164,7 +164,7 @@ const getCategoryInfo = async (
 
   try {
 
-    const categoryServiceInstance = new CategoryService(UserCategory, Item, logger);
+    const categoryServiceInstance = new CategoryService(UserCategory, TodayWal, Time, Item, logger);
     const data = categoryServiceInstance.getCategoryInfo(req.user?.id as number);
 
     SuccessResponse(res, sc.OK, rm.READ_USER_INFO_SUCCESS, await data);
@@ -190,7 +190,7 @@ const resetUserCategoryInfo = async (
 
   try {
     
-    const categoryServiceInstance = new CategoryService(UserCategory, Item, logger);
+    const categoryServiceInstance = new CategoryService(UserCategory, TodayWal, Time, Item, logger);
     const data = categoryServiceInstance.resetUserCategoryInfo(req.user?.id as number, req.body.data as ResetCategoryDto);
 
     SuccessResponse(res, sc.OK, rm.UPDATE_USER_INFO_SUCCESS, await data);

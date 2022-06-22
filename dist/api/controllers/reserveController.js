@@ -13,157 +13,134 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reserveController = void 0;
-const dayjs_1 = __importDefault(require("dayjs"));
-const logger_1 = __importDefault(require("../../loaders/logger"));
 const models_1 = require("../../models");
-const apiResponse_1 = require("../../common/apiResponse");
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
-const dayArr = ["(일)", "(월)", "(화)", "(수)", "(목)", "(금)", "(토)"];
-const getHistoryDateMessage = (rawDate) => {
+const event_1 = __importDefault(require("../../services/pushAlarm/event"));
+const reserveService_1 = __importDefault(require("../../services/reserve/reserveService"));
+const apiResponse_1 = require("../../common/apiResponse");
+/**
+ *  @예약한_왈소리_히스토리
+ *  @route GET /reserve
+ *  @access public
+ */
+const getReservation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const monthDate = (0, dayjs_1.default)(rawDate).format("MM. DD");
-        let time = (0, dayjs_1.default)(rawDate).format(":mm");
-        if ((0, dayjs_1.default)(rawDate).hour() >= 12) {
-            time = ` 오후 ${(0, dayjs_1.default)(rawDate).hour() - 12}` + time;
+        const reserveServiceInstance = new reserveService_1.default(models_1.Reservation, models_1.TodayWal, event_1.default, logger_1.default);
+        const data = yield reserveServiceInstance.getReservation((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
+        if (data == "NO_RESERVATION") {
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.NO_RESERVATION, []);
         }
         else {
-            time = ` 오전 ${(0, dayjs_1.default)(rawDate).hour()}` + time;
-        }
-        const day = dayArr[(0, dayjs_1.default)(rawDate).day()];
-        return {
-            monthDate,
-            day,
-            time
-        };
-    }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
-    }
-};
-const pushEachItems = (Items, DataArr, completed) => {
-    try {
-        for (const item of Items) {
-            const rawDate = item.getDataValue("sendingDate");
-            const historyMessage = getHistoryDateMessage(rawDate);
-            const sendingDate = (historyMessage === null || historyMessage === void 0 ? void 0 : historyMessage.monthDate) + " " + (historyMessage === null || historyMessage === void 0 ? void 0 : historyMessage.day) + (historyMessage === null || historyMessage === void 0 ? void 0 : historyMessage.time) + (!completed ? " • 전송 예정" : " • 전송 완료");
-            DataArr.push(Object.assign({ postId: item.id, sendingDate, content: item.getDataValue("content"), reservedAt: (0, dayjs_1.default)(item.getDataValue("reservedAt")).format("YYYY. MM. DD") }, (!completed && { hidden: item.getDataValue("hide") }) //!completed인 경우에만 obj에 hidden속성이 들어감
-            ));
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_RESERVATIONS_SUCCESS, data);
         }
     }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
-    }
-};
-const getReservation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
-    try {
-        const sendingData = [], completeData = [];
-        const data = {
-            sendingData,
-            completeData
-        };
-        const sendingDataItems = yield models_1.Reservation.getSendingItems((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
-        const completeDataItems = yield models_1.Reservation.getCompletedItems((_b = req.user) === null || _b === void 0 ? void 0 : _b.id);
-        if (sendingDataItems.length < 1 && completeDataItems.length < 1) {
-            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.NO_RESERVATION, data);
-        }
-        pushEachItems(sendingDataItems, sendingData, false);
-        pushEachItems(completeDataItems, completeData, true);
-        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_RESERVATIONS_SUCCESS, data);
-    }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
+    catch (error) {
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
-        return next(err);
+        return next(error);
     }
 });
+/**
+ *  @왈소리_만들기
+ *  @route POST /reserve
+ *  @access public
+ */
 const postReservation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
+    var _b;
     try {
-        const { content, hide, date, time } = req.body;
-        if (!content || hide == undefined || !date || !time)
-            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.NULL_VALUE);
-        const existingDate = yield models_1.Reservation.getReservationByDate((_c = req.user) === null || _c === void 0 ? void 0 : _c.id, date);
-        if (existingDate)
-            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.INVALID_RESERVATION_DATE);
-        const newReservationId = yield models_1.Reservation.postReservation((_d = req.user) === null || _d === void 0 ? void 0 : _d.id, date, time, hide, content);
-        const data = { postId: newReservationId };
-        /**
-         * -----------------------------알림 보내는 기능 넣어야 한다 ---------------------------
-         *
-         */
-        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.ADD_RESERVATION_SUCCESS, data);
+        const reserveServiceInstance = new reserveService_1.default(models_1.Reservation, models_1.TodayWal, event_1.default, logger_1.default);
+        const data = yield reserveServiceInstance.postReservation((_b = req.user) === null || _b === void 0 ? void 0 : _b.id, req.body);
+        if (data == 19 /* ALREADY_RESERVED_DATE */) {
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.ALREADY_RESERVED_DATE);
+        }
+        else {
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.ADD_RESERVATION_SUCCESS, data);
+        }
     }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
+    catch (error) {
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
-        return next(err);
+        return next(error);
     }
 });
+/**
+ *  @예약한_왈소리_날짜_확인
+ *  @route GET /reserve/datepicker
+ *  @access public
+ */
 const getReservedDate = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _e;
+    var _c;
     try {
-        const date = [];
-        const data = { date };
-        const reservedDateItems = yield models_1.Reservation.getReservationsFromTomorrow((_e = req.user) === null || _e === void 0 ? void 0 : _e.id);
-        if (reservedDateItems.length < 1) {
-            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.NO_RESERVATION_DATE, data);
+        const reserveServiceInstance = new reserveService_1.default(models_1.Reservation, models_1.TodayWal, event_1.default, logger_1.default);
+        const data = yield reserveServiceInstance.getReservationOnCalender((_c = req.user) === null || _c === void 0 ? void 0 : _c.id);
+        if (data == "NO_RESERVATION_DATE") {
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.NO_RESERVATION_DATE, []);
         }
-        for (const item of reservedDateItems) {
-            const reservedDate = item.getDataValue("sendingDate");
-            date.push((0, dayjs_1.default)(reservedDate).format("YYYY-MM-DD"));
+        else {
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_RESERVED_DATE_SUCCESS, data);
         }
-        data.date = date.sort();
-        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_RESERVED_DATE_SUCCESS, data);
     }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
+    catch (error) {
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
-        return next(err);
+        return next(error);
     }
 });
+/**
+ *  @왈소리_예약_취소
+ *  @route DELETE /reserve/:postId
+ *  @access public
+ */
 const deleteReservation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _f;
-    const postId = req.params.postId;
-    if (postId == ":postId")
+    var _d;
+    const { postId } = req.params;
+    if (postId == ":postId") {
         return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_PARAMS_OR_NULL);
-    try {
-        const waitingReservation = yield models_1.Reservation.getReservationByPostId(parseInt(postId), (_f = req.user) === null || _f === void 0 ? void 0 : _f.id, false);
-        if (!waitingReservation)
-            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.NOT_FOUND, resultMessage_1.default.NO_OR_COMPLETED_RESERVATION);
-        /**
-         * -------------------------------
-            schedule에서 해당 reservation 삭제!!!!!!!!!!!!!!!!!
-            -------------------------------
-        **/
-        yield (waitingReservation === null || waitingReservation === void 0 ? void 0 : waitingReservation.destroy());
-        const data = { postId: parseInt(postId) };
-        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_RESERVATION_SUCCESS, data);
     }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
+    try {
+        const reserveServiceInstance = new reserveService_1.default(models_1.Reservation, models_1.TodayWal, event_1.default, logger_1.default);
+        const data = yield reserveServiceInstance.removeReservation((_d = req.user) === null || _d === void 0 ? void 0 : _d.id, parseInt(postId));
+        if (data == 20 /* NO_OR_COMPLETED_RESERVATION */) {
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.NOT_FOUND, resultMessage_1.default.NO_OR_COMPLETED_RESERVATION);
+        }
+        else {
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_RESERVATION_SUCCESS, data);
+        }
+    }
+    catch (error) {
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
-        return next(err);
+        return next(error);
     }
 });
+/**
+ *  @전송된_왈소리_히스토리_삭제
+ *  @route DELETE /reserve/completed/:postId
+ *  @access public
+ */
 const deleteCompletedReservation = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _g;
-    const postId = req.params.postId;
-    if (postId == ":postId")
+    var _e;
+    const { postId } = req.params;
+    if (postId == ":postId") {
         return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_PARAMS_OR_NULL);
-    try {
-        const completedReservation = yield models_1.Reservation.getReservationByPostId(parseInt(postId), (_g = req.user) === null || _g === void 0 ? void 0 : _g.id, true);
-        if (!completedReservation)
-            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.NOT_FOUND, resultMessage_1.default.NO_OR_UNCOMPLETED_RESERVATION);
-        yield (completedReservation === null || completedReservation === void 0 ? void 0 : completedReservation.destroy());
-        const data = { postId: parseInt(postId) };
-        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_COMPLETED_RESERVATION_SUCCESS, data);
     }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
+    try {
+        const reserveServiceInstance = new reserveService_1.default(models_1.Reservation, models_1.TodayWal, event_1.default, logger_1.default);
+        const data = yield reserveServiceInstance.removeReservationHistory((_e = req.user) === null || _e === void 0 ? void 0 : _e.id, parseInt(postId));
+        if (data == 21 /* NO_OR_UNCOMPLETED_RESERVATION */) {
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.NOT_FOUND, resultMessage_1.default.NO_OR_UNCOMPLETED_RESERVATION);
+        }
+        else {
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_COMPLETED_RESERVATION_SUCCESS, data);
+        }
+    }
+    catch (error) {
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
-        return next(err);
+        return next(error);
     }
 });
 exports.reserveController = {

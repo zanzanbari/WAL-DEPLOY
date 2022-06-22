@@ -22,20 +22,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
-const pushAlarm_1 = require("../pushAlarm");
-const timeHandler_1 = __importDefault(require("../../common/timeHandler"));
-let InitService = class InitService {
-    constructor(userRepository, timeRepository, itemRepository, userCategoryRepository, todayWalRepository, timeQueueEvent, logger) {
-        this.userRepository = userRepository;
-        this.timeRepository = timeRepository;
+const userService_1 = __importDefault(require("./userService"));
+let InitService = class InitService extends userService_1.default {
+    constructor(itemRepository, userCategoryRepository, userRepository, timeRepository, todayWalRepository, timeQueueEvent, logger) {
+        super(userCategoryRepository, itemRepository);
         this.itemRepository = itemRepository;
         this.userCategoryRepository = userCategoryRepository;
+        this.userRepository = userRepository;
+        this.timeRepository = timeRepository;
         this.todayWalRepository = todayWalRepository;
         this.timeQueueEvent = timeQueueEvent;
         this.logger = logger;
     }
     /**
-     *  @유저_초기_설정
+     *  @desc 유저_초기_설정
      *  @route POST /user/set-info
      *  @access public
      */
@@ -45,7 +45,7 @@ let InitService = class InitService {
                 // 초기 알람 시간 설정
                 yield this.timeRepository.setTime(userId, request.time);
                 // 설정한 알람 시간 큐에 추가
-                this.timeQueueEvent.emit("addUserTime", userId);
+                this.timeQueueEvent.emit("addTimeQueue", userId, request.time);
                 // 초기 닉네임 설정
                 yield this.userRepository.setNickname(userId, request.nickname);
                 // 알람 받을 유형 설정
@@ -70,38 +70,41 @@ let InitService = class InitService {
      */
     setTodayWals(selectedTimes, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            for (let i = 0; i < selectedTimes.length; i++) {
-                const currentItemId = (0, pushAlarm_1.getRandCategoryCurrentItem)(userId);
-                const data = {
-                    user_id: userId,
-                    item_id: yield currentItemId,
-                    time: selectedTimes[i]
-                };
-                yield this.todayWalRepository.setTodayWal(data);
+            try {
+                for (let i = 0; i < selectedTimes.length; i++) {
+                    const { currentItemId, categoryId } = yield this.getRandCategoryCurrentItem(userId);
+                    const data = {
+                        userId,
+                        categoryId,
+                        itemId: currentItemId,
+                        time: selectedTimes[i]
+                    };
+                    yield this.todayWalRepository.setTodayWal(data);
+                }
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: `setTodayWals :: ${error.message}` });
+                throw error;
             }
         });
     }
-    extractSelectedTimes(time) {
-        const timeSelection = [];
-        if (time.morning == true)
-            timeSelection.push(timeHandler_1.default.getMorning());
-        if (time.afternoon == true)
-            timeSelection.push(timeHandler_1.default.getAfternoon());
-        if (time.night == true)
-            timeSelection.push(timeHandler_1.default.getNight());
-        return timeSelection;
-    }
     setUserCategory(selectedIds, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            for (let index = 0; index < selectedIds.length; index++) {
-                const categoryId = selectedIds[index];
-                const firstItemId = this.itemRepository.getFirstIdEachOfCategory(categoryId);
-                this.infoToUserCategoryDB = {
-                    user_id: userId,
-                    category_id: categoryId,
-                    next_item_id: yield firstItemId,
-                };
-                yield this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
+            try {
+                for (let index = 0; index < selectedIds.length; index++) {
+                    const categoryId = selectedIds[index];
+                    const firstItemId = this.itemRepository.getFirstIdEachOfCategory(categoryId);
+                    this.infoToUserCategoryDB = {
+                        userId,
+                        categoryId,
+                        nextItemId: yield firstItemId,
+                    };
+                    yield this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
+                }
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: `setUserCategory :: ${error.message}` });
+                throw error;
             }
         });
     }
@@ -113,18 +116,6 @@ let InitService = class InitService {
             }
         }
         return dtypeIds;
-    }
-    /**
-     *  @Bool값_추출
-     *  @desc 유저가 선택한 유형(category) 확인하기 위해
-     *  @access private
-     */
-    extractBooleanInfo(property) {
-        const extractedInfo = [];
-        for (const key in property) { // 객체 탐색 for...in
-            extractedInfo.push(property[key]);
-        }
-        return extractedInfo;
     }
 };
 InitService = __decorate([

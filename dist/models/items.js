@@ -24,31 +24,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
 const categories_1 = __importDefault(require("./categories"));
 let Item = class Item extends sequelize_typescript_1.Model {
-    static getFirstIdEachOfCategory(category_id) {
+    static getFirstIdEachOfCategory(categoryId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const item = yield this.findOne({ where: { category_id } });
+            const item = yield this.findOne({ where: { categoryId } });
             return item === null || item === void 0 ? void 0 : item.getDataValue("id");
         });
     }
+    ;
     static getItemById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const item = yield this.findOne({ where: { id } });
-            return item;
+            return yield this.findOne({ where: { id } });
         });
     }
+    ;
     static getContentById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const item = yield this.findOne({ where: { id } });
             const content = item === null || item === void 0 ? void 0 : item.getDataValue("content");
-            const categoryId = item === null || item === void 0 ? void 0 : item.getDataValue("category_id");
+            const categoryId = item === null || item === void 0 ? void 0 : item.getDataValue("categoryId");
             return { content, categoryId };
         });
     }
-    static getAllItemsByCategoryId(category_id) {
+    ;
+    static getAllItemsByCategoryId(categoryId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.findAll({ where: { category_id } });
+            return yield this.findAll({ where: { categoryId } });
         });
     }
+    ;
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -61,7 +64,7 @@ __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => categories_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Item.prototype, "category_id", void 0);
+], Item.prototype, "categoryId", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.TEXT),

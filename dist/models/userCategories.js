@@ -31,21 +31,32 @@ let UserCategory = class UserCategory extends sequelize_typescript_1.Model {
             yield this.create(Object.assign({}, request));
         });
     }
-    static deleteUserCategory(user_id, category_id) {
+    ;
+    static deleteUserCategory(userId, categoryId) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.destroy({
                 where: {
-                    user_id,
-                    category_id
+                    userId,
+                    categoryId
                 }
             });
         });
     }
-    static findCategoryByUserId(user_id) {
+    ;
+    static findNextItemId(userId, categoryId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.findOne({
+                where: { userId, categoryId },
+                attributes: ["nextItemId"]
+            });
+        });
+    }
+    ;
+    static findCategoryByUserId(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const isCategories = yield this.findAll({
-                where: { user_id },
-                attributes: ["category_id"],
+                where: { userId },
+                attributes: ["categoryId"],
                 include: [{ model: categories_1.default, attributes: ["dtype"] }]
             });
             if (!isCategories)
@@ -60,15 +71,30 @@ let UserCategory = class UserCategory extends sequelize_typescript_1.Model {
             return categories;
         });
     }
-    static getUserCategoryByUserId(user_id) {
+    ;
+    static getUserCategoryByUserId(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const categories = yield this.findAll({
-                where: { user_id },
-                attributes: ["category_id", "next_item_id"]
+                where: { userId },
+                attributes: ["categoryId", "nextItemId"]
             });
             return categories;
         });
     }
+    ;
+    static updateNext(userId, categoryId, nextItemId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.update({
+                nextItemId
+            }, {
+                where: {
+                    userId,
+                    categoryId
+                }
+            });
+        });
+    }
+    ;
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -81,17 +107,17 @@ __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => users_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], UserCategory.prototype, "user_id", void 0);
+], UserCategory.prototype, "userId", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => categories_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], UserCategory.prototype, "category_id", void 0);
+], UserCategory.prototype, "categoryId", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], UserCategory.prototype, "next_item_id", void 0);
+], UserCategory.prototype, "nextItemId", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => categories_1.default),
     __metadata("design:type", categories_1.default)

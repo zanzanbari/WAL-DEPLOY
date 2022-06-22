@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const joi_1 = __importDefault(require("joi"));
+const logger_1 = __importDefault(require("../../loaders/logger"));
 const resultCode_1 = __importDefault(require("../../constant/resultCode"));
 const resultMessage_1 = __importDefault(require("../../constant/resultMessage"));
 const apiResponse_1 = require("../../common/apiResponse");
-const logger_1 = __importDefault(require("../../loaders/logger"));
 // fcmtoken optional 로 한거 개맘에 안드는데,,, isLogin 따로 빼면 코드 중복 개쩔거같고,,, 고민
 const loginRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const loginParamSchema = joi_1.default.object().keys({
@@ -138,11 +138,34 @@ const categoryRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
     }
 });
+const reserveRequestCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const reserveSchema = joi_1.default.object().keys({
+        content: joi_1.default.string().required(),
+        date: joi_1.default.string().required(),
+        time: joi_1.default.string().required(),
+        hide: joi_1.default.boolean().required()
+    });
+    try {
+        const bodyError = yield reserveSchema
+            .validateAsync(req.body)
+            .catch(err => { return err; });
+        if (bodyError.details) {
+            return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.WRONG_BODY_OR_NULL);
+        }
+        next();
+    }
+    catch (error) {
+        console.error(`[VALIDATE ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`);
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
+        (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
+    }
+});
 const validateUtil = {
     loginRequestCheck,
     initRequestCheck,
     timeRequestCheck,
-    categoryRequestCheck
+    categoryRequestCheck,
+    reserveRequestCheck
 };
 exports.default = validateUtil;
 //# sourceMappingURL=requestValidator.js.map

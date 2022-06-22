@@ -24,8 +24,8 @@ function startServer() {
             logger_1.default.appLogger.log({
                 level: "info",
                 message: `
-        ################################################
-              🛡️  Server listening on port 🛡️
+        ################################################\
+                🛡️  Server listening on port 🛡️
         ################################################
     `
             });

@@ -1,12 +1,10 @@
 import { Service } from "typedi";
-import timeHandler from "../../common/timeHandler";
 import UserService from "./userService";
 import { 
     ISetUserCategory, 
     UserSettingDto, 
     ISetCategory,
-    ISetTodayWal, 
-    ISetTime } from "../../dto/request/userRequest";
+    ISetTodayWal } from "../../dto/request/userRequest";
 import { UserSettingResponse } from "../../dto/response/userResponse";
 
 
@@ -79,10 +77,11 @@ class InitService extends UserService {
     try {
 
       for (let i = 0; i < selectedTimes.length; i++) {
-        const currentItemId = this.getRandCategoryCurrentItem(userId);
+        const { currentItemId, categoryId } = await this.getRandCategoryCurrentItem(userId);
         const data: ISetTodayWal = {
-          user_id: userId,
-          item_id: await currentItemId,
+          userId,
+          categoryId,
+          itemId: currentItemId,
           time: selectedTimes[i]
         };
         await this.todayWalRepository.setTodayWal(data);
@@ -93,19 +92,6 @@ class InitService extends UserService {
       throw error;
     }
 
-
-  }
-
-
-  private extractSelectedTimes(time: ISetTime): Date[] {
-    const timeSelection: Date[] = [];
-    if (time.morning == true)
-      timeSelection.push(timeHandler.getMorning());
-    if (time.afternoon == true)
-      timeSelection.push(timeHandler.getAfternoon());
-    if (time.night == true)
-      timeSelection.push(timeHandler.getNight());
-    return timeSelection;
   }
 
 
@@ -120,9 +106,9 @@ class InitService extends UserService {
         const categoryId: number = selectedIds[index];
         const firstItemId: Promise<number> = this.itemRepository.getFirstIdEachOfCategory(categoryId);
         this.infoToUserCategoryDB = {
-          user_id: userId,
-          category_id: categoryId,
-          next_item_id: await firstItemId,
+          userId,
+          categoryId,
+          nextItemId: await firstItemId,
         };
         await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
       }
@@ -144,21 +130,6 @@ class InitService extends UserService {
     }
     return dtypeIds;
   }
-
-  /**
-   *  @Bool값_추출
-   *  @desc 유저가 선택한 유형(category) 확인하기 위해
-   *  @access private
-   */
-
-  private extractBooleanInfo(property: ISetCategory): boolean[] {
-    const extractedInfo: boolean[] = [];
-    for (const key in property) { // 객체 탐색 for...in
-      extractedInfo.push(property[key]);
-    }
-    return extractedInfo;
-  }
-
 
 }
 

@@ -13,9 +13,9 @@ export interface ISetTime {
 };
 
 export interface ISetUserCategory {
-    user_id?: number,
-    category_id?: number,
-    next_item_id?: number,
+    userId?: number,
+    categoryId?: number,
+    nextItemId?: number,
 };
 
 export type ResetTimeDto = ISetTime[];
@@ -31,7 +31,10 @@ export interface ISetCategory {
 
 
 export interface ISetTodayWal {
-    user_id: number;
-    item_id: number;
+    userId: number;
+    categoryId: number,
+    itemId?: number;
+    reservationId?: number;
     time: Date;
+    userDefined?: boolean
 };

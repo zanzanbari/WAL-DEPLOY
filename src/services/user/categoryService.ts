@@ -1,11 +1,15 @@
 import { Service } from "typedi";
 import { 
   ISetCategory, 
+  ISetTime, 
+  ISetTodayWal, 
   ISetUserCategory, 
-  ResetCategoryDto } from "../../interface/dto/request/userRequest";
+  ResetCategoryDto } from "../../dto/request/userRequest";
+  import timeHandler from "../../common/timeHandler";
+import UserService from "./userService";
 
 @Service()
-class CategoryService {
+class CategoryService extends UserService {
 
   private infoToUserCategoryDB!: ISetUserCategory; 
   private categorySelection: ISetCategory = {
@@ -16,14 +20,20 @@ class CategoryService {
   };
 
   constructor(
-    private readonly userCategoryRepository: any,
-    private readonly itemRepository: any,
+    protected readonly userCategoryRepository: any,
+    private readonly todayWalRepository: any,
+    private readonly timeRepository: any,
+    protected readonly itemRepository: any,
     private readonly logger: any
   ) {
+    super(
+      userCategoryRepository,
+      itemRepository
+    )
   }
 
   /**
-   *  @유저_왈소리유형_정보_조회
+   *  @desc 유저_왈소리유형_정보_조회
    *  @route GET /user/info/category
    *  @access public
    */
@@ -44,7 +54,7 @@ class CategoryService {
   }
 
   /**
-   *  @유저_왈소리유형_정보_수정
+   *  @desc 유저_왈소리유형_정보_수정
    *  @route POST /user/info/category
    *  @access public
    */
@@ -61,12 +71,16 @@ class CategoryService {
     const after: boolean[] = this.extractBooleanInfo(afterCategoryInfo);
 
     try { 
-
-      await this.resetUserCategory(before, after, userId);
+      // 유저가 설정한 시간대 확인
+      const timeInfo = await this.timeRepository.findById(userId) as ISetTime;
+      const settedTime: Date[] = this.extractSelectedTimes(timeInfo);
+      // 유저가 설정한 시간대와 수정 요청한 현재 시간과 비교, 유저 설정 시간대가 현재 시간 이후일 때 값 축출
+      const afterTime: Date[] = this.compareAfterTime(settedTime);
+      await this.resetUserCategory(before, after, userId, afterTime);
 
       const dtypeInfo: Promise<string[]> = this.userCategoryRepository.findCategoryByUserId(userId);
       this.setCategorySelection(await dtypeInfo);
-        
+
       return this.categorySelection;
 
     } catch (error) {
@@ -85,37 +99,63 @@ class CategoryService {
   private async resetUserCategory(
     before: boolean[], 
     after: boolean[], 
-    userId: number
+    userId: number,
+    afterTime: Date[]
   ): Promise<void> {
 
-    for (let categoryId = 0; categoryId < 4; categoryId++) {
+    try {
 
-      if (before[categoryId] === true && after[categoryId] === false) { // 삭제
+      for (let categoryId = 0; categoryId < 4; categoryId++) {
+  
+        if (before[categoryId] === true && after[categoryId] === false) { // 삭제
+  
+          for (const time of afterTime) { // 현재 시간 이후에 받을 왈소리에 삭제된 유형이 있다면
+            await this.todayWalRepository.deleteTodayWal(userId, time, categoryId); // 찾아서 삭제
+          }
+          await this.userCategoryRepository.deleteUserCategory(userId, categoryId);
+  
+        } else if (before[categoryId] === false && after[categoryId] === true) { // 생성
+          
+          const firstItemId: Promise<number> = this.itemRepository.getFirstIdEachOfCategory(categoryId);
+          this.infoToUserCategoryDB = {
+            userId,
+            categoryId,
+            nextItemId: await firstItemId, // 새로 생성한 유형의 첫번째 item
+          };
+          await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
 
-        await this.userCategoryRepository.deleteUserCategory(userId, categoryId);
+          for (const time of afterTime) { // 현재 시간 이후에 받을 왈소리에 추가된 유형이 있다면
+            const { currentItemId, categoryId } = await this.getRandCategoryCurrentItem(userId);
+            const data: ISetTodayWal = {
+              userId,
+              categoryId,
+              itemId: currentItemId, 
+              time
+            };
+            console.log(data);
+            await this.todayWalRepository.setTodayWal(data); // 왈소리 세팅
+          }
 
-      } else if (before[categoryId] === false && after[categoryId] === true) { // 생성
 
-        const firstItemId: Promise<number> = this.itemRepository.getFirstIdEachOfCategory(categoryId);
-        this.infoToUserCategoryDB = {
-          user_id: userId,
-          category_id: categoryId,
-          next_item_id: await firstItemId,
-        };
-        await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
-
+        }
+  
       }
-
+      
+    } catch (error) {
+      this.logger.appLogger.log({ level: "error", message: `resetUserCategory :: ${error.message}` });
     }
+
   }
 
 
-  private extractBooleanInfo(property: ISetCategory): boolean[] {
-    const extractedInfo: boolean[] = [];
-    for (const key in property) { // 객체 탐색 for...in
-        extractedInfo.push(property[key]);
+  private compareAfterTime(settedTime: Date[]): Date[] {
+    const afterTime: Date[] = [];
+    for (const time of settedTime) {
+      if (time > timeHandler.getCurrentTime()) {
+        afterTime.push(time);
+      }
     }
-    return extractedInfo;
+    return afterTime;
   }
 
 

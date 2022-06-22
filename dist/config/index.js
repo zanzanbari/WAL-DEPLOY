@@ -13,7 +13,7 @@ if (envFound.error) {
 }
 exports.default = {
     /**
-     * Your favorite port
+     * My favorite port
      */
     port: parseInt(process.env.PORT, 10),
     /**
@@ -43,18 +43,18 @@ exports.default = {
         expiresIn: process.env.JWT_RF_EXPIRES
     },
     /**
-     * Used by winston logger
-     */
-    logs: {
-        level: process.env.LOG_LEVEL || 'silly',
-    },
-    /**
      * redis config
      */
     redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT, 10),
-        password: process.env.REDIS_PASSWORD
+        dev: {
+            host: "localhost",
+            port: 6379
+        },
+        production: {
+            host: process.env.REDIS_HOST,
+            port: parseInt(process.env.REDIS_PORT, 10),
+            password: process.env.REDIS_PASSWORD
+        }
     },
 };
 //# sourceMappingURL=index.js.map

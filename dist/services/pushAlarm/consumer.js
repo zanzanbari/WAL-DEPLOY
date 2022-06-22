@@ -59,10 +59,8 @@ const morningFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
         const dateString = (0, dayjs_1.default)(new Date()).format("YYYY-MM-DD");
         const data = yield getTokenMessage(new Date(`${dateString} 08:00:00`), userId);
         // data : { fcm, content }
-        yield _1.messageQueue.add(data, {
-            attempts: 5
-        });
-        yield _1.messageQueue.process(messageConsumer_1.messageFunc);
+        yield _1.messageQueue.add(data, { attempts: 5 }); //message를 보내는 작업, 5번 시도
+        _1.messageQueue.process(messageConsumer_1.messageFunc);
         done();
     }
     catch (err) {
@@ -75,10 +73,8 @@ const afterFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () 
         const userId = job.data;
         const dateString = (0, dayjs_1.default)(new Date()).format("YYYY-MM-DD");
         const data = yield getTokenMessage(new Date(`${dateString} 14:00:00`), userId);
-        yield _1.messageQueue.add(data, {
-            attempts: 5
-        });
-        yield _1.messageQueue.process(messageConsumer_1.messageFunc);
+        yield _1.messageQueue.add(data, { attempts: 5 });
+        _1.messageQueue.process(messageConsumer_1.messageFunc);
         done();
     }
     catch (err) {
@@ -88,13 +84,13 @@ const afterFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () 
 exports.afterFunc = afterFunc;
 const nightFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log("나 실행한다");
         const userId = job.data;
         const dateString = (0, dayjs_1.default)(new Date()).format("YYYY-MM-DD");
         const data = yield getTokenMessage(new Date(`${dateString} 20:00:00`), userId);
-        yield _1.messageQueue.add(data, {
-            attempts: 5
-        });
-        yield _1.messageQueue.process(messageConsumer_1.messageFunc);
+        console.log("data::", data);
+        yield _1.messageQueue.add(data, { attempts: 5 });
+        _1.messageQueue.process(messageConsumer_1.messageFunc);
         done();
     }
     catch (err) {

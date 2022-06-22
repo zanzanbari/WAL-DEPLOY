@@ -13,7 +13,11 @@ async function startServer(): Promise<void> {
       level: "info",
       message: `
         ################################################
+<<<<<<< HEAD
               🛡️  Server listening on port 🛡️
+=======
+                🛡️  Server listening on port 🛡️
+>>>>>>> develop
         ################################################
     `});
   })

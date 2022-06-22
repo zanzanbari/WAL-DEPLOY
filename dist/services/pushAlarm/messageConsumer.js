@@ -18,9 +18,9 @@ const logger_1 = __importDefault(require("../../loaders/logger"));
 const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { fcmtoken, content } = job.data;
-        let message = {
+        const message = {
             notification: {
-                title: '왈소리 와써💛',
+                title: '🐶오늘의 왈소리 도착~!🐶',
                 body: content,
             },
             token: fcmtoken,
@@ -28,23 +28,23 @@ const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
         firebase_1.firebaseApp
             .messaging()
             .send(message)
-            .then(function (response) {
+            .then(response => {
             logger_1.default.appLogger.log({
                 level: 'info',
-                message: `Successfully sent message: : ${response} ${content}`
+                message: `📣 Successfully sent message: : ${response} ${content}`
             });
         })
-            .catch(function (err) {
-            console.log('Error Sending message!!! : ', err);
+            .catch(error => {
+            console.log('error Sending message!!! : ', error);
             logger_1.default.appLogger.log({
                 level: 'error',
-                message: err.message
+                message: error.message
             });
         });
         done();
     }
-    catch (err) {
-        logger_1.default.appLogger.log({ level: "error", message: err.message });
+    catch (error) {
+        logger_1.default.appLogger.log({ level: "erroror", message: error.message });
     }
 });
 exports.messageFunc = messageFunc;

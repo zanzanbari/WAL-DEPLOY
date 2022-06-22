@@ -1,7 +1,7 @@
 import axios from "axios";
 import logger from "../../../loaders/logger";
 import { isEmail } from "../../../common/validator";
-import { Token, UserInfo } from "../../../interface/dto/response/authResponse";
+import { Token, UserInfo } from "../../../dto/response/authResponse";
 
 async function auth(
   kakaoAccessToken: Token

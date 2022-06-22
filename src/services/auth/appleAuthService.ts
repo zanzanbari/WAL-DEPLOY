@@ -1,7 +1,7 @@
 import * as jwt from "jsonwebtoken";
 import IAuthService from "./authService";
-import { TokenDto } from "../../interface/dto/request/authRequest";
-import { AuthResponse, IAppleUserInfo } from "../../interface/dto/response/authResponse";
+import { TokenDto } from "../../dto/request/authRequest";
+import { AuthResponse, IAppleUserInfo } from "../../dto/response/authResponse";
 import { issueAccessToken, issueRefreshToken } from "../../common/tokenHandler";
 
 class AppleAuthService implements IAuthService {
@@ -12,7 +12,7 @@ class AppleAuthService implements IAuthService {
   }
     
   /**
-   *  @애플_로그인
+   *  @desc 애플_로그인
    *  @route POST /auth/apple/login
    *  @access public
    */
@@ -43,7 +43,7 @@ class AppleAuthService implements IAuthService {
   }
 
   /**
-   *  @애플_로그아웃_탈퇴
+   *  @desc 애플_로그아웃_탈퇴
    *  @route POST /auth/apple/resign
    *  @access public
    */

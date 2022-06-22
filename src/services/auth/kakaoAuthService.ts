@@ -1,8 +1,8 @@
 import { Service } from "typedi";
 import IAuthService from "./authService";
 import kakaoApiUtil from "./client/kakaoApi";
-import { TokenDto } from "../../interface/dto/request/authRequest";
-import { AuthResponse } from "../../interface/dto/response/authResponse";
+import { TokenDto } from "../../dto/request/authRequest";
+import { AuthResponse } from "../../dto/response/authResponse";
 import { issueAccessToken, issueRefreshToken } from "../../common/tokenHandler";
 
 @Service()
@@ -15,7 +15,7 @@ class KakaoAuthService implements IAuthService {
   }
 
   /**
-   *  @카카오_로그인
+   *  @desc 카카오_로그인
    *  @route POST /auth/kakao/login
    *  @access public
    */
@@ -43,7 +43,7 @@ class KakaoAuthService implements IAuthService {
   }
 
   /**
-   *  @카카오_로그아웃_탈퇴
+   *  @desc 카카오_로그아웃_탈퇴
    *  @route POST /auth/kakao/resign
    *  @access public
    */

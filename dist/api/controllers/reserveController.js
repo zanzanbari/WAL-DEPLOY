@@ -66,7 +66,7 @@ const getReservation = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         const sendingDataItems = yield models_1.Reservation.getSendingItems((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
         const completeDataItems = yield models_1.Reservation.getCompletedItems((_b = req.user) === null || _b === void 0 ? void 0 : _b.id);
         if (sendingDataItems.length < 1 && completeDataItems.length < 1) {
-            (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.NO_RESERVATION, data);
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.NO_RESERVATION, data);
         }
         pushEachItems(sendingDataItems, sendingData, false);
         pushEachItems(completeDataItems, completeData, true);
@@ -108,7 +108,7 @@ const getReservedDate = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         const data = { date };
         const reservedDateItems = yield models_1.Reservation.getReservationsFromTomorrow((_e = req.user) === null || _e === void 0 ? void 0 : _e.id);
         if (reservedDateItems.length < 1) {
-            (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.NO_RESERVATION_DATE, data);
+            return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.NO_RESERVATION_DATE, data);
         }
         for (const item of reservedDateItems) {
             const reservedDate = item.getDataValue("sendingDate");

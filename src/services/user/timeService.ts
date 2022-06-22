@@ -75,10 +75,11 @@ class TimeService extends UserService {
 
           this.timeQueueEvent.emit("updateAddTimeQueue", userId, time);
 
-          const currentItemId = await this.getRandCategoryCurrentItem(userId);
+          const { currentItemId, categoryId } = await this.getRandCategoryCurrentItem(userId);
           const data: ISetTodayWal = {
-            user_id: userId,
-            item_id: currentItemId,
+            userId,
+            categoryId,
+            itemId: currentItemId,
             time
           };
           await this.todayWalRepository.setTodayWal(data);

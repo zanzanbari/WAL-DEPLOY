@@ -70,10 +70,11 @@ class GlobalService extends UserService {
         const userId = userInfo.getDataValue("id") as number;
         for (const time of selectedTime) {
 
-          const currentItemId = await this.getRandCategoryCurrentItem(userId);
+          const { currentItemId, categoryId } = await this.getRandCategoryCurrentItem(userId);
           const data: ISetTodayWal = {
-            user_id: userId,
-            item_id: currentItemId,
+            userId,
+            categoryId,
+            itemId: currentItemId,
             time
           };
           // 유저가 선택한 시간대에 오늘의 왈소리 세팅
@@ -90,8 +91,9 @@ class GlobalService extends UserService {
             if (currentDate == timeHandler.getCurrentDate()) { // 예약해둔 왈소리 날짜와 업데이트 시점 현재 날짜와 같으면
 
               const data: ISetTodayWal = {
-                user_id: userId,
-                reservation_id: reserve.id,
+                userId,
+                categoryId: -1,
+                reservationId: reserve.id,
                 time: reserve.sendingDate,
                 userDefined: true
               };

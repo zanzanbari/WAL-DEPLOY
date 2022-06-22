@@ -61,7 +61,7 @@ class MainService {
 
         if (todayWal.getDataValue("userDefined")) { // 직접 예약한 왈소리라면
 
-          const reservationId: number = todayWal.getDataValue("reservation_id");
+          const reservationId: number = todayWal.getDataValue("reservationId");
           const content: Promise<string> = this.reservationRepository.getContentById(reservationId);
 
           mainResponse.type = "스페셜";
@@ -69,7 +69,7 @@ class MainService {
 
         } else { // 직접 예약한 왈소리가 아니라면
           
-          const itemId: number = todayWal.getDataValue("item_id");
+          const itemId: number = todayWal.getDataValue("itemId");
           const { content, categoryId } = await this.itemRepository.getContentById(itemId);
           mainResponse.content = content;
           mainResponse.categoryId = categoryId;

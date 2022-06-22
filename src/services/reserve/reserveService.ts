@@ -71,8 +71,8 @@ class ReserveService {
       if (request.date == timeHandler.getCurrentDate()) { // 예약한게 오늘 날짜면
 
         const data: ISetTodayWal = {
-          user_id: userId,
-          reservation_id: newReservationId,
+          userId,
+          reservationId: newReservationId,
           time: new Date(`${request.date} ${request.time}`),
           userDefined: true
         };
@@ -138,7 +138,7 @@ class ReserveService {
       // 오늘의 왈소리에서 제거, 예약에서도 제거
       const isReserved = await this.todayWalRepository.getTodayReservation(userId, postId);
       if (isReserved) await isReserved?.destroy();
-      await this.reserveRepository.deleteReservation(waitingReservation.id);
+      await waitingReservation.destroy();
 
       return { postId };
 
@@ -162,7 +162,10 @@ class ReserveService {
       const completedReservation = await this.reserveRepository.getReservationByPostId(userId, postId, true);
       if (!completedReservation) return customError.NO_OR_UNCOMPLETED_RESERVATION;
 
-      await completedReservation?.destroy();
+      // 오늘의 왈소리에서 제거, 예약에서도 제거
+      const isReserved = await this.todayWalRepository.getTodayReservation(userId, postId);
+      if (isReserved) await isReserved?.destroy();      
+      await completedReservation.destroy();
 
       return { postId };
 

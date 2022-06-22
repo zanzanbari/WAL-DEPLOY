@@ -1,4 +1,6 @@
 import { Item, UserCategory } from "../../models";
+import { ISetCategory, ISetTime } from "../../dto/request/userRequest";
+import timeHandler from "../../common/timeHandler";
 
 abstract class UserService {
 
@@ -13,7 +15,10 @@ abstract class UserService {
    *  @access protected
    */
 
-  protected async getRandCategoryCurrentItem(userId: number): Promise<number> {
+  protected async getRandCategoryCurrentItem(userId: number): Promise<{ 
+    currentItemId: number; 
+    categoryId: number; 
+  }> {
 
     try {
       // 유저가 선택한 왈소리 종류 랜덤으로 가져오기
@@ -22,8 +27,8 @@ abstract class UserService {
       const randomUserCategory: UserCategory = userCategories[randomIndex];
 
       // 랜덤으로 가져온 왈소리 종류의 아이디와 현재 아이템 아이디
-      const currentItemId: number = randomUserCategory.getDataValue("next_item_id");
-      const categoryId: number = randomUserCategory.getDataValue("category_id");
+      const currentItemId: number = randomUserCategory.getDataValue("nextItemId");
+      const categoryId: number = randomUserCategory.getDataValue("categoryId");
 
       // 랜덤으로 가져온 카테고리에 해당하는 아이템들 다 가져오기
       const sameCategoryItems = await this.itemRepository.getAllItemsByCategoryId(categoryId) as Item[];
@@ -43,13 +48,41 @@ abstract class UserService {
       // 다음 아이템 아이디로 변경 세팅
       await this.userCategoryRepository.updateNext(userId, categoryId, nextItemId);
 
-      return currentItemId;
+      return { currentItemId, categoryId };
 
     } catch(error) {
       throw error;
     }
 
   };
+
+  /**
+   *  @Bool값_추출
+   *  @desc 유저가 선택한 유형(category) 확인하기 위해
+   *  @access protected
+   */
+
+   protected extractBooleanInfo(property: ISetCategory): boolean[] {
+    const extractedInfo: boolean[] = [];
+    for (const key in property) { // 객체 탐색 for...in
+      extractedInfo.push(property[key]);
+    }
+    return extractedInfo;
+  }
+
+  /**
+   *  @Bool값_추출
+   *  @desc 유저가 설정한 시간대만 축출
+   *  @access protected
+   */
+
+  protected extractSelectedTimes(timeInfo: ISetTime): Date[] {
+    const selectedTimes: Date[] = [];
+    if (timeInfo.morning) selectedTimes.push(timeHandler.getMorning());
+    if (timeInfo.afternoon) selectedTimes.push(timeHandler.getAfternoon());
+    if (timeInfo.night) selectedTimes.push(timeHandler.getNight());
+    return selectedTimes;
+  }
 
 }
 

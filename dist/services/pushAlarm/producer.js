@@ -34,7 +34,10 @@ function addTimeQueue(userId, flag) {
                         jobId: userId,
                         repeat: { cron: `0 0 8 * * *` }
                     });
+<<<<<<< HEAD
                     logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} :: morningQueue 등록 성공` });
+=======
+>>>>>>> d5a54576691766cfa34c12b99255efa3c428ceca
                     _1.morningQueue.process("morning", consumer_1.morningFunc);
                     break;
                 case 1:
@@ -42,7 +45,10 @@ function addTimeQueue(userId, flag) {
                         jobId: userId,
                         repeat: { cron: `0 0 14 * * *` }
                     });
+<<<<<<< HEAD
                     logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} :: afternoonQueue 등록 성공` });
+=======
+>>>>>>> d5a54576691766cfa34c12b99255efa3c428ceca
                     _1.afternoonQueue.process("afternoon", consumer_1.afterFunc);
                     break;
                 case 2:
@@ -50,7 +56,10 @@ function addTimeQueue(userId, flag) {
                         jobId: userId,
                         repeat: { cron: `0 0 20 * * *` }
                     });
+<<<<<<< HEAD
                     logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} :: nightQueue 등록 성공` });
+=======
+>>>>>>> d5a54576691766cfa34c12b99255efa3c428ceca
                     _1.nightQueue.process("night", consumer_1.nightFunc);
                     break;
             }

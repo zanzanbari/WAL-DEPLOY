@@ -1,5 +1,5 @@
-import { TokenDto } from "../../interface/dto/request/authRequest";
-import { AuthResponse } from "../../interface/dto/response/authResponse";
+import { TokenDto } from "../../dto/request/authRequest";
+import { AuthResponse } from "../../dto/response/authResponse";
 
 interface IAuthService {
   login(token: TokenDto): Promise<AuthResponse | undefined>;

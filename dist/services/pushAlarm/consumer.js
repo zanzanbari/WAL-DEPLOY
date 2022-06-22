@@ -61,7 +61,10 @@ const morningFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
         const data = yield getTokenMessage(new Date(`${dateString} 08:00:00`), userId);
         // data : { fcm, content }
         yield _1.messageQueue.add(data, { attempts: 5 }); //message를 보내는 작업, 5번 시도
+<<<<<<< HEAD
         logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} : ${job.id}: messageQueue 등록 성공` });
+=======
+>>>>>>> d5a54576691766cfa34c12b99255efa3c428ceca
         _1.messageQueue.process(messageConsumer_1.messageFunc);
         done();
     }
@@ -77,7 +80,10 @@ const afterFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () 
         const dateString = (0, dayjs_1.default)(new Date()).format("YYYY-MM-DD");
         const data = yield getTokenMessage(new Date(`${dateString} 14:00:00`), userId);
         yield _1.messageQueue.add(data, { attempts: 5 });
+<<<<<<< HEAD
         logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} : ${job.id} : messageQueue 등록 성공` });
+=======
+>>>>>>> d5a54576691766cfa34c12b99255efa3c428ceca
         _1.messageQueue.process(messageConsumer_1.messageFunc);
         done();
     }
@@ -89,11 +95,17 @@ exports.afterFunc = afterFunc;
 const nightFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     logger_1.default.appLogger.log({ level: "info", message: `nightFunc process START` });
     try {
+        console.log("나 실행한다");
         const userId = job.data;
         const dateString = (0, dayjs_1.default)(new Date()).format("YYYY-MM-DD");
         const data = yield getTokenMessage(new Date(`${dateString} 20:00:00`), userId);
+<<<<<<< HEAD
         yield _1.messageQueue.add(data, { attempts: 5 });
         logger_1.default.appLogger.log({ level: "info", message: `유저 ${userId} : ${job.id}: messageQueue 등록 성공` });
+=======
+        console.log("data::", data);
+        yield _1.messageQueue.add(data, { attempts: 5 });
+>>>>>>> d5a54576691766cfa34c12b99255efa3c428ceca
         _1.messageQueue.process(messageConsumer_1.messageFunc);
         done();
     }

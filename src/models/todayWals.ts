@@ -1,86 +1,156 @@
 import { 
-    AutoIncrement, 
-    BelongsTo, 
-    Column, 
-    DataType, 
-    AllowNull,
-    ForeignKey, 
-    Model, 
-    PrimaryKey, 
-    Table, 
-    Unique, 
-    Default} from "sequelize-typescript"
+  AutoIncrement, 
+  BelongsTo, 
+  Column, 
+  DataType, 
+  AllowNull,
+  ForeignKey, 
+  Model, 
+  PrimaryKey, 
+  Table, 
+  Unique, 
+  Default } from "sequelize-typescript"
 import User from "./users";
 import Item from "./items";
 import Reservation from "./reservations";
-import { ISetTodayWal } from "../interface/dto/request/userRequest";
+import { ISetTodayWal } from "../dto/request/userRequest";
+import Category from "./categories";
 
 @Table({ // 테이블 설정
-    modelName: "TodayWal",
-    tableName: "todayWals",
-    freezeTableName: true,
-    underscored: false,
-    paranoid: false,
-    timestamps: false,
-    charset: "utf8", 
-    collate: "utf8_general_ci", 
+  modelName: "TodayWal",
+  tableName: "todayWals",
+  freezeTableName: true,
+  underscored: false,
+  paranoid: false,
+  timestamps: false,
+  charset: "utf8", 
+  collate: "utf8_general_ci", 
 })
 
-export default class TodayWal extends Model { 
-    @PrimaryKey
-    @AutoIncrement
-    @Unique
-    @Column
-    id!: number;
+export default class TodayWal extends Model {
 
-    @ForeignKey(() => User)
-    @Column(DataType.INTEGER)
-    user_id!: number;
+  @PrimaryKey
+  @AutoIncrement
+  @Unique
+  @Column
+  public readonly id!: number;
 
-    @ForeignKey(() => Item)
-    @Column(DataType.INTEGER)
-    item_id!: number;
+  @ForeignKey(() => User)
+  @Column(DataType.INTEGER)
+  public userId!: number;
 
-    @ForeignKey(() => Reservation)
-    @Column(DataType.INTEGER)
-    reservation_id!: number;
+  @ForeignKey(() => Category)
+  @Column(DataType.INTEGER)
+  public categoryId!: number
 
-    @AllowNull(false)
-    @Default(false)
-    @Column(DataType.BOOLEAN)
-    public userDefined!: Boolean;
+  @ForeignKey(() => Item)
+  @Column(DataType.INTEGER)
+  public itemId!: number;
 
-    @AllowNull(false)
-    @Column(DataType.DATE)
-    public time!: Date;
+  @ForeignKey(() => Reservation)
+  @Column(DataType.INTEGER)
+  public reservationId!: number;
 
-    @BelongsTo(() => User)
-    user!: User;
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  public userDefined!: Boolean;
 
-    @BelongsTo(() => Item)
-    item!: Item;
+  @AllowNull(false)
+  @Column(DataType.DATE)
+  public time!: Date;
 
-    @BelongsTo(() => Reservation)
-    reservation!: Reservation;
+  @BelongsTo(() => User)
+  user!: User;
 
-    static async setTodayWal(data: ISetTodayWal) {
-        await this.create({ ...data });
-    }
+  @BelongsTo(() => Item)
+  item!: Item;
 
-    static async getTodayWalsByUserId(id: number): Promise<TodayWal[]> {
-        const todayWals = await this.findAll({
-            where: {
-                user_id: id,
-            },
-            order: [
-                ["time", "ASC"]
-            ]
-        })
-        return todayWals;
-    }
+  @BelongsTo(() => Category)
+  category!: Category;
+
+  @BelongsTo(() => Reservation)
+  reservation!: Reservation;
+
+  static async setTodayWal(data: ISetTodayWal) {
+    await this.create({ ...data });
+  };
+
+  static async getTodayWalsByUserId(id: number): Promise<TodayWal[]> {
+    const todayWals = await this.findAll({
+      where: {
+        userId: id,
+      },
+      order: [
+        ["time", "ASC"]
+      ]
+    });
+    return todayWals;
+  };
+
+  static async getTodayReservation(userId: number, reservationId: number) {
+    return await this.findOne({
+      where: { 
+        userId, 
+        reservationId,
+        userDefined: true
+      }
+    });
+  };
     
-    static async deleteTodayWal(user_id: number, time?: Date) {
-        await this.destroy({ where: { user_id, time } });
+  static async deleteTodayWal(userId: number, time?: Date, categoryId?: number) {
+    await this.destroy({ where: { userId, time, categoryId } });
+  };
+
+  static async deleteAll() {
+    await this.destroy({
+      where: {},
+      truncate: true
+    });
+  };
+
+
+  static async getFcmByUserId(userId: number, time?: Date): Promise<{
+    fcmtoken: string;
+    itemId: number;
+  } | {
+    fcmtoken: string;
+    reservationId: number;
+  }> {
+    
+    if (time) {
+
+      const wal = await this.findOne({
+        where: { userId, time },
+        include: [
+          { model: User, attributes: ["fcmtoken"] }
+        ]
+      });
+
+      return {
+        fcmtoken: wal?.getDataValue("user").getDataValue("fcmtoken") as string,
+        itemId: wal?.getDataValue("itemId") as number
+      };
+
+    } else {
+
+      const wal = await this.findOne({
+        where: {
+          userId,
+          userDefined: true
+        },
+        include: [
+          { model: User, attributes: ["fcmtoken"] }
+        ]
+      });
+
+      return { 
+        fcmtoken: wal?.getDataValue("user").getDataValue("fcmtoken") as string,
+        reservationId: wal?.getDataValue("reservationId") as number
+      };
+      
     }
+
+  };
 
 }

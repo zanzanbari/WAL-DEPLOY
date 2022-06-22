@@ -31,6 +31,7 @@ const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
             .then(response => {
             logger_1.default.appLogger.log({
                 level: 'info',
+<<<<<<< HEAD
                 message: `📣 Successfully sent message: : ${response} ${content} ${job.id}`
             });
         })
@@ -38,13 +39,26 @@ const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
             logger_1.default.appLogger.log({
                 level: 'error',
                 message: `❌ SENDING MESSAGE ERROR :: ${error.message}`
+=======
+                message: `📣 Successfully sent message: : ${response} ${content}`
+            });
+        })
+            .catch(error => {
+            console.log('error Sending message!!! : ', error);
+            logger_1.default.appLogger.log({
+                level: 'error',
+                message: error.message
+>>>>>>> d5a54576691766cfa34c12b99255efa3c428ceca
             });
         });
         done();
     }
     catch (error) {
         logger_1.default.appLogger.log({ level: "erroror", message: error.message });
+<<<<<<< HEAD
         throw error;
+=======
+>>>>>>> d5a54576691766cfa34c12b99255efa3c428ceca
     }
 });
 exports.messageFunc = messageFunc;

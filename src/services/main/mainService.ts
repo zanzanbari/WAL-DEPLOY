@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import { TodayWal } from "../../models";
 import timeHandler from "../../common/timeHandler";
-import { IMainResponse } from "../../interface/dto/response/mainResponse";
+import { IMainResponse } from "../../dto/response/mainResponse";
 
 @Service()
 class MainService {
@@ -15,7 +15,7 @@ class MainService {
   }
 
   /**
-   *  @메인화면
+   *  @desc 메인화면
    *  @route GET /main
    *  @access public
    */
@@ -61,7 +61,7 @@ class MainService {
 
         if (todayWal.getDataValue("userDefined")) { // 직접 예약한 왈소리라면
 
-          const reservationId: number = todayWal.getDataValue("reservation_id");
+          const reservationId: number = todayWal.getDataValue("reservationId");
           const content: Promise<string> = this.reservationRepository.getContentById(reservationId);
 
           mainResponse.type = "스페셜";
@@ -69,7 +69,7 @@ class MainService {
 
         } else { // 직접 예약한 왈소리가 아니라면
           
-          const itemId: number = todayWal.getDataValue("item_id");
+          const itemId: number = todayWal.getDataValue("itemId");
           const { content, categoryId } = await this.itemRepository.getContentById(itemId);
           mainResponse.content = content;
           mainResponse.categoryId = categoryId;
@@ -84,7 +84,7 @@ class MainService {
       return result;
 
     } catch (error) {
-      this.logger.appLogger.log({ level: "error", message: error.message });
+      this.logger.appLogger.log({ level: "error", message: `getMainResult :: ${error.message}` });
       throw error;
     }
 

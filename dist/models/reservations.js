@@ -25,11 +25,11 @@ const sequelize_typescript_1 = require("sequelize-typescript");
 const users_1 = __importDefault(require("./users"));
 const models_1 = __importDefault(require("../models"));
 let Reservation = class Reservation extends sequelize_typescript_1.Model {
-    static getSendingItems(id) {
+    static getSendingItems(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const reservations = yield this.findAll({
                 where: {
-                    user_id: id,
+                    userId,
                     completed: false
                 },
                 order: [
@@ -40,11 +40,12 @@ let Reservation = class Reservation extends sequelize_typescript_1.Model {
             return reservations;
         });
     }
-    static getCompletedItems(id) {
+    ;
+    static getCompletedItems(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const reservations = yield this.findAll({
                 where: {
-                    user_id: id,
+                    userId,
                     completed: true
                 },
                 order: [["sendingDate", "DESC"]] //받은 날짜 desc정렬
@@ -52,28 +53,26 @@ let Reservation = class Reservation extends sequelize_typescript_1.Model {
             return reservations;
         });
     }
-    static getReservationByDate(id, date) {
+    ;
+    static getReservationByDate(userId, date) {
         return __awaiter(this, void 0, void 0, function* () {
             const reservation = yield this.findOne({
                 where: {
-                    user_id: id,
+                    userId,
                     $and: models_1.default.where(models_1.default.fn('date', models_1.default.col('sendingDate')), '=', new Date(date))
                 }
             });
             return reservation;
         });
     }
-    static postReservation(id, date, time, hide, content) {
+    ;
+    static setReservation(userId, request) {
         return __awaiter(this, void 0, void 0, function* () {
-            const reservation = yield this.create({
-                user_id: id,
-                sendingDate: new Date(`${date} ${time}`),
-                hide,
-                content
-            });
+            const reservation = yield this.create(Object.assign({ userId, sendingDate: new Date(`${request.date} ${request.time}`) }, request));
             return reservation.id;
         });
     }
+    ;
     static getContentById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const reservation = yield this.findOne({ where: { id } });
@@ -81,11 +80,12 @@ let Reservation = class Reservation extends sequelize_typescript_1.Model {
             return content;
         });
     }
-    static getReservationsFromTomorrow(id) {
+    ;
+    static getReservationsFromTomorrow(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const reservations = yield this.findAll({
                 where: {
-                    user_id: id,
+                    userId,
                     $and: models_1.default.where(models_1.default.fn('date', models_1.default.col('sendingDate')), '>', new Date())
                 },
                 attributes: ["sendingDate"]
@@ -93,18 +93,26 @@ let Reservation = class Reservation extends sequelize_typescript_1.Model {
             return reservations;
         });
     }
-    static getReservationByPostId(postId, id, completed) {
+    ;
+    static getReservationByPostId(userId, postId, completed) {
         return __awaiter(this, void 0, void 0, function* () {
             const reservation = yield this.findOne({
                 where: {
                     id: postId,
-                    user_id: id,
+                    userId,
                     completed
                 }
             });
             return reservation;
         });
     }
+    ;
+    static deleteReservation(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.destroy({ where: { id } });
+        });
+    }
+    ;
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -117,7 +125,7 @@ __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => users_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Reservation.prototype, "user_id", void 0);
+], Reservation.prototype, "userId", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.TEXT),

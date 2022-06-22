@@ -31,7 +31,7 @@ let KakaoAuthService = class KakaoAuthService {
         this.logger = logger;
     }
     /**
-     *  @카카오_로그인
+     *  @desc 카카오_로그인
      *  @route POST /auth/kakao/login
      *  @access public
      */
@@ -56,7 +56,7 @@ let KakaoAuthService = class KakaoAuthService {
         });
     }
     /**
-     *  @카카오_로그아웃_탈퇴
+     *  @desc 카카오_로그아웃_탈퇴
      *  @route POST /auth/kakao/resign
      *  @access public
      */

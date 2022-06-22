@@ -25,22 +25,24 @@ const sequelize_typescript_1 = require("sequelize-typescript");
 const users_1 = __importDefault(require("./users"));
 const resultMessage_1 = __importDefault(require("../constant/resultMessage"));
 let Time = class Time extends sequelize_typescript_1.Model {
-    static setTime(id, timeInfo) {
+    static setTime(userId, timeInfo) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.create(Object.assign({ user_id: id }, timeInfo));
+            yield this.create(Object.assign({ userId }, timeInfo));
         });
     }
-    static updateTime(user_id, timeInfo) {
+    ;
+    static updateTime(userId, timeInfo) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.update(Object.assign({}, timeInfo), {
-                where: { user_id }
+                where: { userId }
             });
         });
     }
-    static findById(user_id) {
+    ;
+    static findById(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const times = yield this.findOne({
-                where: { user_id },
+                where: { userId },
                 attributes: ["morning", "afternoon", "night"]
             });
             if (!times)
@@ -48,6 +50,15 @@ let Time = class Time extends sequelize_typescript_1.Model {
             return times["dataValues"];
         });
     }
+    ;
+    static getAllUserIds() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isInit = yield this.findAll({ attributes: ["userId"] });
+            const isInitUserIds = isInit.map(user => { return user.userId; });
+            return isInitUserIds;
+        });
+    }
+    ;
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -60,7 +71,7 @@ __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => users_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], Time.prototype, "user_id", void 0);
+], Time.prototype, "userId", void 0);
 __decorate([
     (0, sequelize_typescript_1.Default)(false),
     (0, sequelize_typescript_1.AllowNull)(false),

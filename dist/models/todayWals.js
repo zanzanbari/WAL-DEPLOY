@@ -25,17 +25,19 @@ const sequelize_typescript_1 = require("sequelize-typescript");
 const users_1 = __importDefault(require("./users"));
 const items_1 = __importDefault(require("./items"));
 const reservations_1 = __importDefault(require("./reservations"));
+const categories_1 = __importDefault(require("./categories"));
 let TodayWal = class TodayWal extends sequelize_typescript_1.Model {
     static setTodayWal(data) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.create(Object.assign({}, data));
         });
     }
+    ;
     static getTodayWalsByUserId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const todayWals = yield this.findAll({
                 where: {
-                    user_id: id,
+                    userId: id,
                 },
                 order: [
                     ["time", "ASC"]
@@ -44,11 +46,66 @@ let TodayWal = class TodayWal extends sequelize_typescript_1.Model {
             return todayWals;
         });
     }
-    static deleteTodayWal(user_id, time) {
+    ;
+    static getTodayReservation(userId, reservationId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.destroy({ where: { user_id, time } });
+            return yield this.findOne({
+                where: {
+                    userId,
+                    reservationId,
+                    userDefined: true
+                }
+            });
         });
     }
+    ;
+    static deleteTodayWal(userId, time, categoryId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.destroy({ where: { userId, time, categoryId } });
+        });
+    }
+    ;
+    static deleteAll() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.destroy({
+                where: {},
+                truncate: true
+            });
+        });
+    }
+    ;
+    static getFcmByUserId(userId, time) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (time) {
+                const wal = yield this.findOne({
+                    where: { userId, time },
+                    include: [
+                        { model: users_1.default, attributes: ["fcmtoken"] }
+                    ]
+                });
+                return {
+                    fcmtoken: wal === null || wal === void 0 ? void 0 : wal.getDataValue("user").getDataValue("fcmtoken"),
+                    itemId: wal === null || wal === void 0 ? void 0 : wal.getDataValue("itemId")
+                };
+            }
+            else {
+                const wal = yield this.findOne({
+                    where: {
+                        userId,
+                        userDefined: true
+                    },
+                    include: [
+                        { model: users_1.default, attributes: ["fcmtoken"] }
+                    ]
+                });
+                return {
+                    fcmtoken: wal === null || wal === void 0 ? void 0 : wal.getDataValue("user").getDataValue("fcmtoken"),
+                    reservationId: wal === null || wal === void 0 ? void 0 : wal.getDataValue("reservationId")
+                };
+            }
+        });
+    }
+    ;
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -61,17 +118,22 @@ __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => users_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], TodayWal.prototype, "user_id", void 0);
+], TodayWal.prototype, "userId", void 0);
+__decorate([
+    (0, sequelize_typescript_1.ForeignKey)(() => categories_1.default),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
+    __metadata("design:type", Number)
+], TodayWal.prototype, "categoryId", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => items_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], TodayWal.prototype, "item_id", void 0);
+], TodayWal.prototype, "itemId", void 0);
 __decorate([
     (0, sequelize_typescript_1.ForeignKey)(() => reservations_1.default),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.INTEGER),
     __metadata("design:type", Number)
-], TodayWal.prototype, "reservation_id", void 0);
+], TodayWal.prototype, "reservationId", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Default)(false),
@@ -91,6 +153,10 @@ __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => items_1.default),
     __metadata("design:type", items_1.default)
 ], TodayWal.prototype, "item", void 0);
+__decorate([
+    (0, sequelize_typescript_1.BelongsTo)(() => categories_1.default),
+    __metadata("design:type", categories_1.default)
+], TodayWal.prototype, "category", void 0);
 __decorate([
     (0, sequelize_typescript_1.BelongsTo)(() => reservations_1.default),
     __metadata("design:type", reservations_1.default)

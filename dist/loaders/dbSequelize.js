@@ -13,22 +13,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = __importDefault(require("../models"));
+const logger_1 = __importDefault(require("./logger"));
 // 시퀄라이즈 연결
 exports.default = () => __awaiter(void 0, void 0, void 0, function* () {
     models_1.default.authenticate()
         .then(() => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("✅ Connect PostgreSQL");
+        logger_1.default.appLogger.info("✅ Connect PostgreSQL");
     }))
-        .catch((err) => {
-        console.log("TT : ", err);
+        .catch((error) => {
+        logger_1.default.appLogger.error(`❌ sequelize authenticate Error: ${error.message}`);
     });
     // 시퀄라이즈 모델 DB에 싱크
     models_1.default.sync({ force: false })
         .then(() => {
-        console.log('✅ Sync Models to DB');
+        logger_1.default.appLogger.info("✅ Sync Models to DB");
     })
-        .catch((err) => {
-        console.log('❌ DB CONNECT ERROR:', err);
+        .catch((error) => {
+        logger_1.default.appLogger.error(`❌ DB CONNECT ERROR: ${error.message}`);
     });
 });
 //# sourceMappingURL=dbSequelize.js.map

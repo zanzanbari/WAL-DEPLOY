@@ -22,17 +22,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
-const pushAlarm_1 = require("../pushAlarm");
+const userService_1 = __importDefault(require("./userService"));
 const timeHandler_1 = __importDefault(require("../../common/timeHandler"));
-let TimeService = class TimeService {
-    constructor(timeRepository, todayWalRepository, timeQueueEvent, logger) {
+let TimeService = class TimeService extends userService_1.default {
+    constructor(userCategoryRepository, itemRepository, timeRepository, todayWalRepository, timeQueueEvent, logger) {
+        super(userCategoryRepository, itemRepository);
+        this.userCategoryRepository = userCategoryRepository;
+        this.itemRepository = itemRepository;
         this.timeRepository = timeRepository;
         this.todayWalRepository = todayWalRepository;
         this.timeQueueEvent = timeQueueEvent;
         this.logger = logger;
     }
     /**
-     *  @유저_알람시간_수정
+     *  @desc 유저_알람시간_수정
      *  @route POST /user/info/time
      *  @access public
      */
@@ -62,31 +65,42 @@ let TimeService = class TimeService {
      */
     setAddedTime(isAddedTime, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let addFlag = "add";
             let currentTime = timeHandler_1.default.getCurrentTime();
-            for (const time of isAddedTime) {
-                if (time > currentTime) {
-                    this.timeQueueEvent.emit("updateUserTime", userId, time, addFlag);
-                    const currentItemId = yield (0, pushAlarm_1.getRandCategoryCurrentItem)(userId);
-                    const data = {
-                        user_id: userId,
-                        item_id: currentItemId,
-                        time
-                    };
-                    yield this.todayWalRepository.setTodayWal(data);
+            try {
+                for (const time of isAddedTime) {
+                    if (time > currentTime) {
+                        this.timeQueueEvent.emit("updateAddTimeQueue", userId, time);
+                        const { currentItemId, categoryId } = yield this.getRandCategoryCurrentItem(userId);
+                        const data = {
+                            userId,
+                            categoryId,
+                            itemId: currentItemId,
+                            time
+                        };
+                        yield this.todayWalRepository.setTodayWal(data);
+                    }
                 }
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: `setAddedTime :: ${error.message}` });
+                throw error;
             }
         });
     }
     setCanceledTime(isCanceledTime, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            let cancelFlag = "cancel";
             let currentTime = timeHandler_1.default.getCurrentTime();
-            for (const time of isCanceledTime) {
-                if (time > currentTime) {
-                    this.timeQueueEvent.emit("updateUserTime", userId, time, cancelFlag);
-                    yield this.todayWalRepository.deleteTodayWal(userId, time);
+            try {
+                for (const time of isCanceledTime) {
+                    this.timeQueueEvent.emit("updateCancelTimeQueue", userId, time);
+                    if (time > currentTime) {
+                        yield this.todayWalRepository.deleteTodayWal(userId, time);
+                    }
                 }
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: `setCanceledTime :: ${error.message}` });
+                throw error;
             }
         });
     }
@@ -113,7 +127,7 @@ let TimeService = class TimeService {
 };
 TimeService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [Object, Object, Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], TimeService);
 exports.default = TimeService;
 //# sourceMappingURL=timeService.js.map

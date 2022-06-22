@@ -12,12 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.messageFunc = void 0;
-const firebase_1 = require("../../loaders/firebase");
+exports.messageProcess = void 0;
 const logger_1 = __importDefault(require("../../loaders/logger"));
-const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
+const models_1 = require("../../models");
+const firebase_1 = require("../../loaders/firebase");
+const messageProcess = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
+    logger_1.default.appLogger.log({ level: "info", message: "message queue process START" });
     try {
-        const { fcmtoken, content } = job.data;
+        const { fcmtoken, content, isReserved } = job.data;
         const message = {
             notification: {
                 title: '🐶오늘의 왈소리 도착~!🐶',
@@ -28,24 +30,31 @@ const messageFunc = (job, done) => __awaiter(void 0, void 0, void 0, function* (
         firebase_1.firebaseApp
             .messaging()
             .send(message)
-            .then(response => {
+            .then((response) => __awaiter(void 0, void 0, void 0, function* () {
             logger_1.default.appLogger.log({
                 level: 'info',
-                message: `📣 Successfully sent message: : ${response} ${content}`
+                message: `📣 Successfully sent message: : ${response} ${content} ${job.id}`
             });
-        })
+            if (isReserved) {
+                yield models_1.Reservation.update({
+                    completed: true
+                }, {
+                    where: { content }
+                });
+                logger_1.default.appLogger.log({ level: "info", message: "예약 왈소리 전송완료" });
+            }
+        }))
             .catch(error => {
-            console.log('error Sending message!!! : ', error);
             logger_1.default.appLogger.log({
                 level: 'error',
-                message: error.message
+                message: `❌ SENDING MESSAGE ERROR :: ${error.message}`
             });
         });
         done();
     }
     catch (error) {
-        logger_1.default.appLogger.log({ level: "erroror", message: error.message });
+        logger_1.default.appLogger.log({ level: "error", message: error.message });
     }
 });
-exports.messageFunc = messageFunc;
+exports.messageProcess = messageProcess;
 //# sourceMappingURL=messageConsumer.js.map

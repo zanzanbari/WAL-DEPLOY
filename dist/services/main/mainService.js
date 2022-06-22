@@ -31,7 +31,7 @@ let MainService = class MainService {
         this.logger = logger;
     }
     /**
-     *  @메인화면
+     *  @desc 메인화면
      *  @route GET /main
      *  @access public
      */
@@ -67,13 +67,13 @@ let MainService = class MainService {
                     const time = todayWal.getDataValue("time");
                     mainResponse.canOpen = timeHandler_1.default.getCurrentTime().getTime() >= time.getTime() ? true : false;
                     if (todayWal.getDataValue("userDefined")) { // 직접 예약한 왈소리라면
-                        const reservationId = todayWal.getDataValue("reservation_id");
+                        const reservationId = todayWal.getDataValue("reservationId");
                         const content = this.reservationRepository.getContentById(reservationId);
                         mainResponse.type = "스페셜";
                         mainResponse.content = yield content;
                     }
                     else { // 직접 예약한 왈소리가 아니라면
-                        const itemId = todayWal.getDataValue("item_id");
+                        const itemId = todayWal.getDataValue("itemId");
                         const { content, categoryId } = yield this.itemRepository.getContentById(itemId);
                         mainResponse.content = content;
                         mainResponse.categoryId = categoryId;
@@ -89,7 +89,7 @@ let MainService = class MainService {
                 return result;
             }
             catch (error) {
-                this.logger.appLogger.log({ level: "error", message: error.message });
+                this.logger.appLogger.log({ level: "error", message: `getMainResult :: ${error.message}` });
                 throw error;
             }
         });

@@ -24,8 +24,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
 const times_1 = __importDefault(require("./times"));
 const reservations_1 = __importDefault(require("./reservations"));
-const resultMessage_1 = __importDefault(require("../constant/resultMessage"));
 const userCategories_1 = __importDefault(require("./userCategories"));
+const resultMessage_1 = __importDefault(require("../constant/resultMessage"));
+const sequelize_1 = require("sequelize");
+const todayWals_1 = __importDefault(require("./todayWals"));
 let User = class User extends sequelize_typescript_1.Model {
     /*
      * custom method
@@ -38,6 +40,7 @@ let User = class User extends sequelize_typescript_1.Model {
             return user;
         });
     }
+    ;
     static findOneByRefreshToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.findOne({ where: { refreshtoken: token } });
@@ -46,6 +49,7 @@ let User = class User extends sequelize_typescript_1.Model {
             return user;
         });
     }
+    ;
     static findById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.findOne({ where: { id } });
@@ -67,19 +71,19 @@ let User = class User extends sequelize_typescript_1.Model {
             return user;
         });
     }
+    ;
     static createSocialUser(social, userInfo, request, refreshtoken) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.create({
+            return yield this.create({
                 social,
                 email: userInfo.email,
                 nickname: userInfo.nickname,
-                password: null,
                 fcmtoken: request.fcmtoken,
                 refreshtoken
             });
-            return user;
         });
     }
+    ;
     static findByEmailOrCreateSocialUser(social, userInfo, request, refreshtoken) {
         return __awaiter(this, void 0, void 0, function* () {
             // 새 객체가 생성되었을 경우 true, 그렇지 않을 경우 false 
@@ -90,8 +94,7 @@ let User = class User extends sequelize_typescript_1.Model {
                     social,
                     email: userInfo.email,
                     nickname: userInfo.nickname,
-                    password: null,
-                    // fcmtoken: request.fcmtoken,
+                    fcmtoken: request.fcmtoken,
                     refreshtoken
                 }
             });
@@ -102,6 +105,7 @@ let User = class User extends sequelize_typescript_1.Model {
             return user[0]; // boolean 값 빼고 반환
         });
     }
+    ;
     // 기본적으로 delete는 유저 정보 반환 안하므로 custom 해줌 (삭제된 유저 정보 얻기 위해)
     static findAndDelete(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -112,6 +116,7 @@ let User = class User extends sequelize_typescript_1.Model {
             }));
         });
     }
+    ;
     static setNickname(id, nickname) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.update({
@@ -121,6 +126,7 @@ let User = class User extends sequelize_typescript_1.Model {
             });
         });
     }
+    ;
     static getFCMToken(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.findOne({
@@ -130,6 +136,23 @@ let User = class User extends sequelize_typescript_1.Model {
             return user === null || user === void 0 ? void 0 : user.fcmtoken;
         });
     }
+    ;
+    static getUserTimeReserveInfo(userIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const usersInfo = yield this.findAll({
+                where: { id: { [sequelize_1.Op.in]: userIds } },
+                include: [
+                    { model: times_1.default, attributes: ["morning", "afternoon", "night"] },
+                    { model: reservations_1.default, attributes: ["id", "sendingDate"] }
+                ],
+                attributes: ["id"]
+            });
+            if (!usersInfo)
+                throw new Error(resultMessage_1.default.NO_USER);
+            return usersInfo;
+        });
+    }
+    ;
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -156,11 +179,6 @@ __decorate([
 ], User.prototype, "nickname", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(true),
-    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING(100)),
-    __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    (0, sequelize_typescript_1.AllowNull)(true),
     sequelize_typescript_1.Unique,
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.TEXT),
     __metadata("design:type", String)
@@ -183,6 +201,10 @@ __decorate([
     (0, sequelize_typescript_1.HasMany)(() => reservations_1.default),
     __metadata("design:type", Array)
 ], User.prototype, "reservations", void 0);
+__decorate([
+    (0, sequelize_typescript_1.HasMany)(() => todayWals_1.default),
+    __metadata("design:type", Array)
+], User.prototype, "todayWals", void 0);
 User = __decorate([
     (0, sequelize_typescript_1.Table)({
         modelName: "User",

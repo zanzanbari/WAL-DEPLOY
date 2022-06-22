@@ -15,9 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const logger_1 = __importDefault(require("./logger"));
 const express_1 = __importDefault(require("./express"));
 const dbSequelize_1 = __importDefault(require("./dbSequelize"));
-const pushAlarm_1 = require("../services/pushAlarm");
+const initWal_1 = __importDefault(require("./initWal"));
 exports.default = ({ expressApp }) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, pushAlarm_1.updateToday)(); //자정마다 todayWal 업데이트
+    initWal_1.default.updateAtNoonEveryDay();
     yield (0, dbSequelize_1.default)();
     logger_1.default.appLogger.info("🚀 DB Loaded And Connected");
     yield (0, express_1.default)({ app: expressApp });

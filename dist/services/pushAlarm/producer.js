@@ -12,104 +12,194 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserTime = exports.addUserTime = void 0;
-const _1 = require("./");
-const consumer_1 = require("./consumer");
-const models_1 = require("../../models");
-const logger_1 = __importDefault(require("../../loaders/logger"));
 const timeHandler_1 = __importDefault(require("../../common/timeHandler"));
-/**
-*  @시간정보_큐에_추가
-*  @desc
-*  @flag_0 : morning
-*  @flag_1 : afternoon
-*  @flag_2 : night
-*/
-function addTimeQueue(userId, flag) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            switch (flag) {
-                case 0:
-                    yield _1.morningQueue.add("morning", userId, {
-                        jobId: userId,
-                        repeat: { cron: `* 8 * * *` }
-                    });
-                    _1.morningQueue.process("morning", consumer_1.morningFunc);
-                    break;
-                case 1:
-                    yield _1.afternoonQueue.add("afternoon", userId, {
-                        jobId: userId,
-                        repeat: { cron: `* 14 * * *` }
-                    });
-                    _1.afternoonQueue.process("afternoon", consumer_1.afterFunc);
-                    break;
-                case 2:
-                    yield _1.nightQueue.add("night", userId, {
-                        jobId: userId,
-                        repeat: { cron: `* 20 * * *` }
-                    });
-                    _1.nightQueue.process("night", consumer_1.nightFunc);
-                    break;
+class Producer {
+    constructor(morningQueue, afternoonQueue, nightQueue, reserveQueue, processEvent, logger) {
+        this.morningQueue = morningQueue;
+        this.afternoonQueue = afternoonQueue;
+        this.nightQueue = nightQueue;
+        this.reserveQueue = reserveQueue;
+        this.processEvent = processEvent;
+        this.logger = logger;
+    }
+    /**
+     *  @desc 유저가 설정한 시간대에 큐 추가
+     *  @access public
+     */
+    addTimeQueue(userId, time) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (time.morning)
+                    this.addQueueAndEmitConsumer(`morning ${userId}`, userId);
+                if (time.afternoon)
+                    this.addQueueAndEmitConsumer(`afternoon ${userId}`, userId);
+                if (time.night)
+                    this.addQueueAndEmitConsumer(`night ${userId}`, userId);
             }
-        }
-        catch (error) {
-            logger_1.default.appLogger.log({ level: "error", message: error.message });
-            throw error;
-        }
-    });
-}
-function addUserTime(userId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            //user id를 data로 전달
-            const times = yield models_1.Time.findOne({
-                where: { user_id: userId }
-            });
-            if (times.morning)
-                addTimeQueue(userId, 0);
-            if (times.afternoon)
-                addTimeQueue(userId, 1);
-            if (times.night)
-                addTimeQueue(userId, 2);
-        }
-        catch (error) {
-            logger_1.default.appLogger.log({ level: "error", message: error.message });
-            throw error;
-        }
-    });
-}
-exports.addUserTime = addUserTime;
-//user 세팅 수정 시 특정 조건에 걸리면 이 함수 실행
-function updateUserTime(userId, time, flag) {
-    return __awaiter(this, void 0, void 0, function* () {
-        //time: morning, afternoon, night
-        //flag: add, delete
-        try {
-            if (flag == "add") {
-                if (time == timeHandler_1.default.getMorning())
-                    addTimeQueue(userId, 0);
-                if (time == timeHandler_1.default.getAfternoon())
-                    addTimeQueue(userId, 1);
-                if (time == timeHandler_1.default.getNight())
-                    addTimeQueue(userId, 2);
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
             }
-            else if (flag == "cancel") {
-                if (time == timeHandler_1.default.getMorning()) {
-                    yield (_1.morningQueue === null || _1.morningQueue === void 0 ? void 0 : _1.morningQueue.removeRepeatable("morning", { cron: `* 8 * * *`, jobId: userId }));
+        });
+    }
+    /**
+     *  @desc 유저가 설정 시간 추가 변경 했을 때 해당 시간 큐에 추가
+     *  @access public
+     */
+    updateAddTimeQueue(userId, time) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (time.getTime() == timeHandler_1.default.getMorning().getTime())
+                    this.addQueueAndEmitConsumer(`morning ${userId}`, userId);
+                if (time.getTime() == timeHandler_1.default.getAfternoon().getTime())
+                    this.addQueueAndEmitConsumer(`afternoon ${userId}`, userId);
+                if (time.getTime() == timeHandler_1.default.getNight().getTime())
+                    this.addQueueAndEmitConsumer(`night ${userId}`, userId);
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+            }
+        });
+    }
+    /**
+     *  @desc 유저가 설정 시간 삭제 변경 했을 때 해당 시간 큐에서 제거
+     *  @access public
+     */
+    updateCancelTimeQueue(userId, time) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (time.getTime() == timeHandler_1.default.getMorning().getTime()) {
+                    yield this.morningQueue.removeRepeatable(`morning ${userId}`, {
+                        cron: "0 0 8 * * *",
+                        jobId: userId
+                    });
+                    this.logger.appLogger.log({ level: "info", message: `유저 ${userId} :: morningQueue 삭제 성공` });
                 }
-                else if (time == timeHandler_1.default.getAfternoon()) {
-                    yield (_1.afternoonQueue === null || _1.afternoonQueue === void 0 ? void 0 : _1.afternoonQueue.removeRepeatable("afternoon", { cron: `* 14 * * *`, jobId: userId }));
+                if (time.getTime() == timeHandler_1.default.getAfternoon().getTime()) {
+                    yield this.afternoonQueue.removeRepeatable(`afternoon ${userId}`, {
+                        cron: "0 0 14 * * *",
+                        jobId: userId
+                    });
+                    this.logger.appLogger.log({ level: "info", message: `유저 ${userId} :: afternoonQueue 삭제 성공` });
                 }
-                else if (time == timeHandler_1.default.getNight()) {
-                    yield (_1.nightQueue === null || _1.nightQueue === void 0 ? void 0 : _1.nightQueue.removeRepeatable("night", { cron: `* 20 * * *`, jobId: userId }));
+                if (time.getTime() == timeHandler_1.default.getNight().getTime()) {
+                    yield this.nightQueue.removeRepeatable(`night ${userId}`, {
+                        cron: "0 0 20 * * *",
+                        jobId: userId
+                    });
+                    this.logger.appLogger.log({ level: "info", message: `유저 ${userId} :: nightQueue 삭제 성공` });
                 }
             }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+            }
+        });
+    }
+    /**
+     *  @desc 예약 큐 추가
+     *  @date 2022-06-21 형식
+     *  @time 20:30:00 형식
+     *  @access public
+     */
+    addReservationQueue(userId, date, time) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sepDate = date.split("-");
+            const month = this.removeZero(sepDate[1]);
+            const day = this.removeZero(sepDate[2]);
+            const sepTime = time.split(":");
+            const hour = this.removeZero(sepTime[0]);
+            const min = this.removeZero(sepTime[1]);
+            try {
+                yield this.reserveQueue.add(`reserve ${userId}`, userId, {
+                    jobId: userId,
+                    repeat: { cron: `0 ${min} ${hour} ${day} ${month} *` },
+                    removeOnComplete: true
+                });
+                this.logger.appLogger.log({ level: "info", message: `유저 ${userId} :: reserveQueue 등록 성공` });
+                this.processEvent.emit("reserveProcess", userId);
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+            }
+        });
+    }
+    /**
+     *  @desc 예약 큐 제거
+     *  @date 2022-06-21T20:00:00.0000Z 형식
+     *  @access public
+     */
+    cancelReservationQueue(userId, date) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const utcDate = timeHandler_1.default.toUtcTime(date);
+            const strDate = utcDate.toISOString().split("T");
+            const sepDate = strDate[0];
+            const month = this.removeZero(sepDate.split("-")[1]);
+            const day = this.removeZero(sepDate.split("-")[2]);
+            const sepTime = strDate[1];
+            const hour = this.removeZero(sepTime.split(":")[0]);
+            const min = this.removeZero(sepTime.split(":")[1]);
+            try {
+                yield this.reserveQueue.removeRepeatable(`reserve ${userId}`, {
+                    cron: `0 ${min} ${hour} ${day} ${month} *`,
+                    jobId: userId
+                });
+                this.logger.appLogger.log({ level: "info", message: `유저 ${userId} :: reserveQueue 삭제 성공` });
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+            }
+        });
+    }
+    /**
+     *  @desc 큐 추가 및 process 이벤트 emit
+     *  @access private
+     */
+    addQueueAndEmitConsumer(time, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                switch (time) {
+                    case `morning ${userId}`:
+                        yield this.morningQueue.add(`morning ${userId}`, userId, {
+                            jobId: userId,
+                            repeat: { cron: "0 0 8 * * *" }
+                        });
+                        this.logger.appLogger.log({ level: "info", message: `유저 ${userId} :: morningQueue 등록 성공` });
+                        this.processEvent.emit("morningProcess", userId);
+                        break;
+                    case `afternoon ${userId}`:
+                        yield this.afternoonQueue.add(`afternoon ${userId}`, userId, {
+                            jobId: userId,
+                            repeat: { cron: "0 0 14 * * *" }
+                        });
+                        this.logger.appLogger.log({ level: "info", message: `유저 ${userId} :: afternoonQueue 등록 성공` });
+                        this.processEvent.emit("afternoonProcess", userId);
+                        break;
+                    case `night ${userId}`:
+                        yield this.nightQueue.add(`night ${userId}`, userId, {
+                            jobId: userId,
+                            repeat: { cron: "0 0 20 * * *" }
+                        });
+                        this.logger.appLogger.log({ level: "info", message: `유저 ${userId} :: nightQueue 등록 성공` });
+                        this.processEvent.emit("nightProcess", userId);
+                        break;
+                }
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+            }
+        });
+    }
+    /**
+     *  @desc cron 형식에 01 ~ 09 불가능하므로 0 제거
+     *  @access private
+     */
+    removeZero(element) {
+        if (element.split("")[0] === "0") {
+            return element.split("")[1];
         }
-        catch (error) {
-            logger_1.default.appLogger.log({ level: "error", message: error.message });
-            throw error;
+        else {
+            return element;
         }
-    });
+    }
 }
-exports.updateUserTime = updateUserTime;
+exports.default = Producer;
 //# sourceMappingURL=producer.js.map

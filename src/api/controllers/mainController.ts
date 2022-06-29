@@ -32,8 +32,29 @@ const getTodayWals = async (
 
 }
 
+const updateTodayWalShown = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+
+  try {
+
+    const mainServiceInstance = new MainService(TodayWal, Reservation, Item, logger);
+    const data = mainServiceInstance.updateShown( req.user?.id as number, parseInt(req.params.mainId) as number);
+
+    SuccessResponse(res, sc.OK, rm.SHOW_TODAY_WAL_SUCCESS, await data);
+
+  } catch (error){
+    ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
+    return next(error);
+  }
+
+}
+
 const mainController = {
-  getTodayWals
+  getTodayWals,
+  updateTodayWalShown
 };
 
 export default mainController;

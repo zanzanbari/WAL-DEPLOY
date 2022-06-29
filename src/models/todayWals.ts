@@ -57,6 +57,11 @@ export default class TodayWal extends Model {
   public userDefined!: Boolean;
 
   @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  public isShown!: Boolean;
+
+  @AllowNull(false)
   @Column(DataType.DATE)
   public time!: Date;
 
@@ -153,4 +158,17 @@ export default class TodayWal extends Model {
 
   };
 
+
+  static async updateShown(userId: number, mainId: number): Promise<TodayWal[]> {
+    await this.update({
+      isShown: true
+      },{
+      where: {
+        id: mainId,
+        userId
+      }
+    });
+
+    return await this.getTodayWalsByUserId(userId);
+  };
 }

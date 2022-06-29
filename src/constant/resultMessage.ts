@@ -74,6 +74,7 @@ const ResultMessage = {
 
   // 메인
   READ_TODAY_WAL_SUCCESS: "오늘의 왈 조회 성공",
+  SHOW_TODAY_WAL_SUCCESS: "오늘의 왈 읽음 처리 성공",
 } // as const;
 
 export default ResultMessage;

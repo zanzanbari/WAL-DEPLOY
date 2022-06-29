@@ -8,4 +8,6 @@ router.use(authUtil.isAuth);
 
 router.get('/', mainController.getTodayWals);
 
+router.patch('/:mainId', mainController.updateTodayWalShown);
+
 export default router;

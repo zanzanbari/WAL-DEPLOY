@@ -4,5 +4,6 @@ export interface IMainResponse {
   content: string,
   canOpen: boolean,
   categoryId: number,
-  isShown: boolean
+  isShown: boolean,
+  voice: string | null
 };

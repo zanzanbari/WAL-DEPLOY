@@ -36,6 +36,21 @@ class MainService {
 
   }
 
+
+  public async updateShown(userId: number, mainId: number): Promise<IMainResponse[]> {
+    try {
+
+      const todayWals: Promise<TodayWal[]> = await this.todayWalRepository.updateShown(userId, mainId);
+      const main: Promise<IMainResponse[]> = this.getMainResult(await todayWals);
+      return main;
+      
+    } catch (error) {
+      this.logger.appLogger.log({ level: "error", message: error.message });
+      throw error;
+    }
+  }
+
+
   /**
    * -------------------------
    *  @access private Method
@@ -50,11 +65,16 @@ class MainService {
 
       for (const todayWal of todayWals) {
 
+        const id: number = todayWal.getDataValue("id");
+        const isShown: boolean = todayWal.getDataValue("isShown");
+
         let mainResponse: IMainResponse = {
+          id,
           type: "default",
           content: "default",
           canOpen: false,
-          categoryId: -1
+          categoryId: -1,
+          isShown,
         };
         const time: Date = todayWal.getDataValue("time");
         mainResponse.canOpen = timeHandler.getCurrentTime().getTime() >= time.getTime() ? true : false;

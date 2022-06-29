@@ -40,6 +40,10 @@ export default class Item extends Model {
   @Column(DataType.TEXT)
   public content!: string;
 
+  @AllowNull(true)
+  @Column(DataType.TEXT)
+  public voice?: string;
+
   @BelongsTo(() => Category)
   category!: Category
 
@@ -56,11 +60,13 @@ export default class Item extends Model {
   : Promise<{ 
       content: string; 
       categoryId: number; 
+      voice: string | null;
   }> {
       const item =  await this.findOne({ where: { id } });
       const content: string = item?.getDataValue("content");
       const categoryId: number = item?.getDataValue("categoryId");
-      return { content, categoryId };
+      const voice: string = item?.getDataValue("voice");
+      return { content, categoryId, voice };
   };
 
   static async getAllItemsByCategoryId(categoryId: number) {

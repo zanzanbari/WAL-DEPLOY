@@ -75,7 +75,7 @@ class MainService {
           canOpen: false,
           categoryId: -1,
           isShown,
-          voice: null
+          voice: ""
         };
         const time: Date = todayWal.getDataValue("time");
         mainResponse.canOpen = timeHandler.getCurrentTime().getTime() >= time.getTime() ? true : false;
@@ -94,7 +94,8 @@ class MainService {
           const { content, categoryId, voice } = await this.itemRepository.getContentById(itemId);
           mainResponse.content = content;
           mainResponse.categoryId = categoryId;
-          mainResponse.voice = voice;
+          if (voice) mainResponse.voice = voice;
+
 
           if (time.getTime() === timeHandler.getMorning().getTime()) mainResponse.type = "아침";
           if (time.getTime() === timeHandler.getAfternoon().getTime()) mainResponse.type = "점심";

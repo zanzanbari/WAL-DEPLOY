@@ -7,6 +7,7 @@ import { issueAccessToken, issueRefreshToken } from "../../common/tokenHandler";
 class AppleAuthService implements IAuthService {
   constructor(
     private readonly userRepository: any,
+    private readonly resignUserRepository: any,
     private readonly logger: any
   ) {
   }
@@ -48,12 +49,12 @@ class AppleAuthService implements IAuthService {
    *  @access public
    */
     
-  public async resign(userId: number): Promise<AuthResponse> {
+  public async resign(userId: number, reason: string[]) {
     
     try {
 
-      const resignedUser = this.userRepository.findAndDelete(userId);
-      return await resignedUser;
+      const resignedUser = await this.userRepository.findAndDelete(userId);
+      await this.resignUserRepository.save(userId, reason);
 
     } catch (error) {
       this.logger.appLogger.log({ level: "error", message: error.message });

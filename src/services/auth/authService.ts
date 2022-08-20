@@ -3,7 +3,7 @@ import { AuthResponse } from "../../dto/response/authResponse";
 
 interface IAuthService {
   login(token: TokenDto): Promise<AuthResponse | undefined>;
-  resign(userId: number, token?: TokenDto): Promise<AuthResponse>;
+  resign(userId: number, reason: string[], token?: TokenDto): Promise<void>;
 };
 
 export default IAuthService;

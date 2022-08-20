@@ -42,10 +42,10 @@ export default class User extends Model {
   public social!: string;
 
 
-  @AllowNull(false)
+  @AllowNull(true)
   @Unique
   @Column(DataType.STRING(50))
-  public email!: string;
+  public email?: string;
 
 
   @AllowNull(true)

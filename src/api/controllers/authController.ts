@@ -76,7 +76,7 @@ const socialResign = async (
     switch(social) {
       case "kakao":
         const kakaoAuthServiceInstance = new KakaoAuthService(User, ResignUser, logger);
-        await kakaoAuthServiceInstance.resign(userId, reasonsForResign, req.query as TokenDto);
+        await kakaoAuthServiceInstance.resign(userId, reasonsForResign, req.body as TokenDto);
         break;
       case "apple":
         const appleAuthServiceInstance = new AppleAuthService(User, ResignUser,logger);

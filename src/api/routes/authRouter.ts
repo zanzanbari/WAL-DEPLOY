@@ -13,7 +13,7 @@ router.post(
 
 router.post(
   "/:social/logout",
-  validateUtil.loginRequestCheck,
+  // validateUtil.loginRequestCheck,
   authUtil.isAuth, 
   authController.socialResign
 );

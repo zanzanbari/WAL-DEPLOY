@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "../../models";
+import { User, ResignUser } from "../../models";
 import logger from "../../loaders/logger";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
@@ -31,11 +31,11 @@ const socialLogin = async (
     switch(social) {
       case "kakao":
         // TODO: typedi container 써서 logger, repository 주입 - 나중에
-        const kakaoAuthServiceInstance = new KakaoAuthService(User, logger);
+        const kakaoAuthServiceInstance = new KakaoAuthService(User, ResignUser, logger);
         data = await kakaoAuthServiceInstance.login(req.query as TokenDto);
         break;
       case "apple":
-        const appleAuthServiceInstance = new AppleAuthService(User, logger);
+        const appleAuthServiceInstance = new AppleAuthService(User, ResignUser, logger);
         data = await appleAuthServiceInstance.login(req.query as TokenDto);
         break;
     }
@@ -69,22 +69,22 @@ const socialResign = async (
 
   const { social } = req.params;
   const userId = req.user?.id as number
+  const reasonsForResign = req.body.data;
 
   try {
 
-    let data: AuthResponse | undefined;
     switch(social) {
       case "kakao":
-        const kakaoAuthServiceInstance = new KakaoAuthService(User, logger);
-        data = await kakaoAuthServiceInstance.resign(userId, req.query as TokenDto);
+        const kakaoAuthServiceInstance = new KakaoAuthService(User, ResignUser, logger);
+        await kakaoAuthServiceInstance.resign(userId, reasonsForResign, req.query as TokenDto);
         break;
       case "apple":
-        const appleAuthServiceInstance = new AppleAuthService(User, logger);
-        data = await appleAuthServiceInstance.resign(userId);
+        const appleAuthServiceInstance = new AppleAuthService(User, ResignUser,logger);
+        await appleAuthServiceInstance.resign(userId, reasonsForResign);
         break;
     }
 
-    return SuccessResponse(res, sc.OK, rm.DELETE_USER, data)
+    return SuccessResponse(res, sc.OK, rm.DELETE_USER, null)
 
   } catch (error) {
     ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);

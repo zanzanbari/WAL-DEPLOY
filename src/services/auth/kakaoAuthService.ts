@@ -26,7 +26,6 @@ class KakaoAuthService implements IAuthService {
     try {
             
       const userData = await kakaoApiUtil.auth(request.socialtoken as string);
-      console.log(userData);
       const refreshtoken = await issueRefreshToken();
       const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
       const accesstoken = await issueAccessToken(socialUser);

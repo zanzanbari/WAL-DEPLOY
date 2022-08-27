@@ -171,4 +171,10 @@ export default class TodayWal extends Model {
 
     return await this.getTodayWalsByUserId(userId);
   };
+
+  static async findByTimeAndUserId(time: Date, userId: number) {
+    return await this.findOne({
+      where: { userId, time }
+    });
+  }
 }

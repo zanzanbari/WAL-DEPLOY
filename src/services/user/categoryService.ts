@@ -125,15 +125,17 @@ class CategoryService extends UserService {
           await this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
 
           for (const time of afterTime) { // 현재 시간 이후에 받을 왈소리에 추가된 유형이 있다면
-            const { currentItemId, categoryId } = await this.getRandCategoryCurrentItem(userId);
-            const data: ISetTodayWal = {
-              userId,
-              categoryId,
-              itemId: currentItemId, 
-              time
-            };
-            console.log(data);
-            await this.todayWalRepository.setTodayWal(data); // 왈소리 세팅
+            if (this.todayWalRepository.findByTimeAndUserId(time, userId) == null) {
+              const { currentItemId, categoryId } = await this.getRandCategoryCurrentItem(userId);
+              const data: ISetTodayWal = {
+                userId,
+                categoryId,
+                itemId: currentItemId, 
+                time
+              };
+              console.log(data);
+              await this.todayWalRepository.setTodayWal(data); // 왈소리 세팅 
+            }
           }
 
 

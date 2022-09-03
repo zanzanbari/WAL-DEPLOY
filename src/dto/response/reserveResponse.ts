@@ -3,5 +3,6 @@ export interface IReserveData {
   sendingDate: string,
   content: string,
   reserveAt: string,
+  sendDueDate: string,
   hidden?: boolean
 };

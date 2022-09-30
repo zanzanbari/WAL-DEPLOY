@@ -48,6 +48,19 @@ let MainService = class MainService {
             }
         });
     }
+    updateShown(userId, mainId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const todayWals = yield this.todayWalRepository.updateShown(userId, mainId);
+                const main = this.getMainResult(yield todayWals);
+                return main;
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
+            }
+        });
+    }
     /**
      * -------------------------
      *  @access private Method
@@ -58,11 +71,16 @@ let MainService = class MainService {
             const result = [];
             try {
                 for (const todayWal of todayWals) {
+                    const id = todayWal.getDataValue("id");
+                    const isShown = todayWal.getDataValue("isShown");
                     let mainResponse = {
+                        id,
                         type: "default",
                         content: "default",
                         canOpen: false,
-                        categoryId: -1
+                        categoryId: -1,
+                        isShown,
+                        voice: ""
                     };
                     const time = todayWal.getDataValue("time");
                     mainResponse.canOpen = timeHandler_1.default.getCurrentTime().getTime() >= time.getTime() ? true : false;
@@ -74,9 +92,11 @@ let MainService = class MainService {
                     }
                     else { // 직접 예약한 왈소리가 아니라면
                         const itemId = todayWal.getDataValue("itemId");
-                        const { content, categoryId } = yield this.itemRepository.getContentById(itemId);
+                        const { content, categoryId, voice } = yield this.itemRepository.getContentById(itemId);
                         mainResponse.content = content;
                         mainResponse.categoryId = categoryId;
+                        if (voice)
+                            mainResponse.voice = voice;
                         if (time.getTime() === timeHandler_1.default.getMorning().getTime())
                             mainResponse.type = "아침";
                         if (time.getTime() === timeHandler_1.default.getAfternoon().getTime())

@@ -34,11 +34,11 @@ const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         switch (social) {
             case "kakao":
                 // TODO: typedi container 써서 logger, repository 주입 - 나중에
-                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, logger_1.default);
+                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, models_1.ResignUser, logger_1.default);
                 data = yield kakaoAuthServiceInstance.login(req.query);
                 break;
             case "apple":
-                const appleAuthServiceInstance = new appleAuthService_1.default(models_1.User, logger_1.default);
+                const appleAuthServiceInstance = new appleAuthService_1.default(models_1.User, models_1.ResignUser, logger_1.default);
                 data = yield appleAuthServiceInstance.login(req.query);
                 break;
         }
@@ -64,19 +64,19 @@ const socialResign = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     var _a;
     const { social } = req.params;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const reasonsForResign = req.body.data;
     try {
-        let data;
         switch (social) {
             case "kakao":
-                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, logger_1.default);
-                data = yield kakaoAuthServiceInstance.resign(userId, req.query);
+                const kakaoAuthServiceInstance = new kakaoAuthService_1.default(models_1.User, models_1.ResignUser, logger_1.default);
+                yield kakaoAuthServiceInstance.resign(userId, reasonsForResign, req.body);
                 break;
             case "apple":
-                const appleAuthServiceInstance = new appleAuthService_1.default(models_1.User, logger_1.default);
-                data = yield appleAuthServiceInstance.resign(userId);
+                const appleAuthServiceInstance = new appleAuthService_1.default(models_1.User, models_1.ResignUser, logger_1.default);
+                yield appleAuthServiceInstance.resign(userId, reasonsForResign);
                 break;
         }
-        return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_USER, data);
+        return (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.DELETE_USER, null);
     }
     catch (error) {
         (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);

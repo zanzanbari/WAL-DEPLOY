@@ -35,8 +35,21 @@ const getTodayWals = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         return next(error);
     }
 });
+const updateTodayWalShown = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
+    try {
+        const mainServiceInstance = new mainService_1.default(models_1.TodayWal, models_1.Reservation, models_1.Item, logger_1.default);
+        const data = mainServiceInstance.updateShown((_b = req.user) === null || _b === void 0 ? void 0 : _b.id, parseInt(req.params.mainId));
+        (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.SHOW_TODAY_WAL_SUCCESS, yield data);
+    }
+    catch (error) {
+        (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
+        return next(error);
+    }
+});
 const mainController = {
-    getTodayWals
+    getTodayWals,
+    updateTodayWalShown
 };
 exports.default = mainController;
 //# sourceMappingURL=mainController.js.map

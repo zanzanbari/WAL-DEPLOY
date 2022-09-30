@@ -35,8 +35,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = __importStar(require("jsonwebtoken"));
 const tokenHandler_1 = require("../../common/tokenHandler");
 class AppleAuthService {
-    constructor(userRepository, logger) {
+    constructor(userRepository, resignUserRepository, logger) {
         this.userRepository = userRepository;
+        this.resignUserRepository = resignUserRepository;
         this.logger = logger;
     }
     /**
@@ -71,11 +72,11 @@ class AppleAuthService {
      *  @route POST /auth/apple/resign
      *  @access public
      */
-    resign(userId) {
+    resign(userId, reason) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const resignedUser = this.userRepository.findAndDelete(userId);
-                return yield resignedUser;
+                const resignedUser = yield this.userRepository.findAndDelete(userId);
+                yield this.resignUserRepository.save(userId, reason);
             }
             catch (error) {
                 this.logger.appLogger.log({ level: "error", message: error.message });

@@ -189,7 +189,7 @@ class ReserveService {
                         historyMessage.day +
                         historyMessage.time +
                         (!completed ? " • 전송 예정" : " • 전송 완료");
-                    const reserveData = Object.assign({ postId: item.id, sendingDate, content: item.getDataValue("content"), reserveAt: (0, dayjs_1.default)(item.getDataValue("reserveAt")).format("YYYY. MM. DD") }, (!completed && { hidden: item.getDataValue("hide") }));
+                    const reserveData = Object.assign({ postId: item.id, sendingDate, content: item.getDataValue("content"), reserveAt: (0, dayjs_1.default)(item.getDataValue("reservedAt")).format("YYYY. MM. DD"), sendDueDate: (0, dayjs_1.default)(rowDate).format("YYYY. MM. DD") }, (!completed && { hidden: item.getDataValue("hide") }));
                     dataArr.push(reserveData);
                 }
             }

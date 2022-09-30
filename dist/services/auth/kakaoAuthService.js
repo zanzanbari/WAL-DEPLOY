@@ -26,8 +26,9 @@ const kakaoApi_1 = __importDefault(require("./client/kakaoApi"));
 const tokenHandler_1 = require("../../common/tokenHandler");
 let KakaoAuthService = class KakaoAuthService {
     // TODO 주입해주고 싶다 
-    constructor(userRepository, logger) {
+    constructor(userRepository, resignUserRepository, logger) {
         this.userRepository = userRepository;
+        this.resignUserRepository = resignUserRepository;
         this.logger = logger;
     }
     /**
@@ -60,13 +61,13 @@ let KakaoAuthService = class KakaoAuthService {
      *  @route POST /auth/kakao/resign
      *  @access public
      */
-    resign(userId, request) {
+    resign(userId, reason, token) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const unlinkedUser = kakaoApi_1.default.unlink(request.socialtoken);
-                const resignedUser = this.userRepository.findAndDelete(userId);
+                const unlinkedUser = kakaoApi_1.default.unlink(token.socialtoken);
+                const resignedUser = yield this.userRepository.findAndDelete(userId);
+                yield this.resignUserRepository.save(userId, reason);
                 yield unlinkedUser;
-                return yield resignedUser;
             }
             catch (error) {
                 this.logger.appLogger.log({ level: "error", message: error.message });
@@ -77,7 +78,7 @@ let KakaoAuthService = class KakaoAuthService {
 };
 KakaoAuthService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], KakaoAuthService);
 exports.default = KakaoAuthService;
 //# sourceMappingURL=kakaoAuthService.js.map

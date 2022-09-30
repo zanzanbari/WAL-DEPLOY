@@ -65,6 +65,7 @@ const ResultMessage = {
     NO_OR_COMPLETED_RESERVATION: "해당하는 왈소리가 없거나 이미 전송됐음",
     // 메인
     READ_TODAY_WAL_SUCCESS: "오늘의 왈 조회 성공",
+    SHOW_TODAY_WAL_SUCCESS: "오늘의 왈 읽음 처리 성공",
 }; // as const;
 exports.default = ResultMessage;
 //# sourceMappingURL=resultMessage.js.map

@@ -232,7 +232,8 @@ class ReserveService {
           postId: item.id,
           sendingDate,
           content: item.getDataValue("content"),
-          reserveAt: dayjs(item.getDataValue("reserveAt")).format("YYYY. MM. DD"),
+          reserveAt: dayjs(item.getDataValue("reservedAt")).format("YYYY. MM. DD"),
+          sendDueDate: dayjs(rowDate).format("YYYY. MM. DD"),
           ...(!completed && { hidden: item.getDataValue("hide") })
         };
 

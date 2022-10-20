@@ -36,14 +36,13 @@ abstract class UserService {
       let nextItemId: number = 0; // 세팅해줄 다음 아이템 아이디
       for (const item of sameCategoryItems) {
   
-        if (item.getDataValue("id") === currentItemId) {
+        if (item.getDataValue("id") == currentItemId) {
   
-          const itemIndex = sameCategoryItems.indexOf(item); // 근데 얘랑 currentItemId 랑 같은거 아닌가?
+          const itemIndex = sameCategoryItems.indexOf(item);
           const nextItemIndex = (itemIndex + 1) % sameCategoryItems.length;
           nextItemId = sameCategoryItems[nextItemIndex].getDataValue("id");
-  
+          break
         }
-  
       }
       // 다음 아이템 아이디로 변경 세팅
       await this.userCategoryRepository.updateNext(userId, categoryId, nextItemId);

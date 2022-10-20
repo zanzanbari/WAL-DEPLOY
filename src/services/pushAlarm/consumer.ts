@@ -19,13 +19,13 @@ export const morningProcess = async (job: Job, done: DoneCallback) => {
     const userId = job.data;
     const data = await getFcmAndContent(userId, timeHandler.getMorning());
     // data : { fcm, content }
-    await messageQueue.add(`morning-message ${userId}`,data, { attempts: 5 }); //message를 보내는 작업, 5번 시도
+    await messageQueue.add(`morning-message ${userId}`,data, { attempts: 3 }); //message를 보내는 작업, 5번 시도
     logger.appLogger.log({ level: "info", message: "morning messageQueue 등록 성공" });
     messageQueue.process(`morning-message ${userId}`,messageProcess);
     done();
 
   } catch (error) {
-    logger.appLogger.log({ level: "error", message: error.message });
+    logger.appLogger.log({ level: "error", message: `morningProcess::${error.message}` });
   }
 
 }
@@ -44,13 +44,13 @@ export const afterProcess = async (job: Job, done: DoneCallback) => {
     const userId = job.data;
     const data = await getFcmAndContent(userId, timeHandler.getAfternoon());
 
-    await messageQueue.add(`afternoon-message ${userId}`,data, { attempts: 5 });
+    await messageQueue.add(`afternoon-message ${userId}`,data, { attempts: 3 });
     logger.appLogger.log({ level: "info", message: "afternoon messageQueue 등록 성공" });
     messageQueue.process(`afternoon-message ${userId}`,messageProcess)
     done();
     
   } catch (error) {
-    logger.appLogger.log({ level: "error", message: error.message });
+    logger.appLogger.log({ level: "error", message: `afterProcess::${error.message}` });
   }
     
 }
@@ -63,15 +63,13 @@ export const afterProcess = async (job: Job, done: DoneCallback) => {
 export const nightProcess = async (job: Job, done: DoneCallback) => {
 
   logger.appLogger.log({ level: "info", message: "night queue process START" });
-
-  logger.appLogger.log({ level: "info", message: `morningFunc process START` });
   
   try {
     
     const userId = job.data;
     const data = await getFcmAndContent(userId, timeHandler.getNight());
 
-    await messageQueue.add(`night-message ${userId}`,data, { attempts: 5 });
+    await messageQueue.add(`night-message ${userId}`,data, { attempts: 3 });
     logger.appLogger.log({ level: "info", message: "night messageQueue 등록 성공" });
     messageQueue.process(`night-message ${userId}`,messageProcess);
     done();
@@ -91,20 +89,18 @@ export const reserveProcess = async (job: Job, done: DoneCallback) => {
 
   logger.appLogger.log({ level: "info", message: "reserve queue process START" });
 
-  logger.appLogger.log({ level: "info", message: `afterFunc process START` });
-
   try {
 
     const userId = job.data;
     const data = await getFcmAndContent(userId);
 
-    await messageQueue.add(`reserve-message ${userId}`,data, { attempts: 5 });
+    await messageQueue.add(`reserve-message ${userId}`,data, { attempts: 3 });
     logger.appLogger.log({ level: "info", message: "reserve messageQueue 등록 성공" });
     messageQueue.process(`reserve-message ${userId}`,messageProcess);
     done();
 
   } catch (error) {
-    logger.appLogger.log({ level: "error", message: error.message });
+    logger.appLogger.log({ level: "error", message: `reserveProcess::${error.message}` });
   }
 
 }
@@ -121,7 +117,7 @@ async function getFcmAndContent(userId: number, time?: Date): Promise<{
   isReserved: boolean;
 }> {
 
-  logger.appLogger.log({ level: "info", message: `nightFunc process START` });
+  logger.appLogger.log({ level: "info", message: `getFcmAndContent START` });
 
   try {
 

@@ -12,7 +12,7 @@ export const messageProcess = async (job: Job, done: DoneCallback) => {
 
     const message = { 
       notification: { 
-        title: '🐶오늘의 왈소리 도착~!🐶', 
+        title: '왈',
         body: content,
       }, 
       token: fcmtoken, 

@@ -70,6 +70,6 @@ export default class Item extends Model {
   };
 
   static async getAllItemsByCategoryId(categoryId: number) {
-    return await this.findAll({ where: { categoryId } });
+    return await this.findAll({ where: { categoryId }, order: ["id"] });
   };
 }

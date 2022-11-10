@@ -26,6 +26,10 @@ class KakaoAuthService implements IAuthService {
     try {
             
       const userData = await kakaoApiUtil.auth(request.socialtoken as string);
+
+      const isResignedUser = await this.resignUserRepository.existsInaDayByEmail(userData?.email); //24시간 내 탈퇴한 유저
+      if (isResignedUser) throw new Error("Forbidden");
+
       const refreshtoken = await issueRefreshToken();
       const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
       const accesstoken = await issueAccessToken(socialUser);
@@ -55,7 +59,7 @@ class KakaoAuthService implements IAuthService {
 
       const unlinkedUser = kakaoApiUtil.unlink(token.socialtoken);
       const resignedUser = await this.userRepository.findAndDelete(userId);
-      await this.resignUserRepository.save(userId, reason);
+      await this.resignUserRepository.save(userId, reason, resignedUser.email);
 
       await unlinkedUser;
 

@@ -46,6 +46,8 @@ const socialLogin = async (
     switch(error.message) {
       case("AXIOS_ERROR"): 
         return ErrorResponse(res, sc.BAD_REQUEST, rm.AXIOS_VALIDATE_ERROR);
+      case("Forbidden"):
+        return ErrorResponse(res, sc.FORBIDDEN, rm.FORBIDDEN_LOGIN_IF_RESIGNED);
       default:
         ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
     }

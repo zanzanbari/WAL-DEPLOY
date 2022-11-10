@@ -20,6 +20,7 @@ const ResultMessage = {
     WRONG_EMAIL_CONVENTION: "이메일 형식이 잘못되었습니다.",
     PLEASE_LOGIN_AGAIN: "다시 로그인 하십시오.",
     AXIOS_VALIDATE_ERROR: "카카오 토큰이 만료되었습니다.",
+    FORBIDDEN_LOGIN_IF_RESIGNED: "탈퇴 24시간 내 재가입 불가",
     // 로그아웃
     LOGOUT_SUCCESS: "로그아웃 성공",
     // 프로필 조회

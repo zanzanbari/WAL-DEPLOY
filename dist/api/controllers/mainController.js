@@ -26,7 +26,7 @@ const apiResponse_1 = require("../../common/apiResponse");
 const getTodayWals = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const mainServiceInstance = new mainService_1.default(models_1.TodayWal, models_1.Reservation, models_1.Item, logger_1.default);
+        const mainServiceInstance = new mainService_1.default(models_1.TodayWal, models_1.Reservation, models_1.Item, models_1.Subtitle, models_1.TodaySubtitle, logger_1.default);
         const data = mainServiceInstance.getMain((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.READ_TODAY_WAL_SUCCESS, yield data);
     }
@@ -38,7 +38,7 @@ const getTodayWals = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 const updateTodayWalShown = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     try {
-        const mainServiceInstance = new mainService_1.default(models_1.TodayWal, models_1.Reservation, models_1.Item, logger_1.default);
+        const mainServiceInstance = new mainService_1.default(models_1.TodayWal, models_1.Reservation, models_1.Item, models_1.Subtitle, models_1.TodaySubtitle, logger_1.default);
         const data = mainServiceInstance.updateShown((_b = req.user) === null || _b === void 0 ? void 0 : _b.id, parseInt(req.params.mainId));
         (0, apiResponse_1.SuccessResponse)(res, resultCode_1.default.OK, resultMessage_1.default.SHOW_TODAY_WAL_SUCCESS, yield data);
     }

@@ -40,6 +40,9 @@ let KakaoAuthService = class KakaoAuthService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userData = yield kakaoApi_1.default.auth(request.socialtoken);
+                const isResignedUser = yield this.resignUserRepository.existsInaDayByEmail(userData === null || userData === void 0 ? void 0 : userData.email); //24시간 내 탈퇴한 유저
+                if (isResignedUser)
+                    throw new Error("Forbidden");
                 const refreshtoken = yield (0, tokenHandler_1.issueRefreshToken)();
                 const socialUser = yield this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
                 const accesstoken = yield (0, tokenHandler_1.issueAccessToken)(socialUser);
@@ -66,7 +69,7 @@ let KakaoAuthService = class KakaoAuthService {
             try {
                 const unlinkedUser = kakaoApi_1.default.unlink(token.socialtoken);
                 const resignedUser = yield this.userRepository.findAndDelete(userId);
-                yield this.resignUserRepository.save(userId, reason);
+                yield this.resignUserRepository.save(userId, reason, resignedUser.email);
                 yield unlinkedUser;
             }
             catch (error) {

@@ -16,13 +16,15 @@ const node_schedule_1 = __importDefault(require("node-schedule"));
 const timeHandler_1 = __importDefault(require("../common/timeHandler"));
 const userService_1 = __importDefault(require("./user/userService"));
 class GlobalService extends userService_1.default {
-    constructor(userCategoryRepository, itemRepository, todayWalRepository, userRepository, timeRepository, logger) {
+    constructor(userCategoryRepository, itemRepository, todayWalRepository, userRepository, timeRepository, subtitleRepository, todaySubtitleRepository, logger) {
         super(userCategoryRepository, itemRepository);
         this.userCategoryRepository = userCategoryRepository;
         this.itemRepository = itemRepository;
         this.todayWalRepository = todayWalRepository;
         this.userRepository = userRepository;
         this.timeRepository = timeRepository;
+        this.subtitleRepository = subtitleRepository;
+        this.todaySubtitleRepository = todaySubtitleRepository;
         this.logger = logger;
     }
     /**
@@ -35,6 +37,7 @@ class GlobalService extends userService_1.default {
             try {
                 yield this.todayWalRepository.deleteAll();
                 yield this.updateAllUserTodayWal();
+                yield this.updateTodaySubtitle();
                 this.logger.appLogger.log({ level: "info", message: "🐶 오늘의 왈 업데이트" });
             }
             catch (error) {
@@ -42,6 +45,22 @@ class GlobalService extends userService_1.default {
                 throw error;
             }
         }));
+    }
+    /**
+     * 오늘의 subtitle 세팅
+     */
+    updateTodaySubtitle() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const subtitleSize = yield this.subtitleRepository.getAllLength();
+                const lastSubtitleId = yield this.todaySubtitleRepository.getTodaySubtitle();
+                const nextSubtitleId = (lastSubtitleId + 1 > subtitleSize) ? 1 : lastSubtitleId + 1;
+                yield this.todaySubtitleRepository.updateTodaySubtitle(nextSubtitleId);
+            }
+            catch (error) {
+                throw error;
+            }
+        });
     }
     /**
      *  @desc 모든 유저 탐색 후 오늘의 왈소리 세팅

@@ -51,6 +51,9 @@ class AppleAuthService {
                 // FIXME apple server 공개 키로 jwt 해독
                 const payload = jwt.decode(request.socialtoken);
                 const userData = { email: payload.sub, nickname: null };
+                const isResignedUser = yield this.resignUserRepository.existsInaDayByEmail(payload.sub); //24시간 내 탈퇴한 유저
+                if (isResignedUser)
+                    throw new Error("Forbidden");
                 const refreshtoken = yield (0, tokenHandler_1.issueRefreshToken)();
                 const socialUser = yield this.userRepository.findByEmailOrCreateSocialUser("apple", userData, request, refreshtoken);
                 const accesstoken = yield (0, tokenHandler_1.issueAccessToken)(socialUser);
@@ -76,7 +79,7 @@ class AppleAuthService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const resignedUser = yield this.userRepository.findAndDelete(userId);
-                yield this.resignUserRepository.save(userId, reason);
+                yield this.resignUserRepository.save(userId, reason, resignedUser.email);
             }
             catch (error) {
                 this.logger.appLogger.log({ level: "error", message: error.message });

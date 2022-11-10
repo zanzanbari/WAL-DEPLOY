@@ -112,7 +112,7 @@ let User = class User extends sequelize_typescript_1.Model {
             return yield this.findOne({ where: { id } })
                 .then((resolve) => __awaiter(this, void 0, void 0, function* () {
                 yield this.destroy({ where: { id } });
-                return resolve === null || resolve === void 0 ? void 0 : resolve.getDataValue("id");
+                return resolve;
             }));
         });
     }

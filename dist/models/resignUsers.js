@@ -17,17 +17,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
+const models_1 = __importDefault(require("../models"));
 let ResignUser = class ResignUser extends sequelize_typescript_1.Model {
     /*
      * custom method
      */
-    static save(userId, reasonsForResign) {
+    static save(userId, reasonsForResign, email) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.create({ userId, reasonsForResign });
+            yield this.create({ userId, reasonsForResign, email });
         });
     }
+    static existsInaDayByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const now = new Date();
+            const user = yield this.findOne({ where: {
+                    email,
+                    $and: models_1.default.where(models_1.default.fn('date', models_1.default.col('createdAt')), '>=', new Date(now.setDate(now.getDate() - 1)))
+                } });
+            if (user)
+                return true;
+            else
+                return false;
+        });
+    }
+    ;
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -46,6 +64,11 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.ARRAY(sequelize_typescript_1.DataType.STRING)),
     __metadata("design:type", String)
 ], ResignUser.prototype, "reasonsForResign", void 0);
+__decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING),
+    __metadata("design:type", String)
+], ResignUser.prototype, "email", void 0);
 ResignUser = __decorate([
     (0, sequelize_typescript_1.Table)({
         modelName: "ResignUser",

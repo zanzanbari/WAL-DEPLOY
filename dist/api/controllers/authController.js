@@ -48,6 +48,8 @@ const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         switch (error.message) {
             case ("AXIOS_ERROR"):
                 return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.AXIOS_VALIDATE_ERROR);
+            case ("Forbidden"):
+                return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.FORBIDDEN, resultMessage_1.default.FORBIDDEN_LOGIN_IF_RESIGNED);
             default:
                 (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.INTERNAL_SERVER_ERROR, resultMessage_1.default.INTERNAL_SERVER_ERROR);
         }

@@ -25,6 +25,9 @@ class AppleAuthService implements IAuthService {
       const payload = jwt.decode(request.socialtoken as string) as IAppleUserInfo;
       const userData = { email: payload.sub, nickname: null };
       
+      const isResignedUser = await this.resignUserRepository.existsInaDayByEmail(payload.sub); //24시간 내 탈퇴한 유저
+      if (isResignedUser) throw new Error("Forbidden");
+
       const refreshtoken = await issueRefreshToken();
       const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("apple", userData, request, refreshtoken);
       const accesstoken = await issueAccessToken(socialUser);
@@ -54,7 +57,7 @@ class AppleAuthService implements IAuthService {
     try {
 
       const resignedUser = await this.userRepository.findAndDelete(userId);
-      await this.resignUserRepository.save(userId, reason);
+      await this.resignUserRepository.save(userId, reason, resignedUser.email);
 
     } catch (error) {
       this.logger.appLogger.log({ level: "error", message: error.message });

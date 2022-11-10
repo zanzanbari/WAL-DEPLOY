@@ -7,6 +7,7 @@ import {
   PrimaryKey, 
   Table, 
   Unique } from "sequelize-typescript"
+import sequelize from "../models";
 
 @Table({
   modelName: "ResignUser",
@@ -35,12 +36,25 @@ export default class ResignUser extends Model {
   @Column(DataType.ARRAY(DataType.STRING))
   public reasonsForResign?: string;
 
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  public email!: string;
+
   /*
    * custom method 
    */
-  static async save(userId: number, reasonsForResign: string[]) {
-    await this.create({ userId, reasonsForResign });
+  static async save(userId: number, reasonsForResign: string[], email: string) {
+    await this.create({ userId, reasonsForResign, email });
   }
 
+  static async existsInaDayByEmail(email: string): Promise<Boolean> {
+    const now = new Date();
+    const user = await this.findOne({ where: { 
+      email,
+      $and: sequelize.where(sequelize.fn('date', sequelize.col('createdAt')), '>=', new Date(now.setDate(now.getDate() - 1)))
+    } });
+    if (user) return true;
+    else return false;
+  };
 
 }

@@ -49,7 +49,7 @@ let Item = class Item extends sequelize_typescript_1.Model {
     ;
     static getAllItemsByCategoryId(categoryId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.findAll({ where: { categoryId } });
+            return yield this.findAll({ where: { categoryId }, order: ["id"] });
         });
     }
     ;

@@ -22,7 +22,7 @@ const messageProcess = (job, done) => __awaiter(void 0, void 0, void 0, function
         const { fcmtoken, content, isReserved } = job.data;
         const message = {
             notification: {
-                title: '🐶오늘의 왈소리 도착~!🐶',
+                title: '왈',
                 body: content,
             },
             token: fcmtoken,

@@ -34,7 +34,7 @@ const morningProcess = (job, done) => __awaiter(void 0, void 0, void 0, function
         done();
     }
     catch (error) {
-        logger_1.default.appLogger.log({ level: "error", message: error.message });
+        logger_1.default.appLogger.log({ level: "error", message: `morningProcess::${error.message}` });
     }
 });
 exports.morningProcess = morningProcess;
@@ -53,7 +53,7 @@ const afterProcess = (job, done) => __awaiter(void 0, void 0, void 0, function* 
         done();
     }
     catch (error) {
-        logger_1.default.appLogger.log({ level: "error", message: error.message });
+        logger_1.default.appLogger.log({ level: "error", message: `afterProcess::${error.message}` });
     }
 });
 exports.afterProcess = afterProcess;
@@ -63,7 +63,6 @@ exports.afterProcess = afterProcess;
  */
 const nightProcess = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     logger_1.default.appLogger.log({ level: "info", message: "night queue process START" });
-    logger_1.default.appLogger.log({ level: "info", message: `morningFunc process START` });
     try {
         const userId = job.data;
         const data = yield getFcmAndContent(userId, timeHandler_1.default.getNight());
@@ -83,7 +82,6 @@ exports.nightProcess = nightProcess;
  */
 const reserveProcess = (job, done) => __awaiter(void 0, void 0, void 0, function* () {
     logger_1.default.appLogger.log({ level: "info", message: "reserve queue process START" });
-    logger_1.default.appLogger.log({ level: "info", message: `afterFunc process START` });
     try {
         const userId = job.data;
         const data = yield getFcmAndContent(userId);
@@ -93,7 +91,7 @@ const reserveProcess = (job, done) => __awaiter(void 0, void 0, void 0, function
         done();
     }
     catch (error) {
-        logger_1.default.appLogger.log({ level: "error", message: error.message });
+        logger_1.default.appLogger.log({ level: "error", message: `reserveProcess::${error.message}` });
     }
 });
 exports.reserveProcess = reserveProcess;
@@ -104,7 +102,7 @@ exports.reserveProcess = reserveProcess;
  */
 function getFcmAndContent(userId, time) {
     return __awaiter(this, void 0, void 0, function* () {
-        logger_1.default.appLogger.log({ level: "info", message: `nightFunc process START` });
+        logger_1.default.appLogger.log({ level: "info", message: `getFcmAndContent START` });
         try {
             if (time) {
                 const { fcmtoken, itemId } = yield models_1.TodayWal.getFcmByUserId(userId, time);

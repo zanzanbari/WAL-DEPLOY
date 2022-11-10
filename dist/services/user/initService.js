@@ -42,6 +42,10 @@ let InitService = class InitService extends userService_1.default {
     initSetInfo(userId, request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                //이미 setInfo기록 있으면 에러 발생
+                const checkBefore = yield this.todayWalRepository.getTodayWalsByUserId(userId);
+                if (checkBefore.length)
+                    throw new Error(checkBefore + "이미 초기 세팅된 유저입니다.");
                 // 초기 알람 시간 설정
                 yield this.timeRepository.setTime(userId, request.time);
                 // 설정한 알람 시간 큐에 추가

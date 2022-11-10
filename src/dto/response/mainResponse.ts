@@ -5,5 +5,6 @@ export interface IMainResponse {
   canOpen: boolean,
   categoryId: number,
   isShown: boolean,
-  voice: string | null
+  voice: string | null,
+  subtitle: string
 };

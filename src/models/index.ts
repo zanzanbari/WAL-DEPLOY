@@ -8,6 +8,8 @@ import UserCategory from './userCategories';
 import TodayWal from './todayWals';
 import config from '../config';
 import ResignUser from './resignUsers';
+import Subtitle from './subtitle';
+import TodaySubtitle from './todaySubtitle';
 
 const sequelize = new Sequelize({
   host: config.database.development.host,
@@ -32,7 +34,9 @@ sequelize.addModels([
   Time,
   Reservation,
   TodayWal,
-  ResignUser
+  ResignUser,
+  Subtitle,
+  TodaySubtitle
 ]);
 
 export {
@@ -43,7 +47,9 @@ export {
   Time,
   Reservation,
   TodayWal,
-  ResignUser
+  ResignUser,
+  Subtitle,
+  TodaySubtitle
 };
 
 export default sequelize;

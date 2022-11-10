@@ -40,9 +40,12 @@ class InitService extends UserService {
   ): Promise<UserSettingResponse> {
 
     try {
+<<<<<<< HEAD
       //이미 setInfo기록 있으면 에러 발생
       const checkBefore = await this.todayWalRepository.getTodayWalsByUserId(userId);
       if (checkBefore.length) throw new Error(checkBefore + "이미 초기 세팅된 유저입니다.");
+=======
+>>>>>>> aefd521 ([Delete] checkBeforeInit)
       
       // 초기 알람 시간 설정
       await this.timeRepository.setTime(userId, request.time);

@@ -22,14 +22,16 @@ class MainService {
    *  @access public
    */
 
-  public async getMain(userId: number): Promise<IMainResponse[]> {
+  public async getMain(userId: number){
 
     try {
 
-      const todayWals: Promise<TodayWal[]> = this.todayWalRepository.getTodayWalsByUserId(userId);
-      const main: Promise<IMainResponse[]> = this.getMainResult(await todayWals);
+      const subtitle: string = await this.getTodaySubtitle();
 
-      return await main;
+      const todayWals: TodayWal[] = await this.todayWalRepository.getTodayWalsByUserId(userId);
+      const todayWal: IMainResponse[] = await this.getMainResult(todayWals);
+
+      return  {subtitle, todayWal};
       
     } catch (error) {
       this.logger.appLogger.log({ level: "error", message: error.message });
@@ -39,12 +41,15 @@ class MainService {
   }
 
 
-  public async updateShown(userId: number, mainId: number): Promise<IMainResponse[]> {
+  public async updateShown(userId: number, mainId: number) {
     try {
 
-      const todayWals: Promise<TodayWal[]> = await this.todayWalRepository.updateShown(userId, mainId);
-      const main: Promise<IMainResponse[]> = this.getMainResult(await todayWals);
-      return main;
+      const subtitle: string = await this.getTodaySubtitle();
+
+      const todayWals: TodayWal[] = await this.todayWalRepository.updateShown(userId, mainId);
+      const todayWal: IMainResponse[] = await this.getMainResult(todayWals);
+
+      return {subtitle, todayWal};
       
     } catch (error) {
       this.logger.appLogger.log({ level: "error", message: error.message });
@@ -90,15 +95,11 @@ class MainService {
           canOpen: false,
           categoryId: -1,
           isShown,
-          voice: "",
-          subtitle: "default"
+          voice: ""
         };
         const time: Date = todayWal.getDataValue("time");
         mainResponse.canOpen = timeHandler.getCurrentTime().getTime() >= time.getTime() ? true : false;
 
-        const subtitle = await this.getTodaySubtitle();
-        mainResponse.subtitle = subtitle;
-        
         if (todayWal.getDataValue("userDefined")) { // 직접 예약한 왈소리라면
 
           const reservationId: number = todayWal.getDataValue("reservationId");

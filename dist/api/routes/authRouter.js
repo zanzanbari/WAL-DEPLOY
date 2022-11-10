@@ -9,7 +9,9 @@ const authController_1 = require("../controllers/authController");
 const requestValidator_1 = __importDefault(require("../middlewares/requestValidator"));
 const router = (0, express_1.Router)();
 router.post("/:social/login", requestValidator_1.default.loginRequestCheck, authController_1.authController.socialLogin);
-router.post("/:social/logout", requestValidator_1.default.loginRequestCheck, auth_1.default.isAuth, authController_1.authController.socialResign);
+router.post("/:social/logout", 
+// validateUtil.loginRequestCheck,
+auth_1.default.isAuth, authController_1.authController.socialResign);
 router.get("/logout", auth_1.default.isAuth, authController_1.authController.logout);
 router.post("/reissue/token", authController_1.authController.reissueToken);
 exports.default = router;

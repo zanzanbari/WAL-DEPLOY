@@ -26,8 +26,9 @@ const kakaoApi_1 = __importDefault(require("./client/kakaoApi"));
 const tokenHandler_1 = require("../../common/tokenHandler");
 let KakaoAuthService = class KakaoAuthService {
     // TODO 주입해주고 싶다 
-    constructor(userRepository, logger) {
+    constructor(userRepository, resignUserRepository, logger) {
         this.userRepository = userRepository;
+        this.resignUserRepository = resignUserRepository;
         this.logger = logger;
     }
     /**
@@ -39,6 +40,9 @@ let KakaoAuthService = class KakaoAuthService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userData = yield kakaoApi_1.default.auth(request.socialtoken);
+                const isResignedUser = yield this.resignUserRepository.existsInaDayByEmail(userData === null || userData === void 0 ? void 0 : userData.email); //24시간 내 탈퇴한 유저
+                if (isResignedUser)
+                    throw new Error("Forbidden");
                 const refreshtoken = yield (0, tokenHandler_1.issueRefreshToken)();
                 const socialUser = yield this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
                 const accesstoken = yield (0, tokenHandler_1.issueAccessToken)(socialUser);
@@ -60,13 +64,13 @@ let KakaoAuthService = class KakaoAuthService {
      *  @route POST /auth/kakao/resign
      *  @access public
      */
-    resign(userId, request) {
+    resign(userId, reason, token) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const unlinkedUser = kakaoApi_1.default.unlink(request.socialtoken);
-                const resignedUser = this.userRepository.findAndDelete(userId);
+                const unlinkedUser = kakaoApi_1.default.unlink(token.socialtoken);
+                const resignedUser = yield this.userRepository.findAndDelete(userId);
+                yield this.resignUserRepository.save(userId, reason, resignedUser.email);
                 yield unlinkedUser;
-                return yield resignedUser;
             }
             catch (error) {
                 this.logger.appLogger.log({ level: "error", message: error.message });
@@ -77,7 +81,7 @@ let KakaoAuthService = class KakaoAuthService {
 };
 KakaoAuthService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], KakaoAuthService);
 exports.default = KakaoAuthService;
 //# sourceMappingURL=kakaoAuthService.js.map

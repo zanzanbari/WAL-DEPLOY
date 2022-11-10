@@ -106,6 +106,27 @@ let TodayWal = class TodayWal extends sequelize_typescript_1.Model {
         });
     }
     ;
+    static updateShown(userId, mainId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.update({
+                isShown: true
+            }, {
+                where: {
+                    id: mainId,
+                    userId
+                }
+            });
+            return yield this.getTodayWalsByUserId(userId);
+        });
+    }
+    ;
+    static findByTimeAndUserId(time, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.findOne({
+                where: { userId, time }
+            });
+        });
+    }
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -140,6 +161,12 @@ __decorate([
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.BOOLEAN),
     __metadata("design:type", Boolean)
 ], TodayWal.prototype, "userDefined", void 0);
+__decorate([
+    (0, sequelize_typescript_1.AllowNull)(false),
+    (0, sequelize_typescript_1.Default)(false),
+    (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.BOOLEAN),
+    __metadata("design:type", Boolean)
+], TodayWal.prototype, "isShown", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.DATE),

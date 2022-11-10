@@ -112,7 +112,7 @@ let User = class User extends sequelize_typescript_1.Model {
             return yield this.findOne({ where: { id } })
                 .then((resolve) => __awaiter(this, void 0, void 0, function* () {
                 yield this.destroy({ where: { id } });
-                return resolve === null || resolve === void 0 ? void 0 : resolve.getDataValue("id");
+                return resolve;
             }));
         });
     }
@@ -167,7 +167,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "social", void 0);
 __decorate([
-    (0, sequelize_typescript_1.AllowNull)(false),
+    (0, sequelize_typescript_1.AllowNull)(true),
     sequelize_typescript_1.Unique,
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.STRING(50)),
     __metadata("design:type", String)

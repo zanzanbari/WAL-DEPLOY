@@ -109,15 +109,17 @@ let CategoryService = class CategoryService extends userService_1.default {
                         };
                         yield this.userCategoryRepository.setUserCategory(this.infoToUserCategoryDB);
                         for (const time of afterTime) { // 현재 시간 이후에 받을 왈소리에 추가된 유형이 있다면
-                            const { currentItemId, categoryId } = yield this.getRandCategoryCurrentItem(userId);
-                            const data = {
-                                userId,
-                                categoryId,
-                                itemId: currentItemId,
-                                time
-                            };
-                            console.log(data);
-                            yield this.todayWalRepository.setTodayWal(data); // 왈소리 세팅
+                            if (this.todayWalRepository.findByTimeAndUserId(time, userId) == null) {
+                                const { currentItemId, categoryId } = yield this.getRandCategoryCurrentItem(userId);
+                                const data = {
+                                    userId,
+                                    categoryId,
+                                    itemId: currentItemId,
+                                    time
+                                };
+                                console.log(data);
+                                yield this.todayWalRepository.setTodayWal(data); // 왈소리 세팅 
+                            }
                         }
                     }
                 }

@@ -56,7 +56,7 @@ class ReserveService {
             try {
                 const existingDate = yield this.reserveRepository.getReservationByDate(userId, request.date);
                 if (existingDate)
-                    return 19 /* customError.ALREADY_RESERVED_DATE */;
+                    return 19 /* ALREADY_RESERVED_DATE */;
                 const newReservationId = yield this.reserveRepository.setReservation(userId, request);
                 if (request.date == timeHandler_1.default.getCurrentDate()) { // 예약한게 오늘 날짜면
                     const data = {
@@ -112,7 +112,7 @@ class ReserveService {
                 // 대기중인 예약 왈소리 가져오기
                 const waitingReservation = yield this.reserveRepository.getReservationByPostId(userId, postId, false);
                 if (!waitingReservation)
-                    return 20 /* customError.NO_OR_COMPLETED_RESERVATION */;
+                    return 20 /* NO_OR_COMPLETED_RESERVATION */;
                 // 예약 큐에서 제거
                 yield this.timeQueueEvent.emit("cancelReservationQueue", userId, waitingReservation.sendingDate);
                 // 오늘의 왈소리에서 제거, 예약에서도 제거
@@ -138,7 +138,7 @@ class ReserveService {
             try {
                 const completedReservation = yield this.reserveRepository.getReservationByPostId(userId, postId, true);
                 if (!completedReservation)
-                    return 21 /* customError.NO_OR_UNCOMPLETED_RESERVATION */;
+                    return 21 /* NO_OR_UNCOMPLETED_RESERVATION */;
                 // 오늘의 왈소리에서 제거, 예약에서도 제거
                 const isReserved = yield this.todayWalRepository.getTodayReservation(userId, postId);
                 if (isReserved)
@@ -189,7 +189,7 @@ class ReserveService {
                         historyMessage.day +
                         historyMessage.time +
                         (!completed ? " • 전송 예정" : " • 전송 완료");
-                    const reserveData = Object.assign({ postId: item.id, sendingDate, content: item.getDataValue("content"), reserveAt: (0, dayjs_1.default)(item.getDataValue("reserveAt")).format("YYYY. MM. DD") }, (!completed && { hidden: item.getDataValue("hide") }));
+                    const reserveData = Object.assign({ postId: item.id, sendingDate, content: item.getDataValue("content"), reserveAt: (0, dayjs_1.default)(item.getDataValue("reservedAt")).format("YYYY. MM. DD"), sendDueDate: (0, dayjs_1.default)(rowDate).format("YYYY. MM. DD") }, (!completed && { hidden: item.getDataValue("hide") }));
                     dataArr.push(reserveData);
                 }
             }

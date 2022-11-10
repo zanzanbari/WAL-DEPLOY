@@ -24,10 +24,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
 const timeHandler_1 = __importDefault(require("../../common/timeHandler"));
 let MainService = class MainService {
-    constructor(todayWalRepository, reservationRepository, itemRepository, logger) {
+    constructor(todayWalRepository, reservationRepository, itemRepository, subtitleRepository, todaySubtitleRepository, logger) {
         this.todayWalRepository = todayWalRepository;
         this.reservationRepository = reservationRepository;
         this.itemRepository = itemRepository;
+        this.subtitleRepository = subtitleRepository;
+        this.todaySubtitleRepository = todaySubtitleRepository;
         this.logger = logger;
     }
     /**
@@ -38,9 +40,37 @@ let MainService = class MainService {
     getMain(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const todayWals = this.todayWalRepository.getTodayWalsByUserId(userId);
-                const main = this.getMainResult(yield todayWals);
-                return yield main;
+                const subtitle = yield this.getTodaySubtitle();
+                const todayWals = yield this.todayWalRepository.getTodayWalsByUserId(userId);
+                const todayWal = yield this.getMainResult(todayWals);
+                return { subtitle, todayWal };
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
+            }
+        });
+    }
+    updateShown(userId, mainId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const subtitle = yield this.getTodaySubtitle();
+                const todayWals = yield this.todayWalRepository.updateShown(userId, mainId);
+                const todayWal = yield this.getMainResult(todayWals);
+                return { subtitle, todayWal };
+            }
+            catch (error) {
+                this.logger.appLogger.log({ level: "error", message: error.message });
+                throw error;
+            }
+        });
+    }
+    getTodaySubtitle() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const subtitleId = yield this.todaySubtitleRepository.getTodaySubtitle();
+                const content = yield this.subtitleRepository.getContentById(subtitleId);
+                return content;
             }
             catch (error) {
                 this.logger.appLogger.log({ level: "error", message: error.message });
@@ -58,11 +88,16 @@ let MainService = class MainService {
             const result = [];
             try {
                 for (const todayWal of todayWals) {
+                    const id = todayWal.getDataValue("id");
+                    const isShown = todayWal.getDataValue("isShown");
                     let mainResponse = {
+                        id,
                         type: "default",
                         content: "default",
                         canOpen: false,
-                        categoryId: -1
+                        categoryId: -1,
+                        isShown,
+                        voice: ""
                     };
                     const time = todayWal.getDataValue("time");
                     mainResponse.canOpen = timeHandler_1.default.getCurrentTime().getTime() >= time.getTime() ? true : false;
@@ -74,9 +109,11 @@ let MainService = class MainService {
                     }
                     else { // 직접 예약한 왈소리가 아니라면
                         const itemId = todayWal.getDataValue("itemId");
-                        const { content, categoryId } = yield this.itemRepository.getContentById(itemId);
+                        const { content, categoryId, voice } = yield this.itemRepository.getContentById(itemId);
                         mainResponse.content = content;
                         mainResponse.categoryId = categoryId;
+                        if (voice)
+                            mainResponse.voice = voice;
                         if (time.getTime() === timeHandler_1.default.getMorning().getTime())
                             mainResponse.type = "아침";
                         if (time.getTime() === timeHandler_1.default.getAfternoon().getTime())
@@ -97,7 +134,7 @@ let MainService = class MainService {
 };
 MainService = __decorate([
     (0, typedi_1.Service)(),
-    __metadata("design:paramtypes", [Object, Object, Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], MainService);
 ;
 exports.default = MainService;

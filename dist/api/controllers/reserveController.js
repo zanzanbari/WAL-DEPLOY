@@ -53,7 +53,7 @@ const postReservation = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     try {
         const reserveServiceInstance = new reserveService_1.default(models_1.Reservation, models_1.TodayWal, event_1.default, logger_1.default);
         const data = yield reserveServiceInstance.postReservation((_b = req.user) === null || _b === void 0 ? void 0 : _b.id, req.body);
-        if (data == 19 /* customError.ALREADY_RESERVED_DATE */) {
+        if (data == 19 /* ALREADY_RESERVED_DATE */) {
             return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.BAD_REQUEST, resultMessage_1.default.ALREADY_RESERVED_DATE);
         }
         else {
@@ -103,7 +103,7 @@ const deleteReservation = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     try {
         const reserveServiceInstance = new reserveService_1.default(models_1.Reservation, models_1.TodayWal, event_1.default, logger_1.default);
         const data = yield reserveServiceInstance.removeReservation((_d = req.user) === null || _d === void 0 ? void 0 : _d.id, parseInt(postId));
-        if (data == 20 /* customError.NO_OR_COMPLETED_RESERVATION */) {
+        if (data == 20 /* NO_OR_COMPLETED_RESERVATION */) {
             return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.NOT_FOUND, resultMessage_1.default.NO_OR_COMPLETED_RESERVATION);
         }
         else {
@@ -130,7 +130,7 @@ const deleteCompletedReservation = (req, res, next) => __awaiter(void 0, void 0,
     try {
         const reserveServiceInstance = new reserveService_1.default(models_1.Reservation, models_1.TodayWal, event_1.default, logger_1.default);
         const data = yield reserveServiceInstance.removeReservationHistory((_e = req.user) === null || _e === void 0 ? void 0 : _e.id, parseInt(postId));
-        if (data == 21 /* customError.NO_OR_UNCOMPLETED_RESERVATION */) {
+        if (data == 21 /* NO_OR_UNCOMPLETED_RESERVATION */) {
             return (0, apiResponse_1.ErrorResponse)(res, resultCode_1.default.NOT_FOUND, resultMessage_1.default.NO_OR_UNCOMPLETED_RESERVATION);
         }
         else {

@@ -40,8 +40,7 @@ class InitService extends UserService {
   ): Promise<UserSettingResponse> {
 
     try {
-      
-      // 초기 알람 시간 설정
+// 초기 알람 시간 설정
       await this.timeRepository.setTime(userId, request.time);
       // 설정한 알람 시간 큐에 추가
       this.timeQueueEvent.emit("addTimeQueue", userId, request.time);

@@ -12,6 +12,8 @@ class GlobalService extends UserService {
     private readonly todayWalRepository: any,
     private readonly userRepository: any,
     private readonly timeRepository: any,
+    private readonly subtitleRepository: any,
+    private readonly todaySubtitleRepository: any,
     private readonly logger: any
   ) {
     super(
@@ -35,6 +37,7 @@ class GlobalService extends UserService {
 
         await this.todayWalRepository.deleteAll();
         await this.updateAllUserTodayWal();
+        await this.updateTodaySubtitle();
         this.logger.appLogger.log({ level: "info", message: "🐶 오늘의 왈 업데이트" });
         
       } catch(error) {
@@ -43,6 +46,26 @@ class GlobalService extends UserService {
       }
     });
 
+  }
+
+  /**
+   * 오늘의 subtitle 세팅
+   */
+  private async updateTodaySubtitle() {
+
+    try {
+
+      const subtitleSize = await this.subtitleRepository.getAllLength() as number;
+      const lastSubtitleId = await this.todaySubtitleRepository.getTodaySubtitle() as number;
+
+      const nextSubtitleId = (lastSubtitleId + 1 > subtitleSize) ? 1 : lastSubtitleId + 1;
+      await this.todaySubtitleRepository.updateTodaySubtitle(nextSubtitleId);
+    
+
+    } catch (error) {
+      throw error;
+    }
+    
   }
 
   /**

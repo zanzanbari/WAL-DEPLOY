@@ -3,7 +3,7 @@ import logger from "../../loaders/logger";
 import sc from "../../constant/resultCode";
 import rm from "../../constant/resultMessage";
 import MainService from "../../services/main/mainService";
-import { TodayWal, Item, Reservation } from "../../models";
+import { TodayWal, Item, Reservation, Subtitle, TodaySubtitle } from "../../models";
 import { ErrorResponse, SuccessResponse } from "../../common/apiResponse";
 
 /**
@@ -20,7 +20,7 @@ const getTodayWals = async (
 
   try {
 
-    const mainServiceInstance = new MainService(TodayWal, Reservation, Item, logger);
+    const mainServiceInstance = new MainService(TodayWal, Reservation, Item, Subtitle, TodaySubtitle, logger);
     const data = mainServiceInstance.getMain( req.user?.id as number);
 
     SuccessResponse(res, sc.OK, rm.READ_TODAY_WAL_SUCCESS, await data);
@@ -40,7 +40,7 @@ const updateTodayWalShown = async (
 
   try {
 
-    const mainServiceInstance = new MainService(TodayWal, Reservation, Item, logger);
+    const mainServiceInstance = new MainService(TodayWal, Reservation, Item, Subtitle, TodaySubtitle, logger);
     const data = mainServiceInstance.updateShown( req.user?.id as number, parseInt(req.params.mainId) as number);
 
     SuccessResponse(res, sc.OK, rm.SHOW_TODAY_WAL_SUCCESS, await data);

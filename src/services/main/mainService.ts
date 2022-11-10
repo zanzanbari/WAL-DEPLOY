@@ -10,6 +10,8 @@ class MainService {
     private readonly todayWalRepository: any,
     private readonly reservationRepository: any,
     private readonly itemRepository: any,
+    private readonly subtitleRepository: any,
+    private readonly todaySubtitleRepository: any,
     private readonly logger: any
   ) {
   }
@@ -50,6 +52,19 @@ class MainService {
     }
   }
 
+  private async getTodaySubtitle(): Promise<string> {
+    try {
+
+      const subtitleId: Promise<number> = await this.todaySubtitleRepository.getTodaySubtitle();
+      const content: Promise<string> = await this.subtitleRepository.getContentById(subtitleId);
+      return content;
+      
+    } catch (error) {
+      this.logger.appLogger.log({ level: "error", message: error.message });
+      throw error;
+    }
+  }
+
 
   /**
    * -------------------------
@@ -75,11 +90,15 @@ class MainService {
           canOpen: false,
           categoryId: -1,
           isShown,
-          voice: ""
+          voice: "",
+          subtitle: "default"
         };
         const time: Date = todayWal.getDataValue("time");
         mainResponse.canOpen = timeHandler.getCurrentTime().getTime() >= time.getTime() ? true : false;
 
+        const subtitle = await this.getTodaySubtitle();
+        mainResponse.subtitle = subtitle;
+        
         if (todayWal.getDataValue("userDefined")) { // 직접 예약한 왈소리라면
 
           const reservationId: number = todayWal.getDataValue("reservationId");

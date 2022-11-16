@@ -21,7 +21,7 @@ class ReissueTokenService {
             try {
                 const refreshTokenDecoded = yield (0, tokenHandler_1.verifyToken)(request.refreshtoken);
                 if ((0, validator_1.isTokenExpired)(refreshTokenDecoded))
-                    return 17 /* TOKEN_EXPIRES */; // 여기서 그냥 로그아웃을 시켜야 하나?
+                    return 17 /* Error.TOKEN_EXPIRES */; // 여기서 그냥 로그아웃을 시켜야 하나?
                 const isUser = this.userRepository.findOneByRefreshToken(request.refreshtoken);
                 const newAccessToken = yield (0, tokenHandler_1.issueAccessToken)(isUser);
                 const user = {

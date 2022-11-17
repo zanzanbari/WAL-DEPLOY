@@ -79,8 +79,8 @@ export default class UserCategory extends Model {
     const isCategories =  await this.findAll({
       where: { userId },
       attributes: ["categoryId"],
-      include: [{ model: Category, attributes: ["dtype"] }],
-      order: [[Category, 'id', 'ASC']] //DTYPE(STR)만 JOIN했기 때문에 순서 잘못된 걸로 추정
+      include: [{ model: Category }],
+      //order: [[Category, 'id', 'ASC']] //DTYPE(STR)만 JOIN했기 때문에 순서 잘못된 걸로 추정
     });
     if (!isCategories) throw new Error(rm.DB_ERROR);
 

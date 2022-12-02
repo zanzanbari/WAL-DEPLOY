@@ -45,7 +45,7 @@ export default class Reservation extends Model {
 
 
   @AllowNull(false)
-  @Default(Date.now())
+  @Default(DataType.NOW)
   @Column(DataType.DATE)
   public reservedAt!: Date;
 

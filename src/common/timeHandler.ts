@@ -17,7 +17,7 @@ const getCurrentTime = () => {
 }
 
 const getCurrentDate = () => {
-  return dayjs().locale("ko").format("YYYY-MM-DD");
+  return dayjs(new Date()).locale("ko").format("YYYY-MM-DD");
 }
 
 

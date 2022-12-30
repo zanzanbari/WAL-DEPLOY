@@ -19,7 +19,7 @@ class ReissueTokenService {
       const refreshTokenDecoded = await verifyToken(request.refreshtoken);
       if (isTokenExpired(refreshTokenDecoded)) return Error.TOKEN_EXPIRES; // 여기서 그냥 로그아웃을 시켜야 하나?
             
-      const isUser = this.userRepository.findOneByRefreshToken(request.refreshtoken);
+      const isUser = await this.userRepository.findOneByRefreshToken(request.refreshtoken);
       const newAccessToken = await issueAccessToken(isUser);
             
       const user: AuthResponse = {

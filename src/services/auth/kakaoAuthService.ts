@@ -30,10 +30,7 @@ class KakaoAuthService implements IAuthService {
       const isResignedUser = await this.resignUserRepository.existsInaDayByEmail(userData?.email); //24시간 내 탈퇴한 유저
       if (isResignedUser) throw new Error("Forbidden");
 
-      let refreshtoken = "";
-      do {
-        refreshtoken =  await issueRefreshToken();
-      } while (refreshtoken != null);
+      const refreshtoken = await issueRefreshToken();
       const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("kakao", userData, request, refreshtoken);
       const accesstoken = await issueAccessToken(socialUser);
             

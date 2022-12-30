@@ -28,7 +28,10 @@ class AppleAuthService implements IAuthService {
       const isResignedUser = await this.resignUserRepository.existsInaDayByEmail(payload.sub); //24시간 내 탈퇴한 유저
       if (isResignedUser) throw new Error("Forbidden");
 
-      const refreshtoken = await issueRefreshToken();
+      let refreshtoken = "";
+      do {
+        refreshtoken =  await issueRefreshToken();
+      } while (refreshtoken != null);
       const socialUser = await this.userRepository.findByEmailOrCreateSocialUser("apple", userData, request, refreshtoken);
       const accesstoken = await issueAccessToken(socialUser);
 

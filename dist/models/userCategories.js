@@ -57,8 +57,8 @@ let UserCategory = class UserCategory extends sequelize_typescript_1.Model {
             const isCategories = yield this.findAll({
                 where: { userId },
                 attributes: ["categoryId"],
-                include: [{ model: categories_1.default, attributes: ["dtype"] }],
-                order: [[categories_1.default, 'id', 'ASC']] //DTYPE(STR)만 JOIN했기 때문에 순서 잘못된 걸로 추정
+                include: [{ model: categories_1.default }],
+                //order: [[Category, 'id', 'ASC']] //DTYPE(STR)만 JOIN했기 때문에 순서 잘못된 걸로 추정
             });
             if (!isCategories)
                 throw new Error(resultMessage_1.default.DB_ERROR);

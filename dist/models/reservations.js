@@ -133,7 +133,7 @@ __decorate([
 ], Reservation.prototype, "content", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
-    (0, sequelize_typescript_1.Default)(Date.now()),
+    (0, sequelize_typescript_1.Default)(sequelize_typescript_1.DataType.NOW),
     (0, sequelize_typescript_1.Column)(sequelize_typescript_1.DataType.DATE),
     __metadata("design:type", Date)
 ], Reservation.prototype, "reservedAt", void 0);

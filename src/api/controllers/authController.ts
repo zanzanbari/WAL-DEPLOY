@@ -97,36 +97,6 @@ const socialResign = async (
 
 /**
  *  @로그아웃
- *  @route GET /auth/logout
- *  @access public
- */
-
-const logout = async (
-  req: Request, 
-  res: Response, 
-  next: NextFunction
-) => {
-  const userId = req.user?.id;
-
-  try {
-    // FIXME accesstoken 만료시켜야되는거 아님??
-    await User.update({
-      refreshtoken: null,
-    }, {
-      where: { id: userId }
-    });
-        
-    return SuccessResponse(res, sc.OK, rm.LOGOUT_SUCCESS, userId);
-
-  } catch (error) {
-    ErrorResponse(res, sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR);
-    return next(error);
-  }
-
-}
-
-/**
- *  @로그아웃
  *  @route GET /auth/reissue/token
  *  @access public
  */
@@ -158,7 +128,6 @@ const reissueToken = async (
 
 export const authController = {
   socialLogin,
-  logout,
   reissueToken,
   socialResign
 }

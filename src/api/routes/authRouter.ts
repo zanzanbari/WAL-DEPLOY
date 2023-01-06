@@ -21,7 +21,6 @@ router.post(
 router.get(
   "/logout", 
   authUtil.isAuth, 
-  authController.logout
 );
 
 router.post("/reissue/token", authController.reissueToken);

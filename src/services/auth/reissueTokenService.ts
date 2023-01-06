@@ -1,6 +1,6 @@
 import Error from "../../constant/responseError";
 import { isTokenExpired } from "../../common/validator";
-import { issueAccessToken, verifyToken } from "../../common/tokenHandler";
+import { issueAccessToken, issueRefreshToken, verifyToken } from "../../common/tokenHandler";
 import { TokenDto } from "../../dto/request/authRequest";
 import { AuthResponse } from "../../dto/response/authResponse";
 
@@ -16,16 +16,17 @@ class ReissueTokenService {
   ): Promise<AuthResponse | undefined | number> {
     try {
 
-      const refreshTokenDecoded = await verifyToken(request.refreshtoken);
-      if (isTokenExpired(refreshTokenDecoded)) return Error.TOKEN_EXPIRES; // 여기서 그냥 로그아웃을 시켜야 하나?
+      const accessTokenDecoded = await verifyToken(request.accesstoken);
+      // if (isTokenExpired(refreshTokenDecoded)) return Error.TOKEN_EXPIRES; // 여기서 그냥 로그아웃을 시켜야 하나?
             
-      const isUser = await this.userRepository.findOneByRefreshToken(request.refreshtoken);
+      const isUser = await this.userRepository.findById(accessTokenDecoded.id);
       const newAccessToken = await issueAccessToken(isUser);
+      const newRefreshToken = await issueRefreshToken();
             
       const user: AuthResponse = {
         id: isUser.id,
         accesstoken: newAccessToken,
-        // exp: ???
+        refreshtoken: newRefreshToken
       };
       return user;
 

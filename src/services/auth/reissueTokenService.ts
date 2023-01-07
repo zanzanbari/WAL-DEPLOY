@@ -1,8 +1,7 @@
-import Error from "../../constant/responseError";
-import { isTokenExpired } from "../../common/validator";
-import { issueAccessToken, issueRefreshToken, verifyToken } from "../../common/tokenHandler";
-import { TokenDto } from "../../dto/request/authRequest";
-import { AuthResponse } from "../../dto/response/authResponse";
+import * as jwt from "jsonwebtoken";
+import { issueAccessToken, issueRefreshToken  } from "../../common/tokenHandler";
+import { ReissueToken, TokenDto } from "../../dto/request/authRequest";
+import { AuthResponse, UserInfo } from "../../dto/response/authResponse";
 
 class ReissueTokenService {
   constructor(
@@ -12,12 +11,13 @@ class ReissueTokenService {
   }
 
   public async reissueToken(
-      request: TokenDto
+      request: ReissueToken
   ): Promise<AuthResponse | undefined | number> {
     try {
 
-      const accessTokenDecoded = await verifyToken(request.accesstoken);
-      // if (isTokenExpired(refreshTokenDecoded)) return Error.TOKEN_EXPIRES; // 여기서 그냥 로그아웃을 시켜야 하나?
+      var base64Payload = request.accesstoken.split('.')[1]; //value 0 -> header, 1 -> payload, 2 -> VERIFY SIGNATURE
+      var payload = Buffer.from(base64Payload, 'base64'); 
+      var accessTokenDecoded = JSON.parse(payload.toString())
             
       const isUser = await this.userRepository.findById(accessTokenDecoded.id);
       const newAccessToken = await issueAccessToken(isUser);

@@ -11,3 +11,8 @@ type Social = "apple" | "kakao"
 export interface SocialType {
     readonly social?: Social
 };
+
+export interface ReissueToken {
+    readonly accesstoken: string
+    readonly refreshtoken: string
+};

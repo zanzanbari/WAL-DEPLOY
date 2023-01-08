@@ -18,7 +18,7 @@ async function auth(
 
     const userData = await axios.post(apiUrl, {},reqConfig)
       .then((resolve) => {
-        const nickname: string = resolve.data.properties["nickname"];
+        const nickname = null;
         const email: string = resolve.data.kakao_account["email"];
         return { nickname, email };
       });

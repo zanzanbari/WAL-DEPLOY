@@ -50,7 +50,7 @@ export const verifyToken = async (token?: string) => {
 
     } else {
 
-      logger.appLogger.log({ level: "error", message: "토큰 검증 오류"});
+      logger.appLogger.log({ level: "error", message: error.message });
       return TOKEN_INVALID;
       
     }

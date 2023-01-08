@@ -75,7 +75,7 @@ export default class Reservation extends Model {
     const reservations = await this.findAll({
       where: {
         userId,
-        completed: false
+        $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '>', new Date())    
       },
       order: [
         ["reservedAt", "DESC"],
@@ -89,7 +89,7 @@ export default class Reservation extends Model {
     const reservations = await this.findAll({
       where: {
         userId,
-        completed: true
+        $and: sequelize.where(sequelize.fn('date', sequelize.col('sendingDate')), '<', new Date())
       },
       order: [["sendingDate", "DESC"]] //받은 날짜 desc정렬
     });

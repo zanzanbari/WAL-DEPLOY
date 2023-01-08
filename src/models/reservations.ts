@@ -9,7 +9,8 @@ import {
   ForeignKey,
   Table, 
   Unique, 
-  Default } from "sequelize-typescript"
+  Default, 
+  CreatedAt} from "sequelize-typescript"
 import User from "./users";
 import sequelize from "../models";
 import { ISetReserveDto } from "../dto/request/reserveRequest";
@@ -43,7 +44,7 @@ export default class Reservation extends Model {
   @Column(DataType.TEXT)
   public content!: string;
 
-
+  @CreatedAt
   @AllowNull(false)
   @Default(DataType.NOW)
   @Column(DataType.DATE)
